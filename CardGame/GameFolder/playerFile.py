@@ -1,5 +1,6 @@
 import random
 import characterFile
+import roomsFile
 
 
 class Player(characterFile.Character):
@@ -10,6 +11,7 @@ class Player(characterFile.Character):
         self.discard = []
         self.mana = 3
         self.coins = 40
+        self.current_room = roomsFile.Menu(None)
 
     def info(self):
         super().info()
