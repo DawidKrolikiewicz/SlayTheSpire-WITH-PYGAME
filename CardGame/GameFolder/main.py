@@ -35,40 +35,6 @@ STARTING_DECK = [cardsFile.Draw2Heal3(), cardsFile.Draw2Heal3(),
 
 PLAYER = playerFile.Player(PLAYER_NAME, STARTING_HEALTH, STARTING_DECK)
 
-
-# ======================================================================================================================
-
-class Test(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        super().__init__()
-        self.x = x
-        self.y = y
-        self.image = pygame.transform.scale_by(pygame.image.load("Cards/Depression.png"), 1)
-        self.rect = self.image.get_rect()
-        self.rect.topleft = (self.x, self.y)
-        self.movex = 1
-        self.movey = 1
-
-    def update(self):
-        if self.rect.top <= 0:
-            self.movey = 1
-        if self.rect.bottom >= SCREEN_HEIGHT:
-            self.movey = -1
-        if self.rect.left <= 0:
-            self.movex = 1
-        if self.rect.right >= SCREEN_WIDTH:
-            self.movex = -1
-
-        self.x = self.x + self.movex
-        self.y = self.y + self.movey
-        self.rect.topleft = (self.x, self.y)
-        pass
-
-    def draw(self, surface):
-        pygame.draw.rect(SCREEN, BLACK, self.rect)
-        surface.blit(self.image, (self.x, self.y))
-
-
 # ======================================================================================================================
 
 is_running = True
@@ -92,8 +58,6 @@ while is_running:
     SCREEN.fill(WHITE)
 
     PLAYER.current_room.update(SCREEN, PLAYER)
-
-    #test_card.update(SCREEN, PLAYER)
 
     # UPDATING THE DISPLAY
     pygame.display.update()
