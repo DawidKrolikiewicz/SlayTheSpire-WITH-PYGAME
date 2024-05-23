@@ -93,7 +93,6 @@ class InGame(Room):
                 player.current_room = Menu(player.current_room)
 
     def update(self, screen, player):
-        screen.fill(self.bg_color)
         pygame.draw.rect(screen, self.menu_button_color, self.menu_button_rect)
 
 
@@ -102,10 +101,16 @@ class InGame(Room):
 class CombatEncounter(InGame):
     def __init__(self):
         super().__init__()
-        self.bg_color = BLUE
-        self.button_rect = pygame.Rect((1266, 668, 100, 100))
-        self.list_of_enemies = []
         pygame.display.set_caption("COMBAT ENCOUNTER")
+        self.bg_player_color = BLUE
+        self.bg_player_rect = pygame.Rect((0, 0, 683, 528))
+        self.bg_enemy_color = GREEN
+        self.bg_enemy_rect = pygame.Rect((683, 0, 683, 528))
+        self.end_turn_color = BLACK
+        self.end_turn_rect = pygame.Rect((1266, 668, 100, 100))
+
+        self.list_of_enemies = []
+        self._generate_enemies()
 
     def event_listener(self, ev, player):
         super().event_listener(ev, player)
@@ -113,66 +118,60 @@ class CombatEncounter(InGame):
             if ev.type == pygame.KEYDOWN:
                 if ev.key == pygame.K_i:
                     player.info()
-                    player.current_room.enemy.info()
-                if ev.key == pygame.K_1:
-                    player.play_card(player, self.list_of_enemies, 0)
-                if ev.key == pygame.K_2:
-                    player.play_card(player, self.list_of_enemies, 1)
-                if ev.key == pygame.K_3:
-                    player.play_card(player, self.list_of_enemies, 2)
-                if ev.key == pygame.K_4:
-                    player.play_card(player, self.list_of_enemies, 3)
-                if ev.key == pygame.K_5:
-                    player.play_card(player, self.list_of_enemies, 4)
-                if ev.key == pygame.K_6:
-                    player.play_card(player, self.list_of_enemies, 5)
-                if ev.key == pygame.K_7:
-                    player.play_card(player, self.list_of_enemies, 6)
-                if ev.key == pygame.K_8:
-                    player.play_card(player, self.list_of_enemies, 7)
-                if ev.key == pygame.K_9:
-                    player.play_card(player, self.list_of_enemies, 8)
-                if ev.key == pygame.K_0:
-                    player.play_card(player, self.list_of_enemies, 9)
+                    for enemy in self.list_of_enemies:
+                        enemy.info()
             if ev.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
-                if self.button_rect.collidepoint(pos):
+                if self.end_turn_rect.collidepoint(pos):
                     print(f"END TURN")
                     self.state = 3
         for card in player.hand:
-            card.event_listener(ev, player)
+            card.event_listener(ev, player, self.list_of_enemies)
 
     def update(self, screen, player):
-        # Fill background color AND Draw Go-To-Menu Rect
+        # Draw backgrounds Rects
+        pygame.draw.rect(screen, self.bg_player_color, self.bg_player_rect)
+        pygame.draw.rect(screen, self.bg_enemy_color, self.bg_enemy_rect)
+
+        # Draw Go-To-Menu Rect
         super().update(screen, player)
 
-        # Draw End-of-turn Button
-        pygame.draw.rect(screen, BLACK, self.button_rect)
+        # Draw End-of-turn Rect
+        pygame.draw.rect(screen, self.end_turn_color, self.end_turn_rect)
 
-        # Update visual for every card in hand
+        # Update every enemy
+        for enemy in self.list_of_enemies:
+            enemy.update(screen, player)
+
+        # Update every card in hand
         for card in player.hand:
             card.update(screen, player)
 
         if self.state == 0:
             # COMBAT START
             player.shuffle_deck()
-            enemy_name = random.choice(["Angry Arthur", "Bad Brad", "Cruel Cooper", "Devious Dominick"])
-            enemy_health = random.randint(10, 16)
-            self.list_of_enemies.append(enemyFile.Enemy1(enemy_name, enemy_health))
             self.state = 1
 
         if self.state == 1:
             # ROUND START
             player.draw_card(5)
             player.mana = 3
-            self.list_of_enemies[0].declare_action(player, self.list_of_enemies)
+            for enemy in self.list_of_enemies:
+                enemy.declare_action(player, self.list_of_enemies)
             print(f">>--------------------------------------------------------------------------<<")
             player.info()
-            self.list_of_enemies[0].info()
+            for enemy in self.list_of_enemies:
+                enemy.info()
             self.state = 2
 
         if self.state == 2:
             # PLAYER ACTIONS TURN
+
+            for enemy in self.list_of_enemies:
+                if enemy.health <= 0:
+                    self.list_of_enemies.remove(enemy)
+                    print(f"Enemy {enemy.name} is DEAD!")
+
             if player.health <= 0:
                 print(f">> (((  LOSE  )))")
                 player.current_room = Menu(None)
@@ -186,11 +185,28 @@ class CombatEncounter(InGame):
         if self.state == 3:
             # END TURN
             print(f">>--------------------------------------------------------------------------<<")
-            self.list_of_enemies[0].play_action(player, self.list_of_enemies)
+            for enemy in self.list_of_enemies:
+                enemy.play_action(player, self.list_of_enemies)
+
             player.end_turn()
             pygame.time.wait(2000)
             print(f">>--------------------------------------------------------------------------<<")
             self.state = 1
+
+    def _generate_enemies(self):
+        # ENEMY GENERATOR
+        number_of_enemies = random.randint(1, 4)
+        offset = 683 // (number_of_enemies + 1)
+        enemy_names = ["Angry Arthur", "Bad Brad", "Cruel Cooper", "Devious Dominick"]
+        for i in range(number_of_enemies):
+            random.shuffle(enemy_names)
+            enemy_name = enemy_names.pop()
+            enemy_health = random.randint(4, 10)
+            enemy = enemyFile.Enemy1(enemy_name, enemy_health)
+            enemy.x = (i + 1) * offset + 683
+            enemy.y = 300
+            print(enemy.name)
+            self.list_of_enemies.append(enemy)
 
 
 # ======================================================================================================================

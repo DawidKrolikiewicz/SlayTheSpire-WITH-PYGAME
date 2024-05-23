@@ -55,7 +55,7 @@ class Player(characterFile.Character):
 
     #        print(f"==============================================================================")
 
-    def play_card(self, player, list_of_enemies, index):
+    def play_card(self, player, list_of_enemies, card):
         if len(self.hand) < 1:
             print(f">>  {self.name}'s hand is EMPTY!")
         else:
@@ -63,16 +63,24 @@ class Player(characterFile.Character):
 #            for i in range(len(self.hand)):
 #                print(f"{i}) {self.hand[i].name}[{self.hand[i].cost}]")
 
-            index_picked = index
-            if self.hand[index_picked].cost <= self.mana:
-                card_picked = self.hand[index_picked]
-                print(f">>  Playing {card_picked.name} from hand!")
-                self.mana -= card_picked.cost
-                self.hand.pop(index_picked)
-                card_picked.action(player, list_of_enemies)
-                self.discard.append(card_picked)
+            if card.cost <= self.mana:
+                self.mana -= card.cost
+                self.hand.remove(card)
+                card.action(player, list_of_enemies)
+                self.discard.append(card)
             else:
-                print(f">>  Not enough mana to play {self.hand[index_picked].name}!")
+                print(f"Not enough mana to play {card.name}!")
+
+#            index_picked = index
+#            if self.hand[index_picked].cost <= self.mana:
+#                card_picked = self.hand[index_picked]
+#                print(f">>  Playing {card_picked.name} from hand!")
+#                self.mana -= card_picked.cost
+#                self.hand.pop(index_picked)
+#                card_picked.action(player, list_of_enemies)
+#                self.discard.append(card_picked)
+#            else:
+#                print(f">>  Not enough mana to play {card.name}!")
 
     def discard_card(self, card):
         self.hand.remove(card)

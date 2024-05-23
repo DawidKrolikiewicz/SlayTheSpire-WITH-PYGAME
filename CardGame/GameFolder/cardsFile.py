@@ -24,13 +24,19 @@ class CardBase(pygame.sprite.Sprite):
         self.price_range = (0, 0)
         self.weight = 0
 
-    def event_listener(self, ev, player):
+    def event_listener(self, ev, player, list_of_enemies):
+        pos = pygame.mouse.get_pos()
         if ev.type == pygame.MOUSEBUTTONDOWN:
-            pos = pygame.mouse.get_pos()
             if self.rect.collidepoint(pos) and player.drag is None:
                 print(self.name)
                 player.drag = self
+                player.drag.image.set_alpha(200)
         if ev.type == pygame.MOUSEBUTTONUP and player.drag is not None:
+            player.drag.image.set_alpha(255)
+            for enemy in list_of_enemies:
+                if enemy.rect.collidepoint(pos):
+                    print(f"Playing {player.drag.name} on {enemy.name}!")
+                    player.play_card(player, list_of_enemies, player.drag)
             player.drag = None
 
     def update(self, screen, player):

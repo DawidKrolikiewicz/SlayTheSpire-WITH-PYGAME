@@ -1,4 +1,7 @@
 import random
+
+import pygame
+
 import characterFile
 
 
@@ -7,6 +10,11 @@ class Enemy(characterFile.Character):
         super().__init__(name, health)
         self.list_of_actions = []
         self.next_action = None
+        self.rect = pygame.Rect((0, 0, 100, 100))
+
+    def update(self, screen, player):
+        self.rect.center = (self.x, self.y)
+        pygame.draw.rect(screen, (255, 0, 0), self.rect)
 
     def declare_action(self, player, list_of_enemies):
         if self.list_of_actions:

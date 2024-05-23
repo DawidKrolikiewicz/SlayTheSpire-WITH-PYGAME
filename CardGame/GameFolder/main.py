@@ -7,6 +7,7 @@ import roomsFile
 
 pygame.init()
 
+# 1366 x 768
 SCREEN_WIDTH = 1366
 SCREEN_HEIGHT = 768
 SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)

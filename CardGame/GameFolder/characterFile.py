@@ -1,5 +1,9 @@
-class Character:
+import pygame.sprite
+
+
+class Character(pygame.sprite.Sprite):
     def __init__(self, name, health):
+        pygame.sprite.Sprite.__init__(self)
         self.name = name
         self.health = health
         self.armor = 0
@@ -7,6 +11,8 @@ class Character:
         self.vulnerability = 0
         self.dexterity = 0
         self.fragility = 0
+        self.x = 0
+        self.y = 0
 
     def info(self):
         print(f">>  {self.name}'s info is being displayed!")
