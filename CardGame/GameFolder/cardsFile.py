@@ -1,12 +1,64 @@
+import random
+import pygame
+
 
 # ======================= CardBase =======================
-class CardBase:
+class CardBase(pygame.sprite.Sprite):
     def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        # GAME RELATED
         self.name = self.__class__.__name__
         self.cost = 99
         self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.x = random.randint(0, 1116)
+        self.y = random.randint(0, 443)
+        self.move_speed = 2
+        self.move_x = self.move_speed
+        self.move_y = self.move_speed
+        self.image = pygame.image.load("Cards/Steroids.png")
+        self.width = self.image.get_width()
+        self.height = self.image.get_height()
+        self.rect = pygame.Rect((self.x, self.y, self.width, self.height))
+        # SHOP RELATED
         self.price_range = (0, 0)
         self.weight = 0
+
+    def event_listener(self, ev, player):
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            if self.rect.collidepoint(pos) and player.drag is None:
+                print(self.name)
+                player.drag = self
+        if ev.type == pygame.MOUSEBUTTONUP and player.drag is not None:
+            player.drag = None
+
+    def update(self, screen, player):
+        # Bouncing around screen-saver style
+        if self.rect.top <= 0:
+            self.move_y = self.move_speed
+        if self.rect.bottom >= screen.get_height():
+            self.move_y = -self.move_speed
+        if self.rect.left <= 0:
+            self.move_x = self.move_speed
+        if self.rect.right >= screen.get_width():
+            self.move_x = -self.move_speed
+
+        if player.drag == self:
+            pos = pygame.mouse.get_pos()
+            self.x = pos[0]
+            self.y = pos[1]
+        else:
+            self.x = self.x + self.move_x
+            self.y = self.y + self.move_y
+
+        self.rect.center = (self.x, self.y)
+
+        self.draw(screen)
+
+    def draw(self, screen):
+        # pygame.draw.rect(screen, (255, 0, 0), self.rect)
+        screen.blit(self.image, (self.x - self.width // 2, self.y - self.height // 2))
 
     def action(self, player, list_of_enemies):
         print(f"CardBase action executing!")
@@ -17,8 +69,12 @@ class CardBase:
 class Draw2Heal3(CardBase):
     def __init__(self):
         super().__init__()
+        # GAME RELATED
         self.cost = 2
         self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("Cards/Covid19Vaccine.png")
+        # SHOP RELATED
         self.price_range = (30, 40)
         self.weight = 1
 
@@ -32,8 +88,12 @@ class Draw2Heal3(CardBase):
 class Deal5Damage(CardBase):
     def __init__(self):
         super().__init__()
+        # GAME RELATED
         self.cost = 1
         self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("Cards/GentlePush.png")
+        # SHOP RELATED
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -47,8 +107,12 @@ class Deal5Damage(CardBase):
 class Draw1(CardBase):
     def __init__(self):
         super().__init__()
+        # GAME RELATED
         self.cost = 1
         self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("Cards/PanicRoll.png")
+        # SHOP RELATED
         self.price_range = (18, 25)
         self.weight = 2
 
@@ -61,8 +125,12 @@ class Draw1(CardBase):
 class Armor4(CardBase):
     def __init__(self):
         super().__init__()
+        # GAME RELATED
         self.cost = 1
         self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("Cards/TinCanArmor.png")
+        # SHOP RELATED
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -75,8 +143,12 @@ class Armor4(CardBase):
 class Buff(CardBase):
     def __init__(self):
         super().__init__()
+        # GAME RELATED
         self.cost = 2
         self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("Cards/Steroids.png")
+        # SHOP RELATED
         self.price_range = (25, 35)
         self.weight = 1
 
@@ -90,8 +162,12 @@ class Buff(CardBase):
 class Debuff(CardBase):
     def __init__(self):
         super().__init__()
+        # GAME RELATED
         self.cost = 1
         self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("Cards/Covid19.png")
+        # SHOP RELATED
         self.price_range = (18, 25)
         self.weight = 2
 
@@ -103,13 +179,19 @@ class Debuff(CardBase):
 
 # ======================= Card6 =======================
 
-class KYS(CardBase):  # Testing purposes card
+class Depression(CardBase):  # Testing purposes card
     def __init__(self):
         super().__init__()
+        # GAME RELATED
         self.cost = 1
         self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("Cards/Depression.png")
+        # SHOP RELATED
+        self.price_range = (99, 99)
+        self.weight = 0
 
     def action(self, player, list_of_enemies):
-        player.deal_damage(99, player)
+        player.deal_damage(5, player)
 
 

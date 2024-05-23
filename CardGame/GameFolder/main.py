@@ -7,10 +7,10 @@ import roomsFile
 
 pygame.init()
 
-SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 500
+SCREEN_WIDTH = 1366
+SCREEN_HEIGHT = 768
 SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
-SCREEN = pygame.display.set_mode((600, 500))
+SCREEN = pygame.display.set_mode(SCREEN_SIZE)
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -24,7 +24,6 @@ TO_SHOP = pygame.USEREVENT + 3
 DISPLAY_INFO = pygame.USEREVENT + 4
 
 timer = pygame.time.Clock()
-pygame.display.set_caption('Slay the spire clone thingy')
 
 PLAYER_NAME = "VictoriousGuy"
 STARTING_HEALTH = 25
@@ -32,7 +31,7 @@ STARTING_DECK = [cardsFile.Draw2Heal3(), cardsFile.Draw2Heal3(),
                  cardsFile.Deal5Damage(), cardsFile.Deal5Damage(),
                  cardsFile.Draw1(), cardsFile.Draw1(),
                  cardsFile.Armor4(), cardsFile.Armor4(),
-                 cardsFile.Buff(), cardsFile.Debuff(), cardsFile.KYS()]
+                 cardsFile.Buff(), cardsFile.Debuff(), cardsFile.Depression()]
 
 PLAYER = playerFile.Player(PLAYER_NAME, STARTING_HEALTH, STARTING_DECK)
 
@@ -74,12 +73,7 @@ class Test(pygame.sprite.Sprite):
 
 is_running = True
 
-test_group = pygame.sprite.Group()
-
-test_1 = Test(55, 103)
-test_2 = Test(400, 100)
-test_group.add(test_1)
-test_group.add(test_2)
+test_card = cardsFile.CardBase()
 
 scene = 1
 
@@ -99,16 +93,14 @@ while is_running:
 
     PLAYER.current_room.update(SCREEN, PLAYER)
 
-#   test_group.update()
-    test_1.update()
-    test_1.draw(SCREEN)
-#   test_2.draw(SCREEN)
+    #test_card.update(SCREEN, PLAYER)
 
     # UPDATING THE DISPLAY
     pygame.display.update()
 
     # Setting Frames per Second
     timer.tick(60)
+
     # Display actual FPS
     # print(int(timer.get_fps()))
 
