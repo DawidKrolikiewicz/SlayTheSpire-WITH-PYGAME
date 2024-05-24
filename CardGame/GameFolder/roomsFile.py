@@ -51,7 +51,6 @@ class Menu(Room):
             pos = pygame.mouse.get_pos()
             if self.menu_button_1_rect.collidepoint(pos):
                 # Start Button
-                print(self.last_room.__class__.__name__)
                 if self.last_room.__class__.__name__ == "CombatEncounter":
                     # Continue Current Run
                     print("Cont Last Combat")
@@ -133,6 +132,7 @@ class CombatEncounter(InGame):
             if ev.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 if self.end_turn_rect.collidepoint(pos):
+                    player.end_turn()
                     print(f"END TURN")
                     self.state = 3
         for card in player.hand:
@@ -165,8 +165,7 @@ class CombatEncounter(InGame):
 
         if self.state == 1:
             # ROUND START
-            player.draw_card(5)
-            player.mana = 3
+            player.start_turn()
             for enemy in self.list_of_enemies:
                 enemy.declare_action(player, self.list_of_enemies)
             print(f">>--------------------------------------------------------------------------<<")
@@ -177,21 +176,19 @@ class CombatEncounter(InGame):
 
         if self.state == 2:
             # PLAYER ACTIONS TURN
-
             for enemy in self.list_of_enemies:
-                if enemy.health <= 0:
+                if enemy.cur_health <= 0:
                     self.list_of_enemies.remove(enemy)
                     print(f"Enemy {enemy.name} is DEAD!")
 
-            if player.health <= 0:
+            if player.cur_health <= 0:
                 print(f">> (((  LOSE  )))")
                 player.current_room = Menu(None)
-                player.health = 25
-            elif all(enemy.health <= 0 for enemy in self.list_of_enemies):
+                player.end_combat()
+            elif all(enemy.cur_health <= 0 for enemy in self.list_of_enemies):
                 print(f">> (((  WIN!  )))")
                 player.current_room = Menu(None)
-                player.health = 25
-            pass
+            #player.end_combat()
 
         if self.state == 3:
             # END TURN

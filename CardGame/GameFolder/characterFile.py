@@ -5,7 +5,8 @@ class Character(pygame.sprite.Sprite):
     def __init__(self, name, health):
         pygame.sprite.Sprite.__init__(self)
         self.name = name
-        self.health = health
+        self.max_health = health
+        self.cur_health = health
         self.armor = 0
         self.strength = 0
         self.vulnerability = 0
@@ -16,7 +17,7 @@ class Character(pygame.sprite.Sprite):
 
     def info(self):
         print(f">>  {self.name}'s info is being displayed!")
-        print(f"    Health: {self.health}")
+        print(f"    Health: {self.cur_health} / {self.max_health}")
         print(f"    Armor: {self.armor}")
         print(f"    Buffs: S- {self.strength}, D- {self.dexterity}, V- {self.vulnerability}, F- {self.fragility}")
 
@@ -30,15 +31,15 @@ class Character(pygame.sprite.Sprite):
             else:
                 damage -= target.armor
                 target.armor = 0
-                target.health -= damage
+                target.cur_health -= damage
         else:
-            target.health -= damage
+            target.cur_health -= damage
 
     def add_armor(self, armor, target):
         target.armor += int((armor + self.dexterity) / (1.5 if self.fragility > 0 else 1))
 
     def heal(self, value, target):
-        target.health += value
+        target.cur_health += value
 
     def add_str(self, value, target):
         target.strength += value
