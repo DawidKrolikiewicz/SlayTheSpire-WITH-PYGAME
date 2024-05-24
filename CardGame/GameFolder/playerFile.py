@@ -30,8 +30,7 @@ class Player(characterFile.Character):
             print(f"{card.name}[{card.cost}]", end=" / ")
         print()
 
-    def add_card_do_deck(self, card):
-        # NOT USED CURRENTLY
+    def add_card_to_deck(self, card):
         self.deck.append(card)
 
     def shuffle_deck(self):
