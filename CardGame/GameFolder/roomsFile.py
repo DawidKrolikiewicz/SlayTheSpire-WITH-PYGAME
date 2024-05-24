@@ -160,7 +160,7 @@ class CombatEncounter(InGame):
 
         if self.state == 0:
             # COMBAT START
-            player.shuffle_deck()
+            player.start_combat()
             self.state = 1
 
         if self.state == 1:
@@ -188,7 +188,7 @@ class CombatEncounter(InGame):
             elif all(enemy.cur_health <= 0 for enemy in self.list_of_enemies):
                 print(f">> (((  WIN!  )))")
                 player.current_room = Menu(None)
-            #player.end_combat()
+                player.end_combat()
 
         if self.state == 3:
             # END TURN

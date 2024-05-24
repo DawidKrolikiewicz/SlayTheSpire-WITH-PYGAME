@@ -23,13 +23,12 @@ class CardBase(pygame.sprite.Sprite):
         self.image = pygame.image.load("Cards/Steroids.png")
         self.width = self.image.get_width()
         self.height = self.image.get_height()
-        self.x = random.randint(0, 1366)
-        self.y = random.randint(528, 768)
         self.move_speed = 0
         self.move_x = self.move_speed
         self.move_y = self.move_speed
         self.rect = pygame.Rect((0, 0, self.width, self.height))
-        self.rect.center = (self.x, self.y)
+
+        self.randomize_card_position()
         # SHOP RELATED
         self.price_range = (0, 0)
         self.weight = 0
@@ -87,6 +86,11 @@ class CardBase(pygame.sprite.Sprite):
 
     def action(self, player, list_of_enemies, target):
         print(f"CardBase action executing!")
+
+    def randomize_card_position(self):
+        self.x = random.randint(0, 1366)
+        self.y = random.randint(528, 768)
+        self.rect.center = (self.x, self.y)
 
 
 # ======================= Card1 =======================
