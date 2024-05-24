@@ -7,6 +7,7 @@ RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
+PURPLE = (150, 0, 250)
 
 # > Room   (superclass)
 # - Menu
@@ -102,10 +103,13 @@ class CombatEncounter(InGame):
     def __init__(self):
         super().__init__()
         pygame.display.set_caption("COMBAT ENCOUNTER")
-        self.bg_player_color = BLUE
-        self.bg_player_rect = pygame.Rect((0, 0, 683, 528))
+        self.bg_play_color = BLUE
+        self.bg_play_rect = pygame.Rect((0, 0, 1366, 528))
         self.bg_enemy_color = GREEN
         self.bg_enemy_rect = pygame.Rect((683, 0, 683, 528))
+        self.bg_hand_color = PURPLE
+        self.bg_hand_rect = pygame.Rect((0, 528, 1366, 240))
+
         self.end_turn_color = BLACK
         self.end_turn_rect = pygame.Rect((1266, 668, 100, 100))
 
@@ -126,12 +130,13 @@ class CombatEncounter(InGame):
                     print(f"END TURN")
                     self.state = 3
         for card in player.hand:
-            card.event_listener(ev, player, self.list_of_enemies)
+            card.event_listener(ev, player, self.list_of_enemies, self.bg_play_rect)
 
     def update(self, screen, player):
         # Draw backgrounds Rects
-        pygame.draw.rect(screen, self.bg_player_color, self.bg_player_rect)
+        pygame.draw.rect(screen, self.bg_play_color, self.bg_play_rect)
         pygame.draw.rect(screen, self.bg_enemy_color, self.bg_enemy_rect)
+        pygame.draw.rect(screen, self.bg_hand_color, self.bg_hand_rect)
 
         # Draw Go-To-Menu Rect
         super().update(screen, player)
@@ -145,7 +150,7 @@ class CombatEncounter(InGame):
 
         # Update every card in hand
         for card in player.hand:
-            card.update(screen, player)
+            card.update(screen, player, self.bg_hand_rect)
 
         if self.state == 0:
             # COMBAT START

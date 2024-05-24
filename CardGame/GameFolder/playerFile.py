@@ -55,7 +55,7 @@ class Player(characterFile.Character):
 
     #        print(f"==============================================================================")
 
-    def play_card(self, player, list_of_enemies, card):
+    def play_card(self, player, list_of_enemies, target, card):
         if len(self.hand) < 1:
             print(f">>  {self.name}'s hand is EMPTY!")
         else:
@@ -66,7 +66,7 @@ class Player(characterFile.Character):
             if card.cost <= self.mana:
                 self.mana -= card.cost
                 self.hand.remove(card)
-                card.action(player, list_of_enemies)
+                card.action(player, list_of_enemies, target)
                 self.discard.append(card)
             else:
                 print(f"Not enough mana to play {card.name}!")
