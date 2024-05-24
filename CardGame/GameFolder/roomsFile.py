@@ -51,14 +51,17 @@ class Menu(Room):
             pos = pygame.mouse.get_pos()
             if self.menu_button_1_rect.collidepoint(pos):
                 # Start Button
-                if self.last_room is None:
-                    # Start New Run
-                    player.current_room = CombatEncounter()
+                print(self.last_room.__class__.__name__)
+                if self.last_room.__class__.__name__ == "CombatEncounter":
+                    # Continue Current Run
+                    print("Cont Last Combat")
+                    player.current_room = self.last_room
                     for i in range(25):
                         print(f"")
                 else:
-                    # Continue Current Run
-                    player.current_room = self.last_room
+                    # Start New Run
+                    print("Start New Combat")
+                    player.current_room = CombatEncounter()
                     for i in range(25):
                         print(f"")
                 pass
@@ -91,7 +94,10 @@ class InGame(Room):
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if self.menu_button_rect.collidepoint(pos):
-                player.current_room = Menu(player.current_room)
+                last_room = player.current_room
+                player.current_room = Menu(last_room)
+                print(last_room.state)
+
 
     def update(self, screen, player):
         pygame.draw.rect(screen, self.menu_button_color, self.menu_button_rect)
@@ -223,6 +229,7 @@ class Shop(InGame):
         pygame.display.set_caption("SHOP")
 
     def update(self, screen, player):
+        screen.fill(self.bg_color)
         super().update(screen, player)
         pass
 
