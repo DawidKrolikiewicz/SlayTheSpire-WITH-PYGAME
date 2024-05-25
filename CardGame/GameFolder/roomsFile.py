@@ -2,6 +2,7 @@ import pygame
 import random
 import enemyFile
 
+
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
@@ -59,7 +60,7 @@ class Menu(Room):
                         print(f"")
                 else:
                     # Start New Run
-                    print("Start New Combat")
+                    print("Start New Combat!!!")
                     player.current_room = CombatEncounter()
                     for i in range(25):
                         print(f"")
@@ -110,7 +111,7 @@ class CombatEncounter(InGame):
         self.bg_play_color = BLUE
         self.bg_play_rect = pygame.Rect((0, 0, 1366, 528))
         self.bg_enemy_color = GREEN
-        self.bg_enemy_rect = pygame.Rect((500, 0, 966, 528))
+        self.bg_enemy_rect = pygame.Rect((500, 0, 866, 528))
         self.bg_hand_color = PURPLE
         self.bg_hand_rect = pygame.Rect((0, 528, 1366, 240))
 
@@ -118,7 +119,9 @@ class CombatEncounter(InGame):
         self.end_turn_rect = pygame.Rect((1266, 668, 100, 100))
 
         self.list_of_enemies = []
-        self._generate_enemies()
+        self._get_random_combat()
+
+        self._position_enemies()
 
     def event_listener(self, ev, player):
         super().event_listener(ev, player)
@@ -148,6 +151,9 @@ class CombatEncounter(InGame):
 
         # Draw End-of-turn Rect
         pygame.draw.rect(screen, self.end_turn_color, self.end_turn_rect)
+
+        # Update player
+        player.update(screen)
 
         # Update every enemy
         for enemy in self.list_of_enemies:
@@ -200,20 +206,24 @@ class CombatEncounter(InGame):
             print(f">>--------------------------------------------------------------------------<<")
             self.state = 1
 
-    def _generate_enemies(self):
-        # ENEMY GENERATOR
-        number_of_enemies = random.randint(1, 4)
-        offset = 683 // (number_of_enemies + 1)
-        enemy_names = ["Angry Arthur", "Bad Brad", "Cruel Cooper", "Devious Dominick"]
-        for i in range(number_of_enemies):
-            random.shuffle(enemy_names)
-            enemy_name = enemy_names.pop()
-            enemy_health = random.randint(4, 10)
-            enemy = enemyFile.Enemy1(enemy_name, enemy_health)
-            enemy.x = (i + 1) * offset + 683
-            enemy.y = 300
-            print(enemy.name)
-            self.list_of_enemies.append(enemy)
+    def _get_random_combat(self):
+        # Get random combat encounter from the list
+        fights = [[enemyFile.Worm("Wormmer", 6), enemyFile.Frog("Frogger", 6), enemyFile.Enemy("BaseEnemy", 6)]]
+        self.list_of_enemies += random.choice(fights)
+
+    def _position_enemies(self):
+        free_space = 866  # width of enemy area
+
+        for enemy in self.list_of_enemies:
+            free_space -= enemy.rect.width
+
+        free_space /= (len(self.list_of_enemies) + 1)
+        x = self.bg_enemy_rect.left
+
+        for enemy in self.list_of_enemies:
+            x += free_space
+            enemy.rect.left = x
+            x = enemy.rect.right
 
 
 # ======================================================================================================================

@@ -1,5 +1,8 @@
 import pygame.sprite
 
+pygame.font.init()
+text_font = pygame.font.SysFont("Comic Sans MS", 18)
+
 
 class Character(pygame.sprite.Sprite):
     def __init__(self, name, health):
@@ -13,7 +16,7 @@ class Character(pygame.sprite.Sprite):
         self.dexterity = 0
         self.fragility = 0
         self.x = 0
-        self.y = 0
+        self.y = 300
 
     def info(self):
         print(f">>  {self.name}'s info is being displayed!")
@@ -40,6 +43,8 @@ class Character(pygame.sprite.Sprite):
 
     def heal(self, value, target):
         target.cur_health += value
+        if target.cur_health > target.max_health:
+            target.cur_health = target.max_health
 
     def add_str(self, value, target):
         target.strength += value

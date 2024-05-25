@@ -27,7 +27,7 @@ DISPLAY_INFO = pygame.USEREVENT + 4
 timer = pygame.time.Clock()
 
 PLAYER_NAME = "VictoriousGuy"
-STARTING_HEALTH = 25
+STARTING_HEALTH = 70
 STARTING_DECK = [cardsFile.Draw2Heal3(), cardsFile.Draw2Heal3(),
                  cardsFile.Deal5Damage(), cardsFile.Deal5Damage(),
                  cardsFile.Draw1(), cardsFile.Draw1(),

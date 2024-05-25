@@ -39,7 +39,6 @@ class CardBase(pygame.sprite.Sprite):
             pos = pygame.mouse.get_pos()
             if ev.type == pygame.MOUSEBUTTONDOWN:
                 if self.rect.collidepoint(pos) and player.drag is None:
-                    print(self.name)
                     player.drag = self
                     self.image.set_alpha(200)
             if ev.type == pygame.MOUSEBUTTONUP and player.drag == self:
