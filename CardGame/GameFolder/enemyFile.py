@@ -10,11 +10,14 @@ class Enemy(characterFile.Character):
         super().__init__(name, health)
         self.list_of_actions = []
         self.next_action = None
+
+        #self.image = pygame.image.load("Enemies/frog.png")
         self.rect = pygame.Rect((0, 0, 100, 100))
 
     def update(self, screen, player):
         self.rect.center = (self.x, self.y)
         pygame.draw.rect(screen, (255, 0, 0), self.rect)
+        #screen.blit(self.image, self.rect.topleft)
 
     def declare_action(self, player, list_of_enemies):
         if self.list_of_actions:
@@ -43,3 +46,16 @@ class Enemy1(Enemy):
     def give_1_vuln(self, player, list_of_enemies):
         print(f">>  {self.name} makes you more vulnerable!")
         self.add_vuln(1, player)
+
+
+class Frog(Enemy):
+    def __init__(self, name, health):
+        super().__init__(name, health)
+        self.image = pygame.image.load("/Enemies/frog.png")
+        self.rect = self.image.get_rect()
+
+    def update(self, screen, player):
+        self.rect.center = (self.x, self.y)
+        pygame.draw.rect(screen, (255, 0, 0), self.rect)
+        screen.blit(self.image, self.rect.topleft)
+

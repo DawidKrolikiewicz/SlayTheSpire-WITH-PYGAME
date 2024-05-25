@@ -97,7 +97,6 @@ class InGame(Room):
                 player.current_room = Menu(last_room)
                 print(last_room.state)
 
-
     def update(self, screen, player):
         pygame.draw.rect(screen, self.menu_button_color, self.menu_button_rect)
 
@@ -111,7 +110,7 @@ class CombatEncounter(InGame):
         self.bg_play_color = BLUE
         self.bg_play_rect = pygame.Rect((0, 0, 1366, 528))
         self.bg_enemy_color = GREEN
-        self.bg_enemy_rect = pygame.Rect((683, 0, 683, 528))
+        self.bg_enemy_rect = pygame.Rect((500, 0, 966, 528))
         self.bg_hand_color = PURPLE
         self.bg_hand_rect = pygame.Rect((0, 528, 1366, 240))
 
