@@ -7,7 +7,6 @@ import pygame
 class Targeting(enum.Enum):
     ANY = 1
     ENEMY = 2
-    PLAYER = 3
 
 
 # ======================= CardBase =======================
@@ -19,6 +18,7 @@ class CardBase(pygame.sprite.Sprite):
         self.cost = 99
         self.text = "There is no text here!"
         self.target = Targeting.ANY
+
         # VISUAL RELATED
         self.image = pygame.image.load("Cards/Steroids.png")
         self.width = self.image.get_width()
@@ -27,8 +27,8 @@ class CardBase(pygame.sprite.Sprite):
         self.move_x = self.move_speed
         self.move_y = self.move_speed
         self.rect = pygame.Rect((0, 0, self.width, self.height))
-
         self.randomize_card_position()
+
         # SHOP RELATED
         self.price_range = (0, 0)
         self.weight = 0
@@ -49,7 +49,7 @@ class CardBase(pygame.sprite.Sprite):
                         player.play_card(player, list_of_enemies, None, self)
                 elif self.target is Targeting.ENEMY:
                     for enemy in list_of_enemies:
-                        if enemy.rect.collidepoint(pos):
+                        if enemy.rect_sprite.collidepoint(pos):
                             print(f"Playing {self.name} on {enemy.name}!")
                             player.play_card(player, list_of_enemies, enemy, self)
                 player.drag = None

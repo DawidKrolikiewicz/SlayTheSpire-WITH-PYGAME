@@ -157,7 +157,7 @@ class CombatEncounter(InGame):
 
         # Update every enemy
         for enemy in self.list_of_enemies:
-            enemy.update(screen, player)
+            enemy.update(screen)
 
         # Update every card in hand
         for card in player.hand:
@@ -215,15 +215,15 @@ class CombatEncounter(InGame):
         free_space = 866  # width of enemy area
 
         for enemy in self.list_of_enemies:
-            free_space -= enemy.rect.width
+            free_space -= enemy.rect_sprite.width
 
         free_space /= (len(self.list_of_enemies) + 1)
         x = self.bg_enemy_rect.left
 
         for enemy in self.list_of_enemies:
             x += free_space
-            enemy.rect.left = x
-            x = enemy.rect.right
+            enemy.rect_sprite.left = x
+            x = enemy.rect_sprite.right
 
 
 # ======================================================================================================================

@@ -1,7 +1,5 @@
 import random
-
 import pygame.image
-
 import characterFile
 import roomsFile
 
@@ -18,34 +16,21 @@ class Player(characterFile.Character):
         self.current_room = roomsFile.Menu(None)
         self.drag = None
 
-        self.image = pygame.image.load("Enemies/player.png")
-        self.rect = self.image.get_rect()
-        self.rect.bottom = 370
-        self.rect.centerx = 250
+        self.image_sprite = pygame.image.load("Enemies/player.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 370
+        self.rect_sprite.centerx = 250
 
         self.image_name = characterFile.text_font.render(self.name, True, (0, 0, 0))
-        self.name_rect = self.image_name.get_rect()
-        self.name_rect.top = self.rect.bottom + 4
+        self.rect_name = self.image_name.get_rect()
+        self.rect_name.top = self.rect_sprite.bottom + 4
 
         self.image_hp = characterFile.text_font.render(f"[{self.armor}] {self.cur_health} / {self.max_health} HP", True, (0, 0, 0))
-        self.hp_rect = self.image_hp.get_rect()
-        self.hp_rect.top = self.name_rect.bottom + 4
+        self.rect_hp = self.image_hp.get_rect()
+        self.rect_hp.top = self.rect_name.bottom + 4
 
     def update(self, screen):
-        # DRAWING ENEMY SPRITE
-        pygame.draw.rect(screen, (255, 0, 0), self.rect)
-        screen.blit(self.image, self.rect.topleft)
-
-        # DRAWING ENEMY NAME
-        self.name_rect.centerx = self.rect.centerx
-        pygame.draw.rect(screen, (0, 100, 255), self.name_rect)
-        screen.blit(self.image_name, self.name_rect.topleft)
-
-        # DRAWING ENEMY HP
-        self.image_hp = characterFile.text_font.render(f"[{self.armor}] {self.cur_health} / {self.max_health} HP", True, (0, 0, 0))
-        self.hp_rect.centerx = self.rect.centerx
-        pygame.draw.rect(screen, (0, 100, 255), self.hp_rect)
-        screen.blit(self.image_hp, self.hp_rect.topleft)
+        super().update(screen)
 
     def info(self):
         super().info()

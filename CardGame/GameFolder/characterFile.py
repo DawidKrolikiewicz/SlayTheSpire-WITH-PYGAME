@@ -6,6 +6,7 @@ text_font = pygame.font.SysFont("Comic Sans MS", 18)
 
 class Character(pygame.sprite.Sprite):
     def __init__(self, name, health):
+        # GAMEPLAY RELATED
         pygame.sprite.Sprite.__init__(self)
         self.name = name
         self.max_health = health
@@ -15,8 +16,37 @@ class Character(pygame.sprite.Sprite):
         self.vulnerability = 0
         self.dexterity = 0
         self.fragility = 0
-        self.x = 0
-        self.y = 300
+
+        # DISPLAY RELATED
+        self.image_sprite = pygame.image.load("Enemies/Don'tMakeInstancesOfBaseEnemyPLS.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 370
+
+        self.image_name = text_font.render(self.name, True, (0, 0, 0))
+        self.rect_name = self.image_name.get_rect()
+        self.rect_name.top = self.rect_sprite.bottom + 4
+
+        self.image_hp = text_font.render(f"[{self.armor}] {self.cur_health} / {self.max_health} HP", True,
+                                         (0, 0, 0))
+        self.rect_hp = self.image_hp.get_rect()
+        self.rect_hp.top = self.rect_name.bottom + 4
+
+    def update(self, screen):
+        # DRAWING CHARACTER SPRITE
+        pygame.draw.rect(screen, (255, 0, 0), self.rect_sprite)
+        screen.blit(self.image_sprite, self.rect_sprite.topleft)
+
+        # DRAWING CHARACTER NAME
+        self.rect_name.centerx = self.rect_sprite.centerx
+        pygame.draw.rect(screen, (0, 100, 255), self.rect_name)
+        screen.blit(self.image_name, self.rect_name.topleft)
+
+        # DRAWING CHARACTER HP
+        self.image_hp = text_font.render(f"[{self.armor}] {self.cur_health} / {self.max_health} HP", True,
+                                         (0, 0, 0))
+        self.rect_hp.centerx = self.rect_sprite.centerx
+        pygame.draw.rect(screen, (0, 100, 255), self.rect_hp)
+        screen.blit(self.image_hp, self.rect_hp.topleft)
 
     def info(self):
         print(f">>  {self.name}'s info is being displayed!")
