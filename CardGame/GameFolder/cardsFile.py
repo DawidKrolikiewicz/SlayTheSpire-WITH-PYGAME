@@ -39,6 +39,7 @@ class CardBase(pygame.sprite.Sprite):
         self.cost = 99
         self.text = "There is no text here!"
         self.target = Targeting.ANY
+        self.exhaust = False
 
         # VISUAL RELATED
         self.image = pygame.image.load("Cards/Steroids.png")

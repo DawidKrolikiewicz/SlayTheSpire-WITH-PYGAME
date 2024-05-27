@@ -55,19 +55,16 @@ class Frog(Enemy):
     def attack_7(self, player, list_of_enemies):
         print(f">> {self.name} attacks!")
         self.deal_damage(7, player)
-        player.add_card_to_deck(cardsFile.Depression())
 
     def attack_2_block_4(self, player, list_of_enemies):
         print(f">> {self.name} attacks and blocks!")
         self.deal_damage(2, player)
         self.add_armor(4, self)
-        player.add_card_to_deck(cardsFile.Depression())
 
     def str_1_block_1(self, player, list_of_enemies):
         print(f">> {self.name} gains strength and blocks!")
         self.add_str(1, self)
         self.add_armor(1, self)
-        player.add_card_to_deck(cardsFile.Depression())
 
 
 class Worm(Enemy):

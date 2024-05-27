@@ -165,7 +165,6 @@ class CombatEncounter(InGame):
         for index, card in enumerate(player.hand):
             card.update(screen, player, index, self.bg_hand_rect)
         self._handle_highlight(player, screen)
-        print(player.highlight)
 
         if self.state == 0:
             # COMBAT START

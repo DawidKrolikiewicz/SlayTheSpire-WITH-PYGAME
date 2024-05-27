@@ -8,6 +8,7 @@ class Player(characterFile.Character):
     def __init__(self, name, health, starting_deck):
         super().__init__(name, health)
         self.run_deck = starting_deck
+        self.max_hand_size = 10
         self.deck = []
         self.hand = []
         self.discard = []
@@ -52,9 +53,23 @@ class Player(characterFile.Character):
             print(f"{card.name}[{card.cost}]", end=" / ")
         print()
 
-    def add_card_to_deck(self, card):
-        # NOT USED CURRENTLY
-        self.deck.append(card)
+    def play_card(self, player, list_of_enemies, target, card):
+        if len(self.hand) < 1:
+            print(f">>  {self.name}'s hand is EMPTY!")
+        else:
+            print(f">>  {self.name} is playing a card:")
+
+            if card.cost <= self.mana:
+                self.mana -= card.cost
+
+                card.action(player, list_of_enemies, target)
+                card.reset_card_position()
+                if not card.exhaust:
+                    self.discard_card(card)
+                else:
+                    self.exhaust_card(card)
+            else:
+                print(f"Not enough mana to play {card.name}!")
 
     def shuffle_deck(self):
         print(f">>  {self.name} is shuffling the deck!")
@@ -73,24 +88,23 @@ class Player(characterFile.Character):
             card_drawn = self.deck.pop(0)
             self.hand.append(card_drawn)
 
-    def play_card(self, player, list_of_enemies, target, card):
-        if len(self.hand) < 1:
-            print(f">>  {self.name}'s hand is EMPTY!")
-        else:
-            print(f">>  {self.name} is playing a card:")
+    def add_card_to_deck(self, card):
+        self.deck.append(card)
 
-            if card.cost <= self.mana:
-                self.mana -= card.cost
-                self.hand.remove(card)
-                card.action(player, list_of_enemies, target)
-                card.reset_card_position()
-                self.discard.append(card)
-            else:
-                print(f"Not enough mana to play {card.name}!")
+    def add_card_to_hand(self, card):
+        if len(self.hand) <= self.max_hand_size:
+            self.hand.append(card)
+
+    def add_card_to_discard(self, card):
+        self.discard.append(card)
 
     def discard_card(self, card):
         self.hand.remove(card)
         self.discard.append(card)
+        card.reset_card_position()
+
+    def exhaust_card(self, card):
+        self.hand.remove(card)
         card.reset_card_position()
 
     def start_combat(self):
