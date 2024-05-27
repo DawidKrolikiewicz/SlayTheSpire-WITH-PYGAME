@@ -21,16 +21,19 @@ class Player(characterFile.Character):
         self.rect_sprite.bottom = 370
         self.rect_sprite.centerx = 250
 
-        self.image_name = characterFile.text_font.render(self.name, True, (0, 0, 0))
-        self.rect_name = self.image_name.get_rect()
-        self.rect_name.top = self.rect_sprite.bottom + 4
-
-        self.image_hp = characterFile.text_font.render(f"[{self.armor}] {self.cur_health} / {self.max_health} HP", True, (0, 0, 0))
-        self.rect_hp = self.image_hp.get_rect()
-        self.rect_hp.top = self.rect_name.bottom + 4
+        self.image_mana = characterFile.text_font.render(f"{self.mana} / 3", True, (0, 0, 0))
+        self.rect_mana = self.image_mana.get_rect()
+        self.rect_mana.midbottom = self.rect_sprite.midtop - pygame.Vector2(0, 4)
 
     def update(self, screen):
         super().update(screen)
+
+        # DRAWING PLAYER MANA
+        self.image_mana = characterFile.text_font.render(f"{self.mana} / 3", True, (0, 0, 0))
+        self.rect_mana = self.image_mana.get_rect()
+        self.rect_mana.midbottom = self.rect_sprite.midtop - pygame.Vector2(0, 4)
+        pygame.draw.rect(screen, (255, 0, 0), self.rect_mana)
+        screen.blit(self.image_mana, self.rect_mana.topleft)
 
     def info(self):
         super().info()
@@ -79,7 +82,7 @@ class Player(characterFile.Character):
                 self.mana -= card.cost
                 self.hand.remove(card)
                 card.action(player, list_of_enemies, target)
-                card.randomize_card_position()
+                card.reset_card_position()
                 self.discard.append(card)
             else:
                 print(f"Not enough mana to play {card.name}!")
@@ -87,6 +90,7 @@ class Player(characterFile.Character):
     def discard_card(self, card):
         self.hand.remove(card)
         self.discard.append(card)
+        card.reset_card_position()
 
     def start_combat(self):
         self.deck += self.run_deck

@@ -161,10 +161,14 @@ class CombatEncounter(InGame):
             enemy.update(screen)
 
         # Update every card in hand
-        self.bg_hand_rect.update(0, 528, 200 * len(player.hand), 240)
+        self.bg_hand_rect.update(0, 528, 140 * len(player.hand) - 140, 240)
         self.bg_hand_rect.centerx = 683
         for index, card in enumerate(player.hand):
             card.update(screen, player, index, self.bg_hand_rect)
+        for card in player.hand:
+            pos = pygame.mouse.get_pos()
+            if (card.rect.collidepoint(pos) and player.drag is None) or player.drag == card:
+                card.draw(screen)
 
         if self.state == 0:
             # COMBAT START

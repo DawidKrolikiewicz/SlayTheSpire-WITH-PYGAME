@@ -25,9 +25,9 @@ class CardBase(pygame.sprite.Sprite):
         self.rect.topleft = (1366, 440)
 
         self.place = pygame.Vector2(0, 0)
-        self.move_speed = 4
+        self.move_speed = 20
 
-        self.randomize_card_position()
+        self.reset_card_position()
 
         # SHOP RELATED
         self.price_range = (0, 0)
@@ -55,27 +55,18 @@ class CardBase(pygame.sprite.Sprite):
                 player.drag = None
 
     def update(self, screen, player, index, hand_rect):
-        # DOING NOTHING :)
+        # COMBAT ENCOUNTER UPDATE
         if player.current_room.__class__.__name__ == "CombatEncounter":
+            pos = pygame.mouse.get_pos()
             if player.drag == self:
                 # Follow mouse
-                pos = pygame.mouse.get_pos()
                 self.rect.center = (pos[0], pos[1])
             else:
-                # Find out default position
-                self.place = pygame.Vector2(hand_rect.left + (index * 200), 600)
-                print(index)
-                # Move to your default position in hand
-                if self.rect.center != self.place:
-                    if self.rect.centerx < self.place[0]:
-                        self.rect.centerx += self.move_speed
-                    elif self.rect.centerx > self.place[0]:
-                        self.rect.centerx -= self.move_speed
-                    if self.rect.centery < self.place[1]:
-                        self.rect.centery += self.move_speed
-                    elif self.rect.centery > self.place[1]:
-                        self.rect.centery -= self.move_speed
-                pass
+                # Move to default position based on index in hand
+                self.place = pygame.Vector2(hand_rect.left + (index * 140), 600)
+                current = pygame.Vector2(self.rect.center)
+                current.move_towards_ip(self.place, self.move_speed)
+                self.rect.center = current
 
             self.draw(screen)
 
@@ -86,10 +77,8 @@ class CardBase(pygame.sprite.Sprite):
     def action(self, player, list_of_enemies, target):
         print(f"CardBase action executing!")
 
-    def randomize_card_position(self):
-        x = random.randint(0, 1366)
-        y = random.randint(528, 768)
-        self.rect.center = (x, y)
+    def reset_card_position(self):
+        self.rect.center = (1500, 600)
 
 
 # ======================= Card1 =======================
