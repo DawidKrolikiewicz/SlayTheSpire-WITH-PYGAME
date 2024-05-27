@@ -3,6 +3,7 @@ import random
 import enemyFile
 import cardsFile
 
+
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
@@ -53,14 +54,16 @@ class Menu(Room):
             pos = pygame.mouse.get_pos()
             if self.menu_button_1_rect.collidepoint(pos):
                 # Start Button
-                if self.last_room is None:
-                    # Start New Run
-                    player.current_room = CombatEncounter()
+                if self.last_room.__class__.__name__ == "CombatEncounter":
+                    # Continue Current Run
+                    print("Cont Last Combat")
+                    player.current_room = self.last_room
                     for i in range(25):
                         print(f"")
                 else:
-                    # Continue Current Run
-                    player.current_room = self.last_room
+                    # Start New Run
+                    print("Start New Combat!!!")
+                    player.current_room = CombatEncounter()
                     for i in range(25):
                         print(f"")
                 pass
@@ -93,7 +96,9 @@ class InGame(Room):
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if self.menu_button_rect.collidepoint(pos):
-                player.current_room = Menu(player.current_room)
+                last_room = player.current_room
+                player.current_room = Menu(last_room)
+                print(last_room.state)
 
     def update(self, screen, player):
         pygame.draw.rect(screen, self.menu_button_color, self.menu_button_rect)
@@ -108,15 +113,17 @@ class CombatEncounter(InGame):
         self.bg_play_color = BLUE
         self.bg_play_rect = pygame.Rect((0, 0, 1366, 528))
         self.bg_enemy_color = GREEN
-        self.bg_enemy_rect = pygame.Rect((683, 0, 683, 528))
+        self.bg_enemy_rect = pygame.Rect((500, 0, 866, 528))
         self.bg_hand_color = PURPLE
-        self.bg_hand_rect = pygame.Rect((0, 528, 1366, 240))
+        self.bg_hand_rect = pygame.Rect((125, 528, 1116, 240))
 
         self.end_turn_color = BLACK
         self.end_turn_rect = pygame.Rect((1266, 668, 100, 100))
 
         self.list_of_enemies = []
-        self._generate_enemies()
+        self._get_random_combat()
+
+        self._position_enemies()
 
     def event_listener(self, ev, player):
         super().event_listener(ev, player)
@@ -129,10 +136,11 @@ class CombatEncounter(InGame):
             if ev.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 if self.end_turn_rect.collidepoint(pos):
+                    player.end_turn()
                     print(f"END TURN")
                     self.state = 3
-        for card in player.hand:
-            card.event_listener(ev, player, self.list_of_enemies, self.bg_play_rect)
+        cardsFile.event_listener(ev, player, self.list_of_enemies, self.bg_play_rect)
+        player.event_listener(ev, self.list_of_enemies)
 
     def update(self, screen, player):
         # Draw backgrounds Rects
@@ -146,23 +154,28 @@ class CombatEncounter(InGame):
         # Draw End-of-turn Rect
         pygame.draw.rect(screen, self.end_turn_color, self.end_turn_rect)
 
-        # Update every enemy
-        for enemy in self.list_of_enemies:
-            enemy.update(screen, player)
+        # Update player
+        player.update(screen)
 
-        # Update every card in hand
-        for card in player.hand:
-            card.update(screen, player, self.bg_hand_rect)
+        # Update every enemy
+        for enemy in self.list_of_enemies :
+            enemy.update(screen)
+
+        # Update every card in hand + draw non-highlighted
+        self.bg_hand_rect.update(0, 528, 140 * len(player.hand) - 140, 240)
+        self.bg_hand_rect.centerx = 683
+        for index, card in enumerate(player.hand):
+            card.update(screen, player, index, self.bg_hand_rect)
+        self._handle_highlight(player, screen)
 
         if self.state == 0:
             # COMBAT START
-            player.shuffle_deck()
+            player.start_combat()
             self.state = 1
 
         if self.state == 1:
             # ROUND START
-            player.draw_card(5)
-            player.mana = 3
+            player.start_turn()
             for enemy in self.list_of_enemies:
                 enemy.declare_action(player, self.list_of_enemies)
             print(f">>--------------------------------------------------------------------------<<")
@@ -173,21 +186,19 @@ class CombatEncounter(InGame):
 
         if self.state == 2:
             # PLAYER ACTIONS TURN
-
             for enemy in self.list_of_enemies:
-                if enemy.health <= 0:
+                if enemy.cur_health <= 0:
                     self.list_of_enemies.remove(enemy)
                     print(f"Enemy {enemy.name} is DEAD!")
 
-            if player.health <= 0:
+            if player.cur_health <= 0:
                 print(f">> (((  LOSE  )))")
                 player.current_room = Menu(None)
-                player.health = 25
-            elif all(enemy.health <= 0 for enemy in self.list_of_enemies):
+                player.end_combat()
+            elif all(enemy.cur_health <= 0 for enemy in self.list_of_enemies):
                 print(f">> (((  WIN!  )))")
                 player.current_room = Menu(None)
-                player.health = 25
-            pass
+                player.end_combat()
 
         if self.state == 3:
             # END TURN
@@ -196,24 +207,41 @@ class CombatEncounter(InGame):
                 enemy.play_action(player, self.list_of_enemies)
 
             player.end_turn()
-            pygame.time.wait(2000)
             print(f">>--------------------------------------------------------------------------<<")
             self.state = 1
 
-    def _generate_enemies(self):
-        # ENEMY GENERATOR
-        number_of_enemies = random.randint(1, 4)
-        offset = 683 // (number_of_enemies + 1)
-        enemy_names = ["Angry Arthur", "Bad Brad", "Cruel Cooper", "Devious Dominick"]
-        for i in range(number_of_enemies):
-            random.shuffle(enemy_names)
-            enemy_name = enemy_names.pop()
-            enemy_health = random.randint(4, 10)
-            enemy = enemyFile.Enemy1(enemy_name, enemy_health)
-            enemy.x = (i + 1) * offset + 683
-            enemy.y = 300
-            print(enemy.name)
-            self.list_of_enemies.append(enemy)
+    def _get_random_combat(self):
+        # Get random combat encounter from the list
+        fights = [[enemyFile.Worm("Wormmer", 6), enemyFile.Frog("Frogger", 6), enemyFile.Enemy("BaseEnemy", 6)]]
+        self.list_of_enemies += random.choice(fights)
+
+    def _position_enemies(self):
+        free_space = 866  # width of enemy area
+
+        for enemy in self.list_of_enemies:
+            free_space -= enemy.rect_sprite.width
+
+        free_space /= (len(self.list_of_enemies) + 1)
+        x = self.bg_enemy_rect.left
+
+        for enemy in self.list_of_enemies:
+            x += free_space
+            enemy.rect_sprite.left = x
+            x = enemy.rect_sprite.right
+
+    def _handle_highlight(self, player, screen):
+        pos = pygame.mouse.get_pos()
+        if player.highlight is not None and player.highlight.rect.collidepoint(pos):
+            # Keep highlight on card as long as it's hovered
+            pass
+        else:
+            player.highlight = None
+            for card in player.hand:
+                if card.rect.collidepoint(pos):
+                    player.highlight = card
+
+        if player.highlight is not None:
+            player.highlight.draw(screen)
 
 
 # ======================================================================================================================
@@ -268,7 +296,6 @@ class Shop(InGame):
                     self.buy_card(i, player)
 
     def update(self, screen, player):
-
         pygame.draw.rect(screen, self.bg_cards_color, self.bg_cards_rect)
         pygame.draw.rect(screen, self.leave_color, self.leave_rect)
 
