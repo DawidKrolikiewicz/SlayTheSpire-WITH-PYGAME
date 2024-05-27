@@ -1,6 +1,8 @@
 import random
 import enum
 import pygame
+import powersFile
+
 
 
 def event_listener(ev, player, list_of_enemies, play_rect):
@@ -217,4 +219,28 @@ class Depression(CardBase):  # Testing purposes card
     def action(self, player, list_of_enemies, target):
         player.deal_damage(5, player)
 
+# ======================= Card7 =======================
+
+
+class Power(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.cost = 0
+        self.text = "There is no text here!"
+        self.text = Targeting.ANY
+        self.exhaust = False
+        # VISUAL RELATED
+        self.image = pygame.image.load("Cards/power.png")
+        # SHOP RELATED
+        self.price_range = (99, 99)
+        self.weight = 0
+
+    def action(self, player, list_of_enemies, target):
+        for buff in player.buffs:
+            if isinstance(buff, powersFile.Power):
+                print("NOT ADDING DUPLICATES OF THE POWER")
+                return
+        player.buffs.append(powersFile.Power())
+        print(player.buffs)
 
