@@ -12,8 +12,22 @@ class Enemy(characterFile.Character):
         self.list_of_actions = []
         self.next_action = None
 
+        self.image_next_action = characterFile.text_font.render(f"{self.next_action}", True, (0, 0, 0))
+        self.rect_next_action = self.image_next_action.get_rect()
+        self.rect_next_action.centerx = self.rect_sprite.centerx
+        self.rect_next_action.top = self.rect_sprite.top - 4
+
     def update(self, screen):
         super().update(screen)
+
+        if self.next_action is not None:
+            self.image_next_action = characterFile.text_font.render(f"{self.next_action.__name__}", True, (0, 0, 0))
+            self.rect_next_action = self.image_next_action.get_rect()
+            self.rect_next_action.centerx = self.rect_sprite.centerx
+            self.rect_next_action.bottom = self.rect_sprite.top - 4
+
+            pygame.draw.rect(screen, (255, 0, 0), self.rect_next_action)
+            screen.blit(self.image_next_action, self.rect_next_action.topleft)
 
     def declare_action(self, player, list_of_enemies):
         if self.list_of_actions:

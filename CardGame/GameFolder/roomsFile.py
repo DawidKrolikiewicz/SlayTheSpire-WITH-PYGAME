@@ -1,6 +1,7 @@
 import pygame
 import random
 import enemyFile
+import cardsFile
 
 
 WHITE = (255, 255, 255)
@@ -113,7 +114,7 @@ class CombatEncounter(InGame):
         self.bg_enemy_color = GREEN
         self.bg_enemy_rect = pygame.Rect((500, 0, 866, 528))
         self.bg_hand_color = PURPLE
-        self.bg_hand_rect = pygame.Rect((0, 528, 1366, 240))
+        self.bg_hand_rect = pygame.Rect((125, 528, 1116, 240))
 
         self.end_turn_color = BLACK
         self.end_turn_rect = pygame.Rect((1266, 668, 100, 100))
@@ -156,12 +157,14 @@ class CombatEncounter(InGame):
         player.update(screen)
 
         # Update every enemy
-        for enemy in self.list_of_enemies:
+        for enemy in self.list_of_enemies :
             enemy.update(screen)
 
         # Update every card in hand
-        for card in player.hand:
-            card.update(screen, player, self.bg_hand_rect)
+        self.bg_hand_rect.update(0, 528, 200 * len(player.hand), 240)
+        self.bg_hand_rect.centerx = 683
+        for index, card in enumerate(player.hand):
+            card.update(screen, player, index, self.bg_hand_rect)
 
         if self.state == 0:
             # COMBAT START
@@ -202,7 +205,6 @@ class CombatEncounter(InGame):
                 enemy.play_action(player, self.list_of_enemies)
 
             player.end_turn()
-            pygame.time.wait(2000)
             print(f">>--------------------------------------------------------------------------<<")
             self.state = 1
 

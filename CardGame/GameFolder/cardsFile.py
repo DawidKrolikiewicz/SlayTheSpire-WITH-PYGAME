@@ -21,12 +21,12 @@ class CardBase(pygame.sprite.Sprite):
 
         # VISUAL RELATED
         self.image = pygame.image.load("Cards/Steroids.png")
-        self.width = self.image.get_width()
-        self.height = self.image.get_height()
-        self.move_speed = 0
-        self.move_x = self.move_speed
-        self.move_y = self.move_speed
-        self.rect = pygame.Rect((0, 0, self.width, self.height))
+        self.rect = self.image.get_rect()
+        self.rect.topleft = (1366, 440)
+
+        self.place = pygame.Vector2(0, 0)
+        self.move_speed = 4
+
         self.randomize_card_position()
 
         # SHOP RELATED
@@ -54,42 +54,42 @@ class CardBase(pygame.sprite.Sprite):
                             player.play_card(player, list_of_enemies, enemy, self)
                 player.drag = None
 
-    def update(self, screen, player, hand_rect):
-        # COMBAT ENCOUNTER EVENT LISTENER
+    def update(self, screen, player, index, hand_rect):
+        # DOING NOTHING :)
         if player.current_room.__class__.__name__ == "CombatEncounter":
-            # Bouncing around screen-saver style
-            if self.rect.centery <= hand_rect.top:
-                self.move_y = self.move_speed
-            if self.rect.bottom >= hand_rect.bottom:
-                self.move_y = -self.move_speed
-            if self.rect.centerx <= hand_rect.left:
-                self.move_x = self.move_speed
-            if self.rect.centerx >= hand_rect.right:
-                self.move_x = -self.move_speed
-
             if player.drag == self:
+                # Follow mouse
                 pos = pygame.mouse.get_pos()
-                self.x = pos[0]
-                self.y = pos[1]
+                self.rect.center = (pos[0], pos[1])
             else:
-                self.x = self.x + self.move_x
-                self.y = self.y + self.move_y
-
-            self.rect.center = (self.x, self.y)
+                # Find out default position
+                self.place = pygame.Vector2(hand_rect.left + (index * 200), 600)
+                print(index)
+                # Move to your default position in hand
+                if self.rect.center != self.place:
+                    if self.rect.centerx < self.place[0]:
+                        self.rect.centerx += self.move_speed
+                    elif self.rect.centerx > self.place[0]:
+                        self.rect.centerx -= self.move_speed
+                    if self.rect.centery < self.place[1]:
+                        self.rect.centery += self.move_speed
+                    elif self.rect.centery > self.place[1]:
+                        self.rect.centery -= self.move_speed
+                pass
 
             self.draw(screen)
 
     def draw(self, screen):
-        # pygame.draw.rect(screen, (255, 0, 0), self.rect)
-        screen.blit(self.image, (self.x - self.width // 2, self.y - self.height // 2))
+        #pygame.draw.rect(screen, (255, 0, 0), self.rect)
+        screen.blit(self.image, self.rect.topleft)
 
     def action(self, player, list_of_enemies, target):
         print(f"CardBase action executing!")
 
     def randomize_card_position(self):
-        self.x = random.randint(0, 1366)
-        self.y = random.randint(528, 768)
-        self.rect.center = (self.x, self.y)
+        x = random.randint(0, 1366)
+        y = random.randint(528, 768)
+        self.rect.center = (x, y)
 
 
 # ======================= Card1 =======================

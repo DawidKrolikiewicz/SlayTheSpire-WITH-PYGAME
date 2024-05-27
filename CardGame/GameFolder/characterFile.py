@@ -1,7 +1,7 @@
 import pygame.sprite
 
 pygame.font.init()
-text_font = pygame.font.SysFont("Comic Sans MS", 18)
+text_font = pygame.font.Font("Fonts/Kreon-Regular.ttf", 20)
 
 
 class Character(pygame.sprite.Sprite):
