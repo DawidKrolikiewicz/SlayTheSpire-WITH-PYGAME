@@ -171,7 +171,7 @@ class Buff(CardBase):
         self.text = "There is no text here!"
         self.target = Targeting.ANY
         # VISUAL RELATED
-        self.image = pygame.image.load("Cards/Steroids.png")
+        self.image = pygame.image.load("Cards/LevelUp.png")
         # SHOP RELATED
         self.price_range = (25, 35)
         self.weight = 1
@@ -203,11 +203,11 @@ class Debuff(CardBase):
 
 # ======================= Card6 =======================
 
-class Depression(CardBase):  # Testing purposes card
+class Depression(CardBase):  # UNPLAYABLE
     def __init__(self):
         super().__init__()
         # GAME RELATED
-        self.cost = 1
+        self.cost = 9
         self.text = "There is no text here!"
         self.target = Targeting.ANY
         # VISUAL RELATED
@@ -243,4 +243,28 @@ class Power(CardBase):
                 return
         player.buffs.append(powersFile.Power())
         print(player.buffs)
+
+class Ritual(CardBase):
+    def __init__(self):
+        super().__init__()
+        self.cost = 3
+        self.text = "There is no text here!"
+        self.target = Targeting.ANY
+        self.image = pygame.image.load("Cards/Steroids.png")
+
+    def action(self, player, list_of_enemies, target):
+        player.deal_damage(3, list_of_enemies[0])
+        player.add_str(3, player)
+
+
+class Fireball(CardBase):
+    def __init__(self):
+        super().__init__()
+        self.cost = 3
+        self.text = "There is no text here!"
+        self.target = Targeting.ENEMY
+        self.image = pygame.image.load("Cards/NotSoGentlePush.png")
+
+    def action(self, player, list_of_enemies, target):
+        player.deal_damage(20, target)
 

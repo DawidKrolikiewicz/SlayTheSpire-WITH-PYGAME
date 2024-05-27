@@ -88,4 +88,18 @@ class Worm(Enemy):
 
 
 
+class Cultist(Enemy):
+    def __init__(self,target):
+        super().__init__("Culist",25)
+        self.list_of_actions = [self.attack_5, self.gain_2_str]
+
+    def attack_5(self, player, list_of_enemies):
+        print(">> Enemy1 attacks!")
+        self.deal_damage(5, player)
+        print(f"==============================================================================")
+
+    def gain_2_str(self, player, list_of_enemies):
+        print(">> Enemy puts up his defences!")
+        self.add_str(2, self)
+        print(f"==============================================================================")
 
