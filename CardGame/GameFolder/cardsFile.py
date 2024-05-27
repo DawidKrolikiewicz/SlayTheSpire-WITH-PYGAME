@@ -3,6 +3,27 @@ import enum
 import pygame
 
 
+def event_listener(ev, player, list_of_enemies, play_rect):
+    # COMBAT ENCOUNTER EVENT LISTENER
+    if player.current_room.__class__.__name__ == "CombatEncounter":
+        pos = pygame.mouse.get_pos()
+        if ev.type == pygame.MOUSEBUTTONDOWN and player.highlight is not None and player.drag is None:
+            player.drag = player.highlight
+            player.drag.image.set_alpha(200)
+        if ev.type == pygame.MOUSEBUTTONUP and player.drag is not None:
+            player.drag.image.set_alpha(255)
+            if player.drag.target is Targeting.ANY:
+                if play_rect.collidepoint(pos):
+                    print(f"Playing {player.drag.name}!")
+                    player.play_card(player, list_of_enemies, None, player.drag)
+            elif player.drag.target is Targeting.ENEMY:
+                for enemy in list_of_enemies:
+                    if enemy.rect_sprite.collidepoint(pos):
+                        print(f"Playing {player.drag.name} on {enemy.name}!")
+                        player.play_card(player, list_of_enemies, enemy, player.drag)
+            player.drag = None
+
+
 # ====================== TARGETING =======================
 class Targeting(enum.Enum):
     ANY = 1
@@ -32,27 +53,6 @@ class CardBase(pygame.sprite.Sprite):
         # SHOP RELATED
         self.price_range = (0, 0)
         self.weight = 0
-
-    def event_listener(self, ev, player, list_of_enemies, play_rect):
-        # COMBAT ENCOUNTER EVENT LISTENER
-        if player.current_room.__class__.__name__ == "CombatEncounter":
-            pos = pygame.mouse.get_pos()
-            if ev.type == pygame.MOUSEBUTTONDOWN:
-                if self.rect.collidepoint(pos) and player.drag is None:
-                    player.drag = self
-                    self.image.set_alpha(200)
-            if ev.type == pygame.MOUSEBUTTONUP and player.drag == self:
-                self.image.set_alpha(255)
-                if self.target is Targeting.ANY:
-                    if play_rect.collidepoint(pos):
-                        print(f"Playing {self.name}!")
-                        player.play_card(player, list_of_enemies, None, self)
-                elif self.target is Targeting.ENEMY:
-                    for enemy in list_of_enemies:
-                        if enemy.rect_sprite.collidepoint(pos):
-                            print(f"Playing {self.name} on {enemy.name}!")
-                            player.play_card(player, list_of_enemies, enemy, self)
-                player.drag = None
 
     def update(self, screen, player, index, hand_rect):
         # COMBAT ENCOUNTER UPDATE
