@@ -160,15 +160,13 @@ class CombatEncounter(InGame):
         for enemy in self.list_of_enemies :
             enemy.update(screen)
 
-        # Update every card in hand
+        # Update every card in hand + draw non-highlighted
         self.bg_hand_rect.update(0, 528, 140 * len(player.hand) - 140, 240)
         self.bg_hand_rect.centerx = 683
         for index, card in enumerate(player.hand):
             card.update(screen, player, index, self.bg_hand_rect)
-        for card in player.hand:
-            pos = pygame.mouse.get_pos()
-            if (card.rect.collidepoint(pos) and player.drag is None) or player.drag == card:
-                card.draw(screen)
+        self._handle_highlight(player, screen)
+        print(player.highlight)
 
         if self.state == 0:
             # COMBAT START
@@ -230,6 +228,20 @@ class CombatEncounter(InGame):
             x += free_space
             enemy.rect_sprite.left = x
             x = enemy.rect_sprite.right
+
+    def _handle_highlight(self, player, screen):
+        pos = pygame.mouse.get_pos()
+        if player.highlight is not None and player.highlight.rect.collidepoint(pos):
+            # Keep highlight on card as long as it's hovered
+            pass
+        else:
+            player.highlight = None
+            for card in player.hand:
+                if card.rect.collidepoint(pos):
+                    player.highlight = card
+
+        if player.highlight is not None:
+            player.highlight.draw(screen)
 
 
 # ======================================================================================================================

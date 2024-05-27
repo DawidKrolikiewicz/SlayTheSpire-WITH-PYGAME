@@ -14,6 +14,7 @@ class Player(characterFile.Character):
         self.mana = 3
         self.coins = 40
         self.current_room = roomsFile.Menu(None)
+        self.highlight = None
         self.drag = None
 
         self.image_sprite = pygame.image.load("Enemies/player.png")
