@@ -3,13 +3,15 @@ import random
 import enemyFile
 import cardsFile
 
-
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 PURPLE = (150, 0, 250)
+
+pygame.font.init()
+text_font = pygame.font.Font("Fonts/Kreon-Regular.ttf", 20)
 
 
 # > Room   (superclass)
@@ -71,7 +73,7 @@ class Menu(Room):
                 player.current_room = Shop()
                 pass
             elif self.menu_button_3_rect.collidepoint(pos):
-                pass
+                player.current_room = Ritual()
             elif self.menu_button_4_rect.collidepoint(pos):
                 pass
 
@@ -158,7 +160,7 @@ class CombatEncounter(InGame):
         player.update(screen)
 
         # Update every enemy
-        for enemy in self.list_of_enemies :
+        for enemy in self.list_of_enemies:
             enemy.update(screen)
 
         # Update every card in hand + draw non-highlighted
@@ -263,7 +265,7 @@ class Shop(InGame):
         self.leave_rect = pygame.Rect((1266, 668, 100, 100))
 
         self.bg_cards_color = PURPLE
-        self.bg_cards_rect = pygame.Rect((0, 220, 1366, 320))
+        self.bg_cards_rect = pygame.Rect((0, 220, 1366, 480))
 
     def create_shop_items(self):
         cards_weights = [available_card().weight for available_card in self.available_cards]
@@ -271,7 +273,7 @@ class Shop(InGame):
         self.set_prices()
 
     def set_prices(self):
-        for i,card in enumerate(self.list_of_cards):
+        for i, card in enumerate(self.list_of_cards):
             self.card_prices.append(random.randint(card.price_range[0], card.price_range[1]))
 
     def buy_card(self, card_index, player):
@@ -299,10 +301,21 @@ class Shop(InGame):
         pygame.draw.rect(screen, self.bg_cards_color, self.bg_cards_rect)
         pygame.draw.rect(screen, self.leave_color, self.leave_rect)
 
+        self.bg_cards_rect.update(0, 220, 1366, 480)
         for index, card in enumerate(self.list_of_cards):
             card.update(screen, player, index, self.bg_cards_rect)
+            image_price = text_font.render(f"Price: [{self.card_prices[index]}]", True,
+                                           (0, 0, 0))
+            rect_price = image_price.get_rect()
+            price_pos = pygame.Vector2(
+                card.rect.centerx - rect_price.width / 2,
+                card.rect.bottom + 5
+            )
+            screen.blit(image_price, price_pos)
 
         super().update(screen, player)
+
+
 # ======================================================================================================================
 
 
@@ -310,52 +323,81 @@ class Ritual:
     def __init__(self):
         self.name = self.__class__.__name__
 
-    def encounter(self, player, shop, random_encounters):
+        self.choice_1_color = BLUE
+        self.choice_1_rect = pygame.Rect((100, 400, 250, 250))
+        self.choice_2_color = GREEN
+        self.choice_2_rect = pygame.Rect((400, 400, 250, 250))
+        self.choice_3_color = PURPLE
+        self.choice_3_rect = pygame.Rect((700, 400, 250, 250))
+
+    def encounter(self, player, screen):
         while True:
-            choice = int(input(("You have stumbled upon two masked man, trying to sacrifice poor, emaciated man.\n"
-              "They haven't noticed you yet.\n"
-              "One of them rises his jagged dagger up, whispering a prayer to his goddess. What do you do?\n"
-              "1) Attack them\n"
-              "2) Join the prayer, as they slaughter their pray\n"
-              "3) Leave before they notice you\nChoice: ")))
+            choice = None
             if choice == 1:
                 k1 = enemyFile.Cultist(player)
                 k2 = enemyFile.Cultist(player)
                 #gl.combat_encounter(player, [k1, k2], shop, random_encounters)
                 break
             elif choice == 2:
-                print("You join in the prayers, mumbling something under your breath.\n"
-                      "The screams of killed man slowly fade away, leaving you with nothing but silence.\n"
-                      "You look at the cultists, feasting on sacrifice's blood, their muscles growing visibly.\n"
-                      "You can perform the same ritual now, but the feeling of uneasiness doesn't leave you.")
+                choice_2_image = text_font.render("You join in the prayers, mumbling something under your breath.\n"
+                                                  "The screams of killed man slowly fade away, leaving you with nothing but silence.\n"
+                                                  "You look at the cultists, feasting on sacrifice's blood, their muscles growing visibly.\n"
+                                                  "You can perform the same ritual now, but the feeling of uneasiness doesn't leave you.")
                 ritual = cardsFile.Ritual()
                 feeble = cardsFile.Depression()
                 player.add_card_do_deck(ritual)
                 player.add_card_do_deck(feeble)
                 break
             elif choice == 3:
-                print("You leave, ignoring this poor man's cries for help.\n"
-                      "His problems are not yours.\n")
+                choice_2_image = text_font.render("You leave, ignoring this poor man's cries for help.\n"
+                                                  "His problems are not yours.\n")
                 break
-            else:
-                print("Wrong input!")
+            #else:
+                #print("Wrong input!")
+
+    def multi_text_render(self, text, screen):
+        rendered_fonts = []
+        for i, line in enumerate(text.split('\n')):
+            txt_surf = text_font.render(line, True, (0,0,0))
+            txt_rect = txt_surf.get_rect()
+            txt_rect.topleft = (10, 10 + i * 24)
+            rendered_fonts.append((txt_surf, txt_rect))
+        for txt_surf, txt_rect in rendered_fonts:
+            screen.blit(txt_surf, txt_rect)
+
+    def event_listener(self, ev, player):
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            if self.choice_1_rect.collidepoint(pos):
+                print("LEAVING SHOP")
+
+    def update(self, screen, player):
+        pygame.draw.rect(screen, self.choice_1_color, self.choice_1_rect)
+        pygame.draw.rect(screen, self.choice_2_color, self.choice_2_rect)
+        pygame.draw.rect(screen, self.choice_3_color, self.choice_3_rect)
+        self.multi_text_render("You have stumbled upon two masked man, trying to sacrifice poor, emaciated man.\n"
+            "They haven't noticed you yet.\n"
+            "One of them rises his jagged dagger up, whispering a prayer to his goddess. What do you do?\n"
+            "1) Attack them\n"
+            "2) Join the prayer, as they slaughter their pray\n"
+            "3) Leave before they notice you\n", screen)
 
 
 class Beggar:
     def __init__(self):
         self.name = self.__class__.__name__
 
-    def encounter(self, player, shop, random_encounters):
+    def encounter(self, player):
         while True:
             choice = int(input(("A lone beggar approaches you, begging for your help.\n"
-                  "He looks hungry, yet there's some kind of spark in his eyes.\n"
-                  "What do you do?\n"
-                  "1) Give him some gold (30)\n"
-                  "2) Give him some food (Lose Buff card)\n"
-                  "3) Ignore his plea\nChoice: ")))
+                                "He looks hungry, yet there's some kind of spark in his eyes.\n"
+                                "What do you do?\n"
+                                "1) Give him some gold (30)\n"
+                                "2) Give him some food (Lose Buff card)\n"
+                                "3) Ignore his plea\nChoice: ")))
             if choice == 1:
                 if player.coins >= 30:
-                    player.coins -=30
+                    player.coins -= 30
                     player.add_card_do_deck(cardsFile.Fireball())
                     print("Delighted beggar takes your coins, counting every one of them.\n"
                           "He then looks you in the eyes, leans slightly and touches your left temple.\n"
@@ -391,18 +433,19 @@ class Beggar:
             else:
                 print("Wrong input!")
 
+
 class Bridge:
     def __init__(self):
         self.name = self.__class__.__name__
 
-    def encounter(self, player, shop, random_encounters):
+    def encounter(self, player):
         while True:
             choice = int(input(("A giant chasm blocks your path.\n"
-                  "Luckily, there is a old-looking bridge, which can get you to the other side.\n"
-                  "When you take a few steps, the bridge starts to creak. It doesn't look very steady\n"
-                  "What do you do?\n"
-                  "1) Rush to the other side\n"
-                  "2) Slowly and carefully cross the bridge\n")))
+                                "Luckily, there is a old-looking bridge, which can get you to the other side.\n"
+                                "When you take a few steps, the bridge starts to creak. It doesn't look very steady\n"
+                                "What do you do?\n"
+                                "1) Rush to the other side\n"
+                                "2) Slowly and carefully cross the bridge\n")))
             if choice == 1:
                 player.health -= 10
                 print("It wasn't very thoughtful of you.\n"
