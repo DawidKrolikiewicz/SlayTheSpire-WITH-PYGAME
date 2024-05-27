@@ -255,7 +255,7 @@ class Shop(InGame):
                                 cardsFile.Buff, cardsFile.Debuff,
                                 cardsFile.Armor4, cardsFile.Deal5Damage]
         self.list_of_cards = []
-        self.card_prices = {}
+        self.card_prices = []
 
         self.create_shop_items()
 
@@ -272,7 +272,7 @@ class Shop(InGame):
 
     def set_prices(self):
         for i,card in enumerate(self.list_of_cards):
-            self.card_prices[i] = random.randint(card.price_range[0], card.price_range[1])
+            self.card_prices.append(random.randint(card.price_range[0], card.price_range[1]))
 
     def buy_card(self, card_index, player):
         if self.card_prices[card_index] <= player.coins:
@@ -281,7 +281,7 @@ class Shop(InGame):
             print(f"You bought {self.list_of_cards[card_index].name} for {self.card_prices[card_index]} coins!")
 
             self.list_of_cards.pop(card_index)
-            del self.card_prices[card_index]
+            self.card_prices.pop(card_index)
         else:
             print("You don't have enough coins!")
 
@@ -299,8 +299,8 @@ class Shop(InGame):
         pygame.draw.rect(screen, self.bg_cards_color, self.bg_cards_rect)
         pygame.draw.rect(screen, self.leave_color, self.leave_rect)
 
-        for card in self.list_of_cards:
-            card.update(screen, player, self.bg_cards_rect)
+        for index, card in enumerate(self.list_of_cards):
+            card.update(screen, player, index, self.bg_cards_rect)
 
         super().update(screen, player)
 # ======================================================================================================================
