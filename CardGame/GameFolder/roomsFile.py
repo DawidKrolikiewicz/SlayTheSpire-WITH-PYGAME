@@ -73,7 +73,7 @@ class Menu(Room):
                 player.current_room = Shop()
                 pass
             elif self.menu_button_3_rect.collidepoint(pos):
-                list_of_encounters = [Ritual(), Beggar()]
+                list_of_encounters = [Ritual(), Beggar(), Bridge()]
                 player.current_room = random.choice(list_of_encounters)
             elif self.menu_button_4_rect.collidepoint(pos):
                 pass
@@ -434,7 +434,7 @@ class Beggar(InGame):
                         player.add_card_to_deck(cardsFile.Fireball())
                         self.state = 2
                 elif self.choice_3_rect.collidepoint(pos):
-                    player.max_health -= 10
+                    player.cur_health -= 10
                     self.state = 3
             elif self.state in (1, 2, 3):
                 if self.exit_rect.collidepoint(pos):
@@ -472,35 +472,66 @@ class Beggar(InGame):
             pygame.draw.rect(screen, self.exit_color, self.exit_rect)
 
 
-class Bridge:
+class Bridge(InGame):
     def __init__(self):
+        super().__init__()
         self.name = self.__class__.__name__
 
-    def encounter(self, player):
-        while True:
-            choice = int(input(("A giant chasm blocks your path.\n"
-                                "Luckily, there is a old-looking bridge, which can get you to the other side.\n"
-                                "When you take a few steps, the bridge starts to creak. It doesn't look very steady\n"
-                                "What do you do?\n"
-                                "1) Rush to the other side\n"
-                                "2) Slowly and carefully cross the bridge\n")))
-            if choice == 1:
-                player.health -= 10
-                print("It wasn't very thoughtful of you.\n"
-                      "With each step, the bridge creaks more, eventually cracking under your weight.\n"
-                      "Luckily, you manage to grab the edge of the chasm, though you get hurt in the process.\n"
-                      "You get up, check your wounds, and resume your journey.")
-                break
-            elif choice == 2:
-                if random.random() > 0.5:
-                    print("You slowly get to the other side of a chasm.\n"
-                          "Though stressful, the journey left you unscrached.\n")
-                    break
-                else:
-                    player.add_card_do_deck(cardsFile.Depression())
-                    print("The journey through the bridge is long and tiring.\n"
-                          "When you get on the other side, you're beyond exhausted.\n"
-                          "Yet, the further road awaits...\n")
-                    break
-            else:
-                print("Wrong input!")
+        self.choice_1_color = BLUE
+        self.choice_1_rect = pygame.Rect((205, 400, 250, 250))
+        self.choice_2_color = GREEN
+        self.choice_2_rect = pygame.Rect((505, 400, 250, 250))
+        self.exit_color = BLACK
+        self.exit_rect = pygame.Rect((1116, 0, 250, 250))
+
+    def multi_text_render(self, text, screen):
+        rendered_fonts = []
+        for i, line in enumerate(text.split('\n')):
+            txt_surf = text_font.render(line, True, (0, 0, 0))
+            txt_rect = txt_surf.get_rect()
+            txt_rect.topleft = (350, 10 + i * 24)
+            rendered_fonts.append((txt_surf, txt_rect))
+        for txt_surf, txt_rect in rendered_fonts:
+            screen.blit(txt_surf, txt_rect)
+
+    def event_listener(self, ev, player):
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            if self.state == 0:
+                if self.choice_1_rect.collidepoint(pos):
+                    player.cur_health -= 10
+                    self.state = 1
+                elif self.choice_2_rect.collidepoint(pos):
+                    self.state = random.randint(2,3)
+                    if self.state == 3:
+                        player.add_card_to_deck(cardsFile.Depression())
+            elif self.state in (1, 2, 3):
+                if self.exit_rect.collidepoint(pos):
+                    player.current_room = Menu(None)
+
+    def update(self, screen, player):
+        if self.state == 0:
+            pygame.draw.rect(screen, self.choice_1_color, self.choice_1_rect)
+            pygame.draw.rect(screen, self.choice_2_color, self.choice_2_rect)
+            self.multi_text_render("A giant chasm blocks your path.\n"
+                                   "Luckily, there is a old-looking bridge, which can get you to the other side.\n"
+                                   "When you take a few steps, the bridge starts to creak. It doesn't look very steady\n"
+                                   "What do you do?\n"
+                                   "1) Rush to the other side\n"
+                                   "2) Slowly and carefully cross the bridge", screen)
+        elif self.state == 1:
+            self.multi_text_render("It wasn't very thoughtful of you.\n"
+                                   "With each step, the bridge creaks more, eventually cracking under your weight.\n"
+                                   "Luckily, you manage to grab the edge of the chasm, though you get hurt in the process.\n"
+                                   "You get up, check your wounds, and resume your journey.", screen)
+            pygame.draw.rect(screen, self.exit_color, self.exit_rect)
+        elif self.state == 2:
+            self.multi_text_render("You slowly get to the other side of a chasm.\n"
+                                        "Though stressful, the journey left you unscrached.", screen)
+            pygame.draw.rect(screen, self.exit_color, self.exit_rect)
+        elif self.state == 3:
+            self.multi_text_render("The journey through the bridge is long and tiring.\n"
+                                    "When you get on the other side, you're beyond exhausted.\n"
+                                    "Yet, the further road awaits...", screen)
+            pygame.draw.rect(screen, self.exit_color, self.exit_rect)
+
