@@ -2,6 +2,7 @@ import random
 import pygame.image
 import characterFile
 import roomsFile
+import cardsFile
 
 ON_CARD_EXHAUSTED = pygame.USEREVENT + 1
 ON_STATUS_CARD_DRAWN = pygame.USEREVENT + 2
@@ -9,7 +10,7 @@ ON_STATUS_OR_CURSE_CARD_DRAWN = pygame.USEREVENT + 3
 ON_PLAYER_ATTACKED = pygame.USEREVENT + 4
 ON_ATTACK_PLAYED = pygame.USEREVENT + 5
 ON_PLAYER_LOSE_HP_FROM_CARD = pygame.USEREVENT + 6
-ON_SKILL_PLAYER = pygame.USEREVENT + 7
+ON_SKILL_PLAYED = pygame.USEREVENT + 7
 ON_PLAYER_GAIN_BLOCK = pygame.USEREVENT + 8
 ON_TURN_END = pygame.USEREVENT + 9
 ON_TURN_START = pygame.USEREVENT + 10
@@ -31,7 +32,7 @@ class Player(characterFile.Character):
 
         self.image_sprite = pygame.image.load("Enemies/player.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 370
+        self.rect_sprite.bottom = 340
         self.rect_sprite.centerx = 250
 
         self.image_mana = characterFile.text_font.render(f"{self.mana} / 3", True, (0, 0, 0))
@@ -80,10 +81,14 @@ class Player(characterFile.Character):
 
                 card.action(player, list_of_enemies, target)
                 card.reset_card_position()
-                if not card.exhaust:
+                if card.type == cardsFile.CardType.POWER:
+                    self.remove_card(card)
+                elif not card.exhaust:
                     self.discard_card(card)
-                else:
+                elif card.exhaust:
                     self.exhaust_card(card)
+                else:
+                    print("There is some CRITICAL error here D:")
             else:
                 print(f"Not enough mana to play {card.name}!")
 
@@ -110,6 +115,12 @@ class Player(characterFile.Character):
         if target == self:
             # Post event
             pygame.event.post(pygame.event.Event(ON_PLAYER_LOSE_HP_FROM_CARD))
+
+    def add_armor(self, armor, target):
+        super().add_armor(armor, target)
+        if target == self:
+            # Post event
+            pygame.event.post(pygame.event.Event(ON_PLAYER_GAIN_BLOCK))
 
     def add_card_to_deck(self, card):
         self.deck.append(card)
@@ -146,10 +157,13 @@ class Player(characterFile.Character):
         self.deck.clear()
         self.hand.clear()
         self.discard.clear()
-        self.strength = 0
-        self.dexterity = 0
-        self.fragility = 0
-        self.vulnerability = 0
+        for ongoing in self.list_of_ongoing:
+            if ongoing.duration is not None:
+                ongoing.duration = 0
+            elif ongoing.intensity is not None:
+                ongoing.intensity = 0
+            elif ongoing.counter is not None:
+                ongoing.counter = 0
 
     def start_turn(self):
         self.armor = 0
@@ -158,10 +172,10 @@ class Player(characterFile.Character):
 
     def end_turn(self):
         self.drag = None
-        if self.fragility > 0:
-            self.fragility -= 1
-        if self.vulnerability > 0:
-            self.vulnerability -= 1
+        for ongoing in self.list_of_ongoing:
+            if ongoing.duration is not None and ongoing.duration > 0:
+                ongoing.duration -= 1
+
         while self.hand:
             self.discard_card(self.hand[0])
         print(f">>  {self.name} is ENDING THEIR TURN:")

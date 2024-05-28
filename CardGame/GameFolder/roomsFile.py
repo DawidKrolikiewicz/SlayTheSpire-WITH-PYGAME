@@ -136,7 +136,6 @@ class CombatEncounter(InGame):
             if ev.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 if self.end_turn_rect.collidepoint(pos):
-                    player.end_turn()
                     print(f"END TURN")
                     self.state = 3
         cardsFile.event_listener(ev, player, self.list_of_enemies, self.bg_play_rect)
@@ -212,7 +211,7 @@ class CombatEncounter(InGame):
 
     def _get_random_combat(self):
         # Get random combat encounter from the list
-        fights = [[enemyFile.Worm("Wormmer", 6), enemyFile.Frog("Frogger", 6), enemyFile.Enemy("BaseEnemy", 6)]]
+        fights = [[enemyFile.Worm("Wormmer", 1), enemyFile.Frog("Frogger", 6), enemyFile.Enemy("BaseEnemy", 6)]]
         self.list_of_enemies += random.choice(fights)
 
     def _position_enemies(self):

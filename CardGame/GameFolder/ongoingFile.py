@@ -1,4 +1,6 @@
+import random
 import pygame.sprite
+import playerFile
 
 
 # ======================= Ongoing (superclass) =======================
@@ -11,7 +13,7 @@ class Ongoing(pygame.sprite.Sprite):
         self.intensity = None
         self.duration = None
         # VISUAL RELATED
-        self.image = pygame.image.load("Ongoing/Ongoing.png")
+        self.image = pygame.image.load("Ongoing/Strength.png")
         self.rect = self.image.get_rect()
         self.rect.centery = 400
 
@@ -19,8 +21,11 @@ class Ongoing(pygame.sprite.Sprite):
         pass
 
     def update(self, character, screen):
-        self.rect.center = (400, 400)
-        screen.blit(self.image, self.rect.topleft)
+        if (self.counter is not None and self.counter > 0) or (self.duration is not None and self.duration > 0) or (self.intensity is not None and self.intensity != 0):
+            self.rect.topleft = character.rect_ongoing.topleft
+            self.rect.right = character.rect_ongoing.right - (character.ongoing_counter * self.rect.width)
+            character.ongoing_counter -= 1
+            screen.blit(self.image, self.rect.topleft)
 
 
 # ============================= Strength =============================
@@ -37,9 +42,7 @@ class Strength(Ongoing):
         pass
 
     def update(self, character, screen):
-        #super().update(screen)
-        self.rect.center = (character.rect_sprite.centerx - 45, self.rect.centery)
-        screen.blit(self.image, self.rect.topleft)
+        super().update(character, screen)
 
 
 # ============================ Dexterity =============================
@@ -56,9 +59,7 @@ class Dexterity(Ongoing):
         pass
 
     def update(self, character, screen):
-        #super().update(screen)
-        self.rect.center = (character.rect_sprite.centerx - 15, self.rect.centery)
-        screen.blit(self.image, self.rect.topleft)
+        super().update(character, screen)
 
 
 # ============================== Frail ===============================
@@ -75,9 +76,7 @@ class Frail(Ongoing):
         pass
 
     def update(self, character, screen):
-        #super().update(screen)
-        self.rect.center = (character.rect_sprite.centerx + 15, self.rect.centery)
-        screen.blit(self.image, self.rect.topleft)
+        super().update(character, screen)
 
 
 # ============================ Vulnerable ============================
@@ -94,14 +93,24 @@ class Vulnerable(Ongoing):
         pass
 
     def update(self, character, screen):
-        #super().update(screen)
-        self.rect.center = (character.rect_sprite.centerx + 45, self.rect.centery)
-        screen.blit(self.image, self.rect.topleft)
+        super().update(character, screen)
 
 
+# ============================ Juggernaut ============================
 
+class JuggernautEffect(Ongoing):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = 5
+        # VISUAL RELATED
+        self.image = pygame.image.load("Ongoing/Juggernaut.png")
 
+    def event_listener(self, ev, player, list_of_enemies):
+        if ev.type == playerFile.ON_PLAYER_GAIN_BLOCK:
+            enemy = random.choice(list_of_enemies)
+            enemy.cur_health -= self.intensity
 
-
-
+    def update(self, character, screen):
+        super().update(character, screen)
 

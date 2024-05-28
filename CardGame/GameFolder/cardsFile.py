@@ -1,7 +1,7 @@
 import random
 import enum
 import pygame
-import powersFile
+import ongoingFile
 
 
 def event_listener(ev, player, list_of_enemies, play_rect):
@@ -26,9 +26,20 @@ def event_listener(ev, player, list_of_enemies, play_rect):
 
 
 # ====================== TARGETING =======================
+
 class Targeting(enum.Enum):
     ANY = 1
     ENEMY = 2
+
+
+# ====================== CARD TYPE =======================
+
+class CardType(enum.Enum):
+    ATTACK = 1
+    SKILL = 2
+    POWER = 3
+    STATUS = 4
+    CURSE = 5
 
 
 # ======================= CardBase =======================
@@ -37,6 +48,7 @@ class CardBase(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         # GAME RELATED
         self.name = self.__class__.__name__
+        self.type = CardType.ATTACK
         self.cost = 99
         self.text = "There is no text here!"
         self.target = Targeting.ANY
@@ -236,26 +248,28 @@ class Depression(CardBase):  # UNPLAYABLE
 # ======================= Card7 =======================
 
 
-class Power(CardBase):
+class Juggernaut(CardBase):
     def __init__(self):
         super().__init__()
         # GAME RELATED
-        self.cost = 0
+        self.type = CardType.POWER
+        self.cost = 1
         self.text = "There is no text here!"
         self.text = Targeting.ANY
         self.exhaust = False
         # VISUAL RELATED
-        self.image = pygame.image.load("Cards/power.png")
+        self.image = pygame.image.load("Cards/juggernaut (1).png")
         # SHOP RELATED
         self.price_range = (99, 99)
         self.weight = 0
 
     def action(self, player, list_of_enemies, target):
-        for buff in player.list_of_ongoing:
-            if isinstance(buff, powersFile.Power):
-                print("NOT ADDING DUPLICATES OF THE POWER")
+        for ongoing in player.list_of_ongoing:
+            if isinstance(ongoing, ongoingFile.JuggernautEffect):
+                ongoing.intensity += 5
                 return
-        player.list_of_ongoing.append(powersFile.Power())
+        player.list_of_ongoing.append(ongoingFile.JuggernautEffect())
+
 
 class Ritual(CardBase):
     def __init__(self):

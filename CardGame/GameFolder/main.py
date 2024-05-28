@@ -32,7 +32,7 @@ STARTING_DECK = [cardsFile.Draw2Heal3(), cardsFile.Draw2Heal3(),
                  cardsFile.Deal5Damage(), cardsFile.Deal5Damage(),
                  cardsFile.Draw1(), cardsFile.Draw1(),
                  cardsFile.Armor4(), cardsFile.Armor4(),
-                 cardsFile.Buff(), cardsFile.Debuff(), cardsFile.Power()]
+                 cardsFile.Buff(), cardsFile.Debuff(), cardsFile.Juggernaut()]
 
 PLAYER = playerFile.Player(PLAYER_NAME, STARTING_HEALTH, STARTING_DECK)
 

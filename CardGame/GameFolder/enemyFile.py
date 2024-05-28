@@ -47,9 +47,10 @@ class Frog(Enemy):
         super().__init__(name, health)
         self.image_sprite = pygame.image.load("Enemies/frog.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 370
+        self.rect_sprite.bottom = 340
 
-        self.list_of_actions = [self.attack_7, self.attack_2_block_4, self.str_1_block_1]
+        #self.list_of_actions = [self.attack_7, self.attack_2_block_4, self.str_1_block_1]
+        self.list_of_actions = [self.attack_2_block_4]
 
     def attack_7(self, player, list_of_enemies):
         print(f">> {self.name} attacks!")
@@ -71,9 +72,10 @@ class Worm(Enemy):
         super().__init__(name, health)
         self.image_sprite = pygame.image.load("Enemies/worm.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 370
+        self.rect_sprite.bottom = 340
 
-        self.list_of_actions = [self.attack_2_x2, self.heal_enemies_3]
+        #self.list_of_actions = [self.attack_2_x2, self.heal_enemies_3, self.give_2_vulnerable]
+        self.list_of_actions = [self.heal_enemies_3, self.give_2_vulnerable]
 
     def attack_2_x2(self, player, list_of_enemies):
         print(f">> {self.name} attacks twice!")
@@ -84,6 +86,10 @@ class Worm(Enemy):
         print(f">> {self.name} heal itself and it's allies!")
         for enemy in list_of_enemies:
             self.heal(3, enemy)
+
+    def give_2_vulnerable(self, player, list_of_enemies):
+        print(f">> {self.name} weakens player's defences!")
+        self.add_vuln(2, player)
 
 
 class Cultist(Enemy):
