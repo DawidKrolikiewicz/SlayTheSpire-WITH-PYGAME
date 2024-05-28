@@ -2,6 +2,21 @@ import random
 import pygame.sprite
 import playerFile
 import characterFile
+import enum
+
+
+class Effect(enum.Enum):
+    # CORE
+    STRENGTH = 1
+    DEXTERITY = 2
+    FRAIL = 3
+    VULNERABLE = 4
+    WEAK = 5
+    # ENEMY
+    RITUAL = 6
+    CURLUP = 7
+    # UNIQUE CARD EFFECTS
+    JUGGERNAUT = 8
 
 
 # ======================= Ongoing Icons (superclass) =======================
@@ -27,8 +42,8 @@ class Ongoing(pygame.sprite.Sprite):
         if ((self.counter is not None and self.counter > 0) or (self.duration is not None and self.duration > 0) or
                 (self.intensity is not None and self.intensity != 0)):
             self.rect.topleft = character.rect_ongoing.topleft
-            self.rect.right = character.rect_ongoing.right - (character.ongoing_counter * self.rect.width)
-            character.ongoing_counter -= 1
+            self.rect.right = character.rect_ongoing.right - (character.counter * self.rect.width)
+            character.counter -= 1
             screen.blit(self.image, self.rect.topleft)
             self.image_value = characterFile.text_font.render(f"{self.value}", True, (0, 0, 0))
             screen.blit(self.image_value, self.rect.topleft)
@@ -41,6 +56,7 @@ class Strength(Ongoing):
         super().__init__()
         # GAME RELATED
         self.intensity = 0
+        self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/StrengthIcon.png")
 
@@ -59,6 +75,7 @@ class Dexterity(Ongoing):
         super().__init__()
         # GAME RELATED
         self.intensity = 0
+        self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/DexterityIcon.png")
 
@@ -77,6 +94,7 @@ class Frail(Ongoing):
         super().__init__()
         # GAME RELATED
         self.duration = 0
+        self.value = self.duration
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/FrailIcon.png")
 
@@ -95,6 +113,7 @@ class Vulnerable(Ongoing):
         super().__init__()
         # GAME RELATED
         self.duration = 0
+        self.value = self.duration
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/VulnerableIcon.png")
 
@@ -113,6 +132,7 @@ class Weak(Ongoing):
         super().__init__()
         # GAME RELATED
         self.duration = 0
+        self.value = self.duration
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/WeakIcon.png")
 
@@ -133,6 +153,7 @@ class Ritual(Ongoing):
         super().__init__()
         # GAME RELATED
         self.intensity = 0
+        self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/RitualIcon.png")
 
@@ -151,6 +172,7 @@ class CurlUp(Ongoing):
         super().__init__()
         # GAME RELATED
         self.intensity = 0
+        self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/CurlUpIcon.png")
 
@@ -166,11 +188,11 @@ class CurlUp(Ongoing):
 
 # ============================ Juggernaut ============================
 
-class JuggernautEffect(Ongoing):
+class Juggernaut(Ongoing):
     def __init__(self):
         super().__init__()
         # GAME RELATED
-        self.intensity = 5
+        self.intensity = 0
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/JuggernautIcon.png")

@@ -13,7 +13,11 @@ class Character(pygame.sprite.Sprite):
         self.max_health = health
         self.cur_health = health
         self.block = 0
-        self.list_of_ongoing = [o.Strength(), o.Dexterity(), o.Frail(), o.Vulnerable()]
+        self.dict_of_ongoing = {o.Effect.STRENGTH: o.Strength(),
+                                o.Effect.DEXTERITY: o.Dexterity(),
+                                o.Effect.VULNERABLE: o.Vulnerable(),
+                                o.Effect.FRAIL: o.Frail()
+                                }
 
         # DISPLAY RELATED
         self.image_sprite = pygame.image.load("../Sprites/Characters/Don'tMakeInstancesOfBaseEnemyPLS.png")
@@ -30,11 +34,11 @@ class Character(pygame.sprite.Sprite):
         self.rect_hp.top = self.rect_name.bottom + 4
 
         self.rect_ongoing = (0, 0, 0, 0)
-        self.ongoing_counter = 0
+        self.counter = 0
 
     def event_listener(self, ev, list_of_enemies):
-        for ongoing in self.list_of_ongoing:
-            ongoing.event_listener(ev, self, list_of_enemies)
+        for key in self.dict_of_ongoing:
+            self.dict_of_ongoing[key].event_listener(ev, self, list_of_enemies)
 
     def update(self, screen):
         # DRAWING CHARACTER SPRITE
@@ -56,38 +60,38 @@ class Character(pygame.sprite.Sprite):
         screen.blit(self.image_hp, self.rect_hp.topleft)
 
         # ONGOING EFFECTS
-        self.ongoing_counter = 0
-        for ongoing in self.list_of_ongoing:
-            if (ongoing.counter is not None and ongoing.counter > 0) or (ongoing.duration is not None and ongoing.duration > 0) or (
-                    ongoing.intensity is not None and ongoing.intensity != 0):
-                self.ongoing_counter += 1
+        self.counter = 0
+        for key in self.dict_of_ongoing:
+            if self.dict_of_ongoing[key].value is not None and self.dict_of_ongoing[key].value != 0:
+                self.counter += 1
 
-        self.rect_ongoing = pygame.Rect(0, 0, self.ongoing_counter * 30, 30)
+        self.rect_ongoing = pygame.Rect(0, 0, self.counter * 30, 30)
         self.rect_ongoing.centerx = self.rect_sprite.centerx
         self.rect_ongoing.top = self.rect_hp.bottom + 4
-        self.ongoing_counter -= 1
+        self.counter -= 1
 
         pygame.draw.rect(screen, (150, 150, 150), self.rect_ongoing)
-        for ongoing in self.list_of_ongoing:
-            ongoing.update(self, screen)
+        for key in self.dict_of_ongoing:
+            self.dict_of_ongoing[key].update(self, screen)
 
     def info(self):
         print(f">>  {self.name}'s info is being displayed!")
         print(f"    Health: {self.cur_health} / {self.max_health}")
         print(f"    Armor: {self.block}")
-        for ongoing in self.list_of_ongoing:
-            if ongoing.duration is not None and ongoing.duration != 0:
-                print(f"    {ongoing.__class__.__name__}: {ongoing.duration}")
-            elif ongoing.intensity is not None and ongoing.intensity != 0:
-                print(f"    {ongoing.__class__.__name__}: {ongoing.intensity}")
-            elif ongoing.counter is not None and ongoing.counter != 0:
-                print(f"    {ongoing.__class__.__name__}: {ongoing.counter}")
+        for key in self.dict_of_ongoing:
+            if self.dict_of_ongoing[key].value is not None and self.dict_of_ongoing[key].value != 0:
+                print(f"    {self.dict_of_ongoing[key].__class__.__name__}: {self.dict_of_ongoing[key].value}")
+
+    def end_turn(self):
+        for key in self.dict_of_ongoing:
+            if self.dict_of_ongoing[key].duration is not None and self.dict_of_ongoing[key].duration > 0:
+                self.dict_of_ongoing[key].duration -= 1
 
     def deal_damage(self, damage, target, is_attack=True, hit_block=True):
         if is_attack:
-            damage = damage + self.list_of_ongoing[0].intensity  # Strength
+            damage = damage + self.dict_of_ongoing[o.Effect.STRENGTH].intensity
 
-        if target.list_of_ongoing[3].duration > 0:  # Vulnerable
+        if target.dict_of_ongoing[o.Effect.VULNERABLE].duration > 0:
             damage = int(damage * 1.5)
 
         if hit_block:
@@ -99,22 +103,46 @@ class Character(pygame.sprite.Sprite):
 
         target.cur_health -= damage
 
-    def add_armor(self, armor, target):
-        target.block += int((armor + self.list_of_ongoing[1].intensity) / (1.5 if self.list_of_ongoing[2].duration > 0 else 1))
+    def add_block(self, value, target, affected_by_ongoing=True):
+        if affected_by_ongoing:
+            value += target.dict_of_ongoing[o.Effect.DEXTERITY].intensity
+            if o.Effect.FRAIL in target.dict_of_ongoing:
+                value = int(value * 0.75)
+
+        target.block += value
 
     def heal(self, value, target):
         target.cur_health += value
         if target.cur_health > target.max_health:
             target.cur_health = target.max_health
 
-    def add_str(self, value, target):
-        target.list_of_ongoing[0].intensity += value
+    def add_strength(self, value, target):
+        if o.Effect.STRENGTH not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.STRENGTH] = o.Strength()
 
-    def add_dex(self, value, target):
-        target.list_of_ongoing[1].intensity += value
+        target.dict_of_ongoing[o.Effect.STRENGTH].intensity += value
 
-    def add_frai(self, value, target):
-        target.list_of_ongoing[2].duration += value
+    def add_dexterity(self, value, target):
+        if o.Effect.DEXTERITY not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.DEXTERITY] = o.Dexterity()
 
-    def add_vuln(self, value, target):
-        target.list_of_ongoing[3].duration += value
+        target.dict_of_ongoing[o.Effect.DEXTERITY].intensity += value
+
+    def add_frail(self, value, target):
+        if o.Effect.FRAIL not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.FRAIL] = o.Frail()
+
+        target.dict_of_ongoing[o.Effect.FRAIL].duration += value
+
+    def add_vulnerable(self, value, target):
+        if o.Effect.VULNERABLE not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.VULNERABLE] = o.Vulnerable()
+
+        target.dict_of_ongoing[o.Effect.VULNERABLE].duration += value
+
+    def add_juggernaut(self, value, target):
+        if o.Effect.JUGGERNAUT not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.JUGGERNAUT] = o.Juggernaut()
+
+        target.dict_of_ongoing[o.Effect.JUGGERNAUT].intensity += value
+

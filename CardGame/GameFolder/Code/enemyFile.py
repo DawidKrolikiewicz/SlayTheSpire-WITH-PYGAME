@@ -39,6 +39,7 @@ class Enemy(characterFile.Character):
     def play_action(self, player, list_of_enemies):
         if self.next_action is not None:
             self.next_action(player, list_of_enemies)
+        self.end_turn()
 
 
 # ========================================== Specific Characters ==========================================
@@ -59,12 +60,12 @@ class Frog(Enemy):
     def attack_2_block_4(self, player, list_of_enemies):
         print(f">> {self.name} attacks and blocks!")
         self.deal_damage(2, player)
-        self.add_armor(4, self)
+        self.add_block(4, self)
 
     def gain_str_1_and_block_1(self, player, list_of_enemies):
         print(f">> {self.name} gains strength and blocks!")
-        self.add_str(1, self)
-        self.add_armor(1, self)
+        self.add_strength(1, self)
+        self.add_block(1, self)
 
 
 class Worm(Enemy):
@@ -88,7 +89,7 @@ class Worm(Enemy):
 
     def give_2_vulnerable(self, player, list_of_enemies):
         print(f">> {self.name} weakens player's defences!")
-        self.add_vuln(2, player)
+        self.add_vulnerable(2, player)
 
 
 class Icecream(Enemy):
@@ -115,12 +116,12 @@ class Icecream(Enemy):
         player.add_card_to_discard(cardsFile.Depression())
 
     def gain_1_dex_and_block_7(self, player, list_of_enemies):
-        self.add_dex(1, self)
-        self.add_armor(7, self)
+        self.add_dexterity(1, self)
+        self.add_block(7, self)
 
     def attack_3_and_block_1(self, player, list_of_enemies):
         self.deal_damage(3, player)
-        self.add_armor(1, self)
+        self.add_block(1, self)
 
     def deal_damage_equal_to_block(self, player, list_of_enemies):
         self.deal_damage(self.block, player)
@@ -138,6 +139,6 @@ class Cultist(Enemy):
 
     def gain_2_str(self, player, list_of_enemies):
         print(">> Enemy puts up his defences!")
-        self.add_str(2, self)
+        self.add_strength(2, self)
         print(f"==============================================================================")
 

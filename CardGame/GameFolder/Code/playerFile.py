@@ -116,8 +116,8 @@ class Player(characterFile.Character):
             # Post event
             pygame.event.post(pygame.event.Event(ON_PLAYER_LOSE_HP_FROM_CARD))
 
-    def add_armor(self, armor, target):
-        super().add_armor(armor, target)
+    def add_block(self, value, target):
+        super().add_block(value, target)
         if target == self:
             # Post event
             pygame.event.post(pygame.event.Event(ON_PLAYER_GAIN_BLOCK))
@@ -157,25 +157,20 @@ class Player(characterFile.Character):
         self.deck.clear()
         self.hand.clear()
         self.discard.clear()
-        for ongoing in self.list_of_ongoing:
-            if ongoing.duration is not None:
-                ongoing.duration = 0
-            elif ongoing.intensity is not None:
-                ongoing.intensity = 0
-            elif ongoing.counter is not None:
-                ongoing.counter = 0
+        for key in self.dict_of_ongoing:
+            if self.dict_of_ongoing[key].value is not None:
+                self.dict_of_ongoing[key].value = 0
 
     def start_turn(self):
-        self.armor = 0
+        self.block = 0
         self.draw_card(5)
         self.mana = 3
 
     def end_turn(self):
-        self.drag = None
-        for ongoing in self.list_of_ongoing:
-            if ongoing.duration is not None and ongoing.duration > 0:
-                ongoing.duration -= 1
+        super().end_turn()
 
+        self.drag = None
         while self.hand:
             self.discard_card(self.hand[0])
-        print(f">>  {self.name} is ENDING THEIR TURN:")
+
+

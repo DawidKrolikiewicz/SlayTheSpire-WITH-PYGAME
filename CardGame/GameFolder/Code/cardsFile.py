@@ -1,6 +1,5 @@
 import enum
 import pygame
-import ongoingFile
 
 
 def event_listener(ev, player, list_of_enemies, play_rect):
@@ -182,7 +181,7 @@ class TinCanArmor(CardBase):
         self.weight = 3
 
     def action(self, player, list_of_enemies, target):
-        player.add_armor(4, player)
+        player.add_block(4, player)
 
 
 # ======================= Card5 =======================
@@ -201,8 +200,8 @@ class A100pNatural(CardBase):
         self.weight = 1
 
     def action(self, player, list_of_enemies, target):
-        player.add_dex(1, player)
-        player.add_str(1, player)
+        player.add_dexterity(1, player)
+        player.add_strength(1, player)
 
 
 # ======================= Card6 =======================
@@ -221,8 +220,8 @@ class Covid19(CardBase):
         self.weight = 2
 
     def action(self, player, list_of_enemies, target):
-        player.add_frai(1, target)
-        player.add_vuln(1, target)
+        player.add_frail(1, target)
+        player.add_vulnerable(1, target)
 
 
 # ======================= Card6 =======================
@@ -262,11 +261,7 @@ class Juggernaut(CardBase):
         self.weight = 0
 
     def action(self, player, list_of_enemies, target):
-        for ongoing in player.list_of_ongoing:
-            if isinstance(ongoing, ongoingFile.JuggernautEffect):
-                ongoing.intensity += 5
-                return
-        player.list_of_ongoing.append(ongoingFile.JuggernautEffect())
+        player.add_juggernaut(5, player)
 
 
 class Ritual(CardBase):
@@ -279,7 +274,7 @@ class Ritual(CardBase):
 
     def action(self, player, list_of_enemies, target):
         player.deal_damage(3, list_of_enemies[0])
-        player.add_str(3, player)
+        player.add_strength(3, player)
 
 
 class Fireball(CardBase):
