@@ -215,7 +215,7 @@ class CombatEncounter(InGame):
 
     def _get_random_combat(self):
         # Get random combat encounter from the list
-        fights = [[enemyFile.Worm("Wormmer", 12), enemyFile.Frog("Frogger", 11), enemyFile.Enemy("BaseEnemy", 15)]]
+        fights = [[enemyFile.Worm("Wormmer", 12), enemyFile.Frog("Frogger", 11), enemyFile.Icecream("EVIL ICECREAM", 30)]]
         self.list_of_enemies += random.choice(fights)
 
     def _position_enemies(self):

@@ -110,8 +110,8 @@ class Player(characterFile.Character):
                 card_drawn = self.deck.pop(0)
                 self.hand.append(card_drawn)
 
-    def deal_damage(self, base_damage_value, target):
-        super().deal_damage(base_damage_value, target)
+    def deal_damage(self, damage, target, is_attack=True, hit_block=True):
+        super().deal_damage(damage, target)
         if target == self:
             # Post event
             pygame.event.post(pygame.event.Event(ON_PLAYER_LOSE_HP_FROM_CARD))

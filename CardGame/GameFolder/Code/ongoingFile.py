@@ -1,6 +1,7 @@
 import random
 import pygame.sprite
 import playerFile
+import characterFile
 
 
 # ======================= Ongoing Icons (superclass) =======================
@@ -12,8 +13,10 @@ class Ongoing(pygame.sprite.Sprite):
         self.counter = None
         self.intensity = None
         self.duration = None
+        self.value = None
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/StrengthIcon.png")
+        self.image_value = None
         self.rect = self.image.get_rect()
         self.rect.centery = 400
 
@@ -27,6 +30,8 @@ class Ongoing(pygame.sprite.Sprite):
             self.rect.right = character.rect_ongoing.right - (character.ongoing_counter * self.rect.width)
             character.ongoing_counter -= 1
             screen.blit(self.image, self.rect.topleft)
+            self.image_value = characterFile.text_font.render(f"{self.value}", True, (0, 0, 0))
+            screen.blit(self.image_value, self.rect.topleft)
 
 
 # ============================= Strength =============================
@@ -43,6 +48,7 @@ class Strength(Ongoing):
         pass
 
     def update(self, character, screen):
+        self.value = self.intensity
         super().update(character, screen)
 
 
@@ -60,6 +66,7 @@ class Dexterity(Ongoing):
         pass
 
     def update(self, character, screen):
+        self.value = self.intensity
         super().update(character, screen)
 
 
@@ -77,6 +84,7 @@ class Frail(Ongoing):
         pass
 
     def update(self, character, screen):
+        self.value = self.duration
         super().update(character, screen)
 
 
@@ -94,8 +102,67 @@ class Vulnerable(Ongoing):
         pass
 
     def update(self, character, screen):
+        self.value = self.duration
         super().update(character, screen)
 
+
+# =============================== Weak ===============================
+
+class Weak(Ongoing):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.duration = 0
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/WeakIcon.png")
+
+    def event_listener(self, ev, player, list_of_enemies):
+        pass
+
+    def update(self, character, screen):
+        self.value = self.duration
+        super().update(character, screen)
+
+
+# /////////////////////////// ENEMY EFFECTS ///////////////////////////
+
+# ============================== Ritual ==============================
+
+class Ritual(Ongoing):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = 0
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/RitualIcon.png")
+
+    def event_listener(self, ev, player, list_of_enemies):
+        pass
+
+    def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)
+
+
+# ============================== CurlUp ==============================
+
+class CurlUp(Ongoing):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = 0
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/CurlUpIcon.png")
+
+    def event_listener(self, ev, player, list_of_enemies):
+        pass
+
+    def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)
+
+
+# /////////////////////////// CARDS EFFECTS ///////////////////////////
 
 # ============================ Juggernaut ============================
 
@@ -104,14 +171,17 @@ class JuggernautEffect(Ongoing):
         super().__init__()
         # GAME RELATED
         self.intensity = 5
+        self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/JuggernautIcon.png")
 
     def event_listener(self, ev, player, list_of_enemies):
         if ev.type == playerFile.ON_PLAYER_GAIN_BLOCK:
             enemy = random.choice(list_of_enemies)
-            enemy.cur_health -= self.intensity
+            player.deal_damage(self.intensity, enemy, is_attack=False)
 
     def update(self, character, screen):
+        self.value = self.intensity
         super().update(character, screen)
+
 

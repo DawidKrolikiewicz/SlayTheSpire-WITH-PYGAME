@@ -12,7 +12,7 @@ class Character(pygame.sprite.Sprite):
         self.name = name
         self.max_health = health
         self.cur_health = health
-        self.armor = 0
+        self.block = 0
         self.list_of_ongoing = [o.Strength(), o.Dexterity(), o.Frail(), o.Vulnerable()]
 
         # DISPLAY RELATED
@@ -24,7 +24,7 @@ class Character(pygame.sprite.Sprite):
         self.rect_name = self.image_name.get_rect()
         self.rect_name.top = self.rect_sprite.bottom + 4
 
-        self.image_hp = text_font.render(f"[{self.armor}] {self.cur_health} / {self.max_health} HP", True,
+        self.image_hp = text_font.render(f"[{self.block}] {self.cur_health} / {self.max_health} HP", True,
                                          (0, 0, 0))
         self.rect_hp = self.image_hp.get_rect()
         self.rect_hp.top = self.rect_name.bottom + 4
@@ -47,8 +47,10 @@ class Character(pygame.sprite.Sprite):
         screen.blit(self.image_name, self.rect_name.topleft)
 
         # DRAWING CHARACTER HP
-        self.image_hp = text_font.render(f"[{self.armor}] {self.cur_health} / {self.max_health} HP", True,
+        self.image_hp = text_font.render(f"[{self.block}] {self.cur_health} / {self.max_health} HP", True,
                                          (0, 0, 0))
+        self.rect_hp = self.image_hp.get_rect()
+        self.rect_hp.top = self.rect_name.bottom + 4
         self.rect_hp.centerx = self.rect_sprite.centerx
         pygame.draw.rect(screen, (0, 100, 255), self.rect_hp)
         screen.blit(self.image_hp, self.rect_hp.topleft)
@@ -72,7 +74,7 @@ class Character(pygame.sprite.Sprite):
     def info(self):
         print(f">>  {self.name}'s info is being displayed!")
         print(f"    Health: {self.cur_health} / {self.max_health}")
-        print(f"    Armor: {self.armor}")
+        print(f"    Armor: {self.block}")
         for ongoing in self.list_of_ongoing:
             if ongoing.duration is not None and ongoing.duration != 0:
                 print(f"    {ongoing.__class__.__name__}: {ongoing.duration}")
@@ -81,22 +83,24 @@ class Character(pygame.sprite.Sprite):
             elif ongoing.counter is not None and ongoing.counter != 0:
                 print(f"    {ongoing.__class__.__name__}: {ongoing.counter}")
 
-    def deal_damage(self, base_damage_value, target):
-        damage = base_damage_value + self.list_of_ongoing[0].intensity
-        if target.list_of_ongoing[3].duration > 0:
+    def deal_damage(self, damage, target, is_attack=True, hit_block=True):
+        if is_attack:
+            damage = damage + self.list_of_ongoing[0].intensity  # Strength
+
+        if target.list_of_ongoing[3].duration > 0:  # Vulnerable
             damage = int(damage * 1.5)
-        if target.armor > 0:
-            if target.armor >= damage:
-                target.armor -= damage
-            else:
-                damage -= target.armor
-                target.armor = 0
-                target.cur_health -= damage
-        else:
-            target.cur_health -= damage
+
+        if hit_block:
+            og_block = target.block
+            target.block -= damage
+            damage -= og_block
+            if target.block < 0:
+                target.block = 0
+
+        target.cur_health -= damage
 
     def add_armor(self, armor, target):
-        target.armor += int((armor + self.list_of_ongoing[1].intensity) / (1.5 if self.list_of_ongoing[2].duration > 0 else 1))
+        target.block += int((armor + self.list_of_ongoing[1].intensity) / (1.5 if self.list_of_ongoing[2].duration > 0 else 1))
 
     def heal(self, value, target):
         target.cur_health += value

@@ -1,6 +1,7 @@
 import random
 import pygame
 import characterFile
+import cardsFile
 
 
 # ========================================= Enemy (superclass) =========================================
@@ -49,7 +50,7 @@ class Frog(Enemy):
         self.rect_sprite = self.image_sprite.get_rect()
         self.rect_sprite.bottom = 340
 
-        self.list_of_actions = [self.attack_7, self.attack_2_block_4, self.str_1_block_1]
+        self.list_of_actions = [self.attack_7, self.attack_2_block_4, self.gain_str_1_and_block_1]
 
     def attack_7(self, player, list_of_enemies):
         print(f">> {self.name} attacks!")
@@ -60,7 +61,7 @@ class Frog(Enemy):
         self.deal_damage(2, player)
         self.add_armor(4, self)
 
-    def str_1_block_1(self, player, list_of_enemies):
+    def gain_str_1_and_block_1(self, player, list_of_enemies):
         print(f">> {self.name} gains strength and blocks!")
         self.add_str(1, self)
         self.add_armor(1, self)
@@ -88,6 +89,41 @@ class Worm(Enemy):
     def give_2_vulnerable(self, player, list_of_enemies):
         print(f">> {self.name} weakens player's defences!")
         self.add_vuln(2, player)
+
+
+class Icecream(Enemy):
+    def __init__(self, name, health):
+        super().__init__(name, health)
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Icecream.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+        self.rage = False
+
+        self.list_of_actions = [self.shuffle_2_depression, self.attack_3_and_block_1]
+
+    def declare_action(self, player, list_of_enemies):
+        if player.cur_health <= self.block:
+            self.next_action = self.deal_damage_equal_to_block
+        elif self.cur_health <= (self.max_health // 2) or self.rage:
+            self.rage = True
+            self.next_action = self.gain_1_dex_and_block_7
+        else:
+            self.next_action = self.list_of_actions[random.randint(0, len(self.list_of_actions) - 1)]
+
+    def shuffle_2_depression(self, player, list_of_enemies):
+        player.add_card_to_discard(cardsFile.Depression())
+        player.add_card_to_discard(cardsFile.Depression())
+
+    def gain_1_dex_and_block_7(self, player, list_of_enemies):
+        self.add_dex(1, self)
+        self.add_armor(7, self)
+
+    def attack_3_and_block_1(self, player, list_of_enemies):
+        self.deal_damage(3, player)
+        self.add_armor(1, self)
+
+    def deal_damage_equal_to_block(self, player, list_of_enemies):
+        self.deal_damage(self.block, player)
 
 
 class Cultist(Enemy):
