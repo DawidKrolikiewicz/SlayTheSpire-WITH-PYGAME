@@ -4,7 +4,6 @@ import pygame
 import powersFile
 
 
-
 def event_listener(ev, player, list_of_enemies, play_rect):
     # COMBAT ENCOUNTER EVENT LISTENER
     if player.current_room.__class__.__name__ == "CombatEncounter":
@@ -212,7 +211,7 @@ class Debuff(CardBase):
         self.weight = 2
 
     def action(self, player, list_of_enemies, target):
-        player.add_frag(1, target)
+        player.add_frai(1, target)
         player.add_vuln(1, target)
 
 
@@ -252,12 +251,11 @@ class Power(CardBase):
         self.weight = 0
 
     def action(self, player, list_of_enemies, target):
-        for buff in player.buffs:
+        for buff in player.list_of_ongoing:
             if isinstance(buff, powersFile.Power):
                 print("NOT ADDING DUPLICATES OF THE POWER")
                 return
-        player.buffs.append(powersFile.Power())
-        print(player.buffs)
+        player.list_of_ongoing.append(powersFile.Power())
 
 class Ritual(CardBase):
     def __init__(self):

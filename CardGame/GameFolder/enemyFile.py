@@ -1,7 +1,6 @@
 import random
 import pygame
 import characterFile
-import cardsFile
 
 
 # ========================================= Enemy (superclass) =========================================
@@ -87,10 +86,9 @@ class Worm(Enemy):
             self.heal(3, enemy)
 
 
-
 class Cultist(Enemy):
-    def __init__(self,target):
-        super().__init__("Culist",25)
+    def __init__(self, name, health):
+        super().__init__(name, health)
         self.list_of_actions = [self.attack_5, self.gain_2_str]
 
     def attack_5(self, player, list_of_enemies):

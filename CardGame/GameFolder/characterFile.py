@@ -1,4 +1,5 @@
 import pygame.sprite
+import ongoingFile as o
 
 pygame.font.init()
 text_font = pygame.font.Font("Fonts/Kreon-Regular.ttf", 20)
@@ -16,6 +17,7 @@ class Character(pygame.sprite.Sprite):
         self.vulnerability = 0
         self.dexterity = 0
         self.fragility = 0
+        self.list_of_ongoing = [o.Strength(), o.Dexterity(), o.Frail(), o.Vulnerable()]
 
         # DISPLAY RELATED
         self.image_sprite = pygame.image.load("Enemies/Don'tMakeInstancesOfBaseEnemyPLS.png")
@@ -30,6 +32,10 @@ class Character(pygame.sprite.Sprite):
                                          (0, 0, 0))
         self.rect_hp = self.image_hp.get_rect()
         self.rect_hp.top = self.rect_name.bottom + 4
+
+    def event_listener(self, ev, list_of_enemies):
+        for ongoing in self.list_of_ongoing:
+            ongoing.event_listener(ev, self, list_of_enemies)
 
     def update(self, screen):
         # DRAWING CHARACTER SPRITE
@@ -47,6 +53,9 @@ class Character(pygame.sprite.Sprite):
         self.rect_hp.centerx = self.rect_sprite.centerx
         pygame.draw.rect(screen, (0, 100, 255), self.rect_hp)
         screen.blit(self.image_hp, self.rect_hp.topleft)
+
+        for ongoing in self.list_of_ongoing:
+            ongoing.update(self, screen)
 
     def info(self):
         print(f">>  {self.name}'s info is being displayed!")
@@ -82,7 +91,7 @@ class Character(pygame.sprite.Sprite):
     def add_dex(self, value, target):
         target.dexterity += value
 
-    def add_frag(self, value, target):
+    def add_frai(self, value, target):
         target.fragility += value
 
     def add_vuln(self, value, target):
