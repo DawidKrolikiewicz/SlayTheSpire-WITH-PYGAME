@@ -143,7 +143,9 @@ class CombatEncounter(InGame):
                     print(f"END TURN")
                     self.state = 3
         cardsFile.event_listener(ev, player, self.list_of_enemies, self.bg_play_rect)
-        player.event_listener(ev, self.list_of_enemies)
+        player.event_listener(ev, player, self.list_of_enemies)
+        for enemy in self.list_of_enemies:
+            enemy.event_listener(ev, player, self.list_of_enemies)
 
     def update(self, screen, player):
         # Draw backgrounds Rects

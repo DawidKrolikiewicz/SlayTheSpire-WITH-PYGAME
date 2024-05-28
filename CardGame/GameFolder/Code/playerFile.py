@@ -39,8 +39,8 @@ class Player(characterFile.Character):
         self.rect_mana = self.image_mana.get_rect()
         self.rect_mana.midbottom = self.rect_sprite.midtop - pygame.Vector2(0, 4)
 
-    def event_listener(self, ev, list_of_enemies):
-        super().event_listener(ev, list_of_enemies)
+    def event_listener(self, ev, player, list_of_enemies):
+        super().event_listener(ev, player, list_of_enemies)
 
     def update(self, screen):
         super().update(screen)
@@ -172,5 +172,6 @@ class Player(characterFile.Character):
         self.drag = None
         while self.hand:
             self.discard_card(self.hand[0])
+        pygame.event.post(pygame.event.Event(ON_TURN_END))
 
 

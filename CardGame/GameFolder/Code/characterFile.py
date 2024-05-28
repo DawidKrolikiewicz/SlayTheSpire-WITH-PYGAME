@@ -36,9 +36,9 @@ class Character(pygame.sprite.Sprite):
         self.rect_ongoing = (0, 0, 0, 0)
         self.counter = 0
 
-    def event_listener(self, ev, list_of_enemies):
+    def event_listener(self, ev, player, list_of_enemies):
         for key in self.dict_of_ongoing:
-            self.dict_of_ongoing[key].event_listener(ev, self, list_of_enemies)
+            self.dict_of_ongoing[key].event_listener(ev, self, player, list_of_enemies)
 
     def update(self, screen):
         # DRAWING CHARACTER SPRITE
@@ -101,6 +101,10 @@ class Character(pygame.sprite.Sprite):
             if target.block < 0:
                 target.block = 0
 
+        if damage > 0:
+            if o.Effect.CURLUP in target.dict_of_ongoing:
+                target.dict_of_ongoing[o.Effect.CURLUP].action(target)
+
         target.cur_health -= damage
 
     def add_block(self, value, target, affected_by_ongoing=True):
@@ -139,6 +143,24 @@ class Character(pygame.sprite.Sprite):
             target.dict_of_ongoing[o.Effect.VULNERABLE] = o.Vulnerable()
 
         target.dict_of_ongoing[o.Effect.VULNERABLE].duration += value
+
+    def add_weak(self, value, target):
+        if o.Effect.WEAK not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.WEAK] = o.Weak()
+
+        target.dict_of_ongoing[o.Effect.WEAK].duration += value
+
+    def add_ritual(self, value, target):
+        if o.Effect.RITUAL not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.RITUAL] = o.Ritual()
+
+        target.dict_of_ongoing[o.Effect.RITUAL].intensity += value
+
+    def add_curlup(self, value, target):
+        if o.Effect.CURLUP not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.CURLUP] = o.CurlUp()
+
+        target.dict_of_ongoing[o.Effect.CURLUP].intensity += value
 
     def add_juggernaut(self, value, target):
         if o.Effect.JUGGERNAUT not in target.dict_of_ongoing:

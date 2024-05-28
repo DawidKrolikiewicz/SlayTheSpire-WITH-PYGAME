@@ -35,7 +35,7 @@ class Ongoing(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.centery = 400
 
-    def event_listener(self, ev, player, list_of_enemies):
+    def event_listener(self, ev, character, player, list_of_enemies):
         pass
 
     def update(self, character, screen):
@@ -60,7 +60,7 @@ class Strength(Ongoing):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/StrengthIcon.png")
 
-    def event_listener(self, ev, player, list_of_enemies):
+    def event_listener(self, ev, character, player, list_of_enemies):
         pass
 
     def update(self, character, screen):
@@ -79,7 +79,7 @@ class Dexterity(Ongoing):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/DexterityIcon.png")
 
-    def event_listener(self, ev, player, list_of_enemies):
+    def event_listener(self, ev, character, player, list_of_enemies):
         pass
 
     def update(self, character, screen):
@@ -98,7 +98,7 @@ class Frail(Ongoing):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/FrailIcon.png")
 
-    def event_listener(self, ev, player, list_of_enemies):
+    def event_listener(self, ev, character, player, list_of_enemies):
         pass
 
     def update(self, character, screen):
@@ -117,7 +117,7 @@ class Vulnerable(Ongoing):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/VulnerableIcon.png")
 
-    def event_listener(self, ev, player, list_of_enemies):
+    def event_listener(self, ev, character, player, list_of_enemies):
         pass
 
     def update(self, character, screen):
@@ -136,7 +136,7 @@ class Weak(Ongoing):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/WeakIcon.png")
 
-    def event_listener(self, ev, player, list_of_enemies):
+    def event_listener(self, ev, character, player, list_of_enemies):
         pass
 
     def update(self, character, screen):
@@ -157,7 +157,9 @@ class Ritual(Ongoing):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/RitualIcon.png")
 
-    def event_listener(self, ev, player, list_of_enemies):
+    def event_listener(self, ev, character, player, list_of_enemies):
+        if ev.type == playerFile.ON_TURN_END:
+            character.add_strength(self.intensity, character)
         pass
 
     def update(self, character, screen):
@@ -176,12 +178,17 @@ class CurlUp(Ongoing):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/CurlUpIcon.png")
 
-    def event_listener(self, ev, player, list_of_enemies):
+    def event_listener(self, ev, character, player, list_of_enemies):
         pass
 
     def update(self, character, screen):
         self.value = self.intensity
         super().update(character, screen)
+
+    def action(self, character):
+        print(f"XXXXXXXXXXXXXXXXXX>> {character.name}")
+        character.add_block(self.intensity, character)
+        del character.dict_of_ongoing[Effect.CURLUP]
 
 
 # /////////////////////////// CARDS EFFECTS ///////////////////////////
@@ -197,7 +204,7 @@ class Juggernaut(Ongoing):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/JuggernautIcon.png")
 
-    def event_listener(self, ev, player, list_of_enemies):
+    def event_listener(self, ev, character, player, list_of_enemies):
         if ev.type == playerFile.ON_PLAYER_GAIN_BLOCK:
             enemy = random.choice(list_of_enemies)
             player.deal_damage(self.intensity, enemy, is_attack=False)
