@@ -319,48 +319,26 @@ class Shop(InGame):
 # ======================================================================================================================
 
 
-class Ritual:
+class Ritual(InGame):
     def __init__(self):
+        super().__init__()
         self.name = self.__class__.__name__
 
         self.choice_1_color = BLUE
-        self.choice_1_rect = pygame.Rect((100, 400, 250, 250))
+        self.choice_1_rect = pygame.Rect((205, 400, 250, 250))
         self.choice_2_color = GREEN
-        self.choice_2_rect = pygame.Rect((400, 400, 250, 250))
+        self.choice_2_rect = pygame.Rect((505, 400, 250, 250))
         self.choice_3_color = PURPLE
-        self.choice_3_rect = pygame.Rect((700, 400, 250, 250))
-
-    def encounter(self, player, screen):
-        while True:
-            choice = None
-            if choice == 1:
-                k1 = enemyFile.Cultist(player)
-                k2 = enemyFile.Cultist(player)
-                #gl.combat_encounter(player, [k1, k2], shop, random_encounters)
-                break
-            elif choice == 2:
-                choice_2_image = text_font.render("You join in the prayers, mumbling something under your breath.\n"
-                                                  "The screams of killed man slowly fade away, leaving you with nothing but silence.\n"
-                                                  "You look at the cultists, feasting on sacrifice's blood, their muscles growing visibly.\n"
-                                                  "You can perform the same ritual now, but the feeling of uneasiness doesn't leave you.")
-                ritual = cardsFile.Ritual()
-                feeble = cardsFile.Depression()
-                player.add_card_do_deck(ritual)
-                player.add_card_do_deck(feeble)
-                break
-            elif choice == 3:
-                choice_2_image = text_font.render("You leave, ignoring this poor man's cries for help.\n"
-                                                  "His problems are not yours.\n")
-                break
-            #else:
-                #print("Wrong input!")
+        self.choice_3_rect = pygame.Rect((805, 400, 250, 250))
+        self.exit_color = BLACK
+        self.exit_rect = pygame.Rect((1116, 0, 250, 250))
 
     def multi_text_render(self, text, screen):
         rendered_fonts = []
         for i, line in enumerate(text.split('\n')):
-            txt_surf = text_font.render(line, True, (0,0,0))
+            txt_surf = text_font.render(line, True, (0, 0, 0))
             txt_rect = txt_surf.get_rect()
-            txt_rect.topleft = (10, 10 + i * 24)
+            txt_rect.topleft = (350, 10 + i * 24)
             rendered_fonts.append((txt_surf, txt_rect))
         for txt_surf, txt_rect in rendered_fonts:
             screen.blit(txt_surf, txt_rect)
@@ -368,19 +346,47 @@ class Ritual:
     def event_listener(self, ev, player):
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
-            if self.choice_1_rect.collidepoint(pos):
-                print("LEAVING SHOP")
+            if self.state == 0:
+                if self.choice_1_rect.collidepoint(pos):
+                    self.state = 1
+                elif self.choice_2_rect.collidepoint(pos):
+                    ritual = cardsFile.Ritual()
+                    feeble = cardsFile.Depression()
+                    player.add_card_to_deck(ritual)
+                    player.add_card_to_deck(feeble)
+                    self.state = 2
+                elif self.choice_3_rect.collidepoint(pos):
+                    self.state = 3
+            elif self.state in (2,3):
+                if self.exit_rect.collidepoint(pos):
+                    player.current_room = Menu(None)
 
     def update(self, screen, player):
-        pygame.draw.rect(screen, self.choice_1_color, self.choice_1_rect)
-        pygame.draw.rect(screen, self.choice_2_color, self.choice_2_rect)
-        pygame.draw.rect(screen, self.choice_3_color, self.choice_3_rect)
-        self.multi_text_render("You have stumbled upon two masked man, trying to sacrifice poor, emaciated man.\n"
-            "They haven't noticed you yet.\n"
-            "One of them rises his jagged dagger up, whispering a prayer to his goddess. What do you do?\n"
-            "1) Attack them\n"
-            "2) Join the prayer, as they slaughter their pray\n"
-            "3) Leave before they notice you\n", screen)
+        if self.state == 0:
+            pygame.draw.rect(screen, self.choice_1_color, self.choice_1_rect)
+            pygame.draw.rect(screen, self.choice_2_color, self.choice_2_rect)
+            pygame.draw.rect(screen, self.choice_3_color, self.choice_3_rect)
+            self.multi_text_render("You have stumbled upon two masked man, trying to sacrifice poor, emaciated man.\n"
+                                   "They haven't noticed you yet.\n"
+                                   "One of them rises up his jagged dagger, whispering a prayer to his goddess. What do you do?\n"
+                                   "1) Attack them\n"
+                                   "2) Join the prayer, as they slaughter their pray\n"
+                                   "3) Leave before they notice you\n", screen)
+        elif self.state == 1:
+            k1 = enemyFile.Cultist(player)
+            k2 = enemyFile.Cultist(player)
+            player.current_room = CombatEncounter()
+        elif self.state == 2:
+            self.multi_text_render("You join in the prayers, mumbling something under your breath.\n"
+                                   "The screams of killed man slowly fade away, leaving you with nothing but silence.\n"
+                                   "You look at the cultists, feasting on sacrifice's blood, their muscles growing visibly.\n"
+                                   "You can perform the same ritual now, but the feeling of uneasiness doesn't leave you.",
+                                   screen)
+            pygame.draw.rect(screen, self.exit_color, self.exit_rect)
+        elif self.state == 3:
+            self.multi_text_render("You leave, ignoring this poor man's cries for help.\n"
+                                   "His problems are not yours.\n", screen)
+            pygame.draw.rect(screen, self.exit_color, self.exit_rect)
 
 
 class Beggar:
