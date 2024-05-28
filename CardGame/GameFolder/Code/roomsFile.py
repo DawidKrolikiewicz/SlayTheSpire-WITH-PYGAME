@@ -3,7 +3,6 @@ import random
 import enemyFile
 import cardsFile
 
-
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 GREEN = (0, 255, 0)
@@ -107,8 +106,10 @@ class InGame(Room):
 # ======================================================================================================================
 
 class CombatEncounter(InGame):
-    def __init__(self):
+    def __init__(self, custom_list_of_enemies=None):
         super().__init__()
+        if custom_list_of_enemies is None:
+            custom_list_of_enemies = []
         pygame.display.set_caption("COMBAT ENCOUNTER")
         self.bg_play_color = BLUE
         self.bg_play_rect = pygame.Rect((0, 0, 1366, 528))
@@ -120,8 +121,11 @@ class CombatEncounter(InGame):
         self.end_turn_color = BLACK
         self.end_turn_rect = pygame.Rect((1266, 668, 100, 100))
 
-        self.list_of_enemies = []
-        self._get_random_combat()
+        if not custom_list_of_enemies:
+            self.list_of_enemies = []
+            self._get_random_combat()
+        else:
+            self.list_of_enemies = custom_list_of_enemies
 
         self._position_enemies()
 
@@ -157,7 +161,7 @@ class CombatEncounter(InGame):
         player.update(screen)
 
         # Update every enemy
-        for enemy in self.list_of_enemies :
+        for enemy in self.list_of_enemies:
             enemy.update(screen)
 
         # Update every card in hand + draw non-highlighted
@@ -211,7 +215,7 @@ class CombatEncounter(InGame):
 
     def _get_random_combat(self):
         # Get random combat encounter from the list
-        fights = [[enemyFile.Worm("Wormmer", 1), enemyFile.Frog("Frogger", 6), enemyFile.Enemy("BaseEnemy", 6)]]
+        fights = [[enemyFile.Worm("Wormmer", 12), enemyFile.Frog("Frogger", 11), enemyFile.Enemy("BaseEnemy", 15)]]
         self.list_of_enemies += random.choice(fights)
 
     def _position_enemies(self):
@@ -250,9 +254,9 @@ class Shop(InGame):
         super().__init__()
         self.bg_color = GREEN
         pygame.display.set_caption("SHOP")
-        self.available_cards = [cardsFile.Draw2Heal3, cardsFile.Draw1,
-                                cardsFile.Buff, cardsFile.Debuff,
-                                cardsFile.Armor4, cardsFile.Deal5Damage]
+        self.available_cards = [cardsFile.Covid19Vaccine, cardsFile.PanicRoll,
+                                cardsFile.A100pNatural, cardsFile.Covid19,
+                                cardsFile.TinCanArmor, cardsFile.Bonk]
         self.list_of_cards = []
         self.card_prices = []
 
@@ -270,7 +274,7 @@ class Shop(InGame):
         self.set_prices()
 
     def set_prices(self):
-        for i,card in enumerate(self.list_of_cards):
+        for i, card in enumerate(self.list_of_cards):
             self.card_prices.append(random.randint(card.price_range[0], card.price_range[1]))
 
     def buy_card(self, card_index, player):
@@ -302,6 +306,8 @@ class Shop(InGame):
             card.update(screen, player, index, self.bg_cards_rect)
 
         super().update(screen, player)
+
+
 # ======================================================================================================================
 
 
@@ -312,15 +318,15 @@ class Ritual:
     def encounter(self, player, shop, random_encounters):
         while True:
             choice = int(input(("You have stumbled upon two masked man, trying to sacrifice poor, emaciated man.\n"
-              "They haven't noticed you yet.\n"
-              "One of them rises his jagged dagger up, whispering a prayer to his goddess. What do you do?\n"
-              "1) Attack them\n"
-              "2) Join the prayer, as they slaughter their pray\n"
-              "3) Leave before they notice you\nChoice: ")))
+                                "They haven't noticed you yet.\n"
+                                "One of them rises his jagged dagger up, whispering a prayer to his goddess. What do you do?\n"
+                                "1) Attack them\n"
+                                "2) Join the prayer, as they slaughter their pray\n"
+                                "3) Leave before they notice you\nChoice: ")))
             if choice == 1:
                 k1 = enemyFile.Cultist(player)
                 k2 = enemyFile.Cultist(player)
-                #gl.combat_encounter(player, [k1, k2], shop, random_encounters)
+                # gl.combat_encounter(player, [k1, k2], shop, random_encounters)
                 break
             elif choice == 2:
                 print("You join in the prayers, mumbling something under your breath.\n"
@@ -347,14 +353,14 @@ class Beggar:
     def encounter(self, player, shop, random_encounters):
         while True:
             choice = int(input(("A lone beggar approaches you, begging for your help.\n"
-                  "He looks hungry, yet there's some kind of spark in his eyes.\n"
-                  "What do you do?\n"
-                  "1) Give him some gold (30)\n"
-                  "2) Give him some food (Lose Buff card)\n"
-                  "3) Ignore his plea\nChoice: ")))
+                                "He looks hungry, yet there's some kind of spark in his eyes.\n"
+                                "What do you do?\n"
+                                "1) Give him some gold (30)\n"
+                                "2) Give him some food (Lose Buff card)\n"
+                                "3) Ignore his plea\nChoice: ")))
             if choice == 1:
                 if player.coins >= 30:
-                    player.coins -=30
+                    player.coins -= 30
                     player.add_card_do_deck(cardsFile.Fireball())
                     print("Delighted beggar takes your coins, counting every one of them.\n"
                           "He then looks you in the eyes, leans slightly and touches your left temple.\n"
@@ -366,7 +372,7 @@ class Beggar:
             elif choice == 2:
                 buff_card = None
                 for card in player.deck:
-                    if isinstance(card, cardsFile.Buff):
+                    if isinstance(card, cardsFile.A100pNatural):
                         buff_card = card
                         break
                 if buff_card:
@@ -390,6 +396,7 @@ class Beggar:
             else:
                 print("Wrong input!")
 
+
 class Bridge:
     def __init__(self):
         self.name = self.__class__.__name__
@@ -397,11 +404,11 @@ class Bridge:
     def encounter(self, player, shop, random_encounters):
         while True:
             choice = int(input(("A giant chasm blocks your path.\n"
-                  "Luckily, there is a old-looking bridge, which can get you to the other side.\n"
-                  "When you take a few steps, the bridge starts to creak. It doesn't look very steady\n"
-                  "What do you do?\n"
-                  "1) Rush to the other side\n"
-                  "2) Slowly and carefully cross the bridge\n")))
+                                "Luckily, there is a old-looking bridge, which can get you to the other side.\n"
+                                "When you take a few steps, the bridge starts to creak. It doesn't look very steady\n"
+                                "What do you do?\n"
+                                "1) Rush to the other side\n"
+                                "2) Slowly and carefully cross the bridge\n")))
             if choice == 1:
                 player.health -= 10
                 print("It wasn't very thoughtful of you.\n"

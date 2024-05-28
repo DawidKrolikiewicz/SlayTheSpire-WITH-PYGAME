@@ -30,7 +30,7 @@ class Player(characterFile.Character):
         self.highlight = None
         self.drag = None
 
-        self.image_sprite = pygame.image.load("Enemies/player.png")
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Player.png")
         self.rect_sprite = self.image_sprite.get_rect()
         self.rect_sprite.bottom = 340
         self.rect_sprite.centerx = 250

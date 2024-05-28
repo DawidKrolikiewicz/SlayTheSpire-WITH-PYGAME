@@ -40,12 +40,12 @@ class Enemy(characterFile.Character):
             self.next_action(player, list_of_enemies)
 
 
-# ========================================== Specific Enemies ==========================================
+# ========================================== Specific Characters ==========================================
 
 class Frog(Enemy):
     def __init__(self, name, health):
         super().__init__(name, health)
-        self.image_sprite = pygame.image.load("Enemies/frog.png")
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Frog.png")
         self.rect_sprite = self.image_sprite.get_rect()
         self.rect_sprite.bottom = 340
 
@@ -69,7 +69,7 @@ class Frog(Enemy):
 class Worm(Enemy):
     def __init__(self, name, health):
         super().__init__(name, health)
-        self.image_sprite = pygame.image.load("Enemies/worm.png")
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Worm.png")
         self.rect_sprite = self.image_sprite.get_rect()
         self.rect_sprite.bottom = 340
 

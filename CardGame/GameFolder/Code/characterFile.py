@@ -2,7 +2,7 @@ import pygame.sprite
 import ongoingFile as o
 
 pygame.font.init()
-text_font = pygame.font.Font("Fonts/Kreon-Regular.ttf", 20)
+text_font = pygame.font.Font("../Fonts/Kreon-Regular.ttf", 20)
 
 
 class Character(pygame.sprite.Sprite):
@@ -16,7 +16,7 @@ class Character(pygame.sprite.Sprite):
         self.list_of_ongoing = [o.Strength(), o.Dexterity(), o.Frail(), o.Vulnerable()]
 
         # DISPLAY RELATED
-        self.image_sprite = pygame.image.load("Enemies/Don'tMakeInstancesOfBaseEnemyPLS.png")
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Don'tMakeInstancesOfBaseEnemyPLS.png")
         self.rect_sprite = self.image_sprite.get_rect()
         self.rect_sprite.bottom = 340
 
