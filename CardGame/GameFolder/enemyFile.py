@@ -49,8 +49,7 @@ class Frog(Enemy):
         self.rect_sprite = self.image_sprite.get_rect()
         self.rect_sprite.bottom = 340
 
-        #self.list_of_actions = [self.attack_7, self.attack_2_block_4, self.str_1_block_1]
-        self.list_of_actions = [self.attack_2_block_4]
+        self.list_of_actions = [self.attack_7, self.attack_2_block_4, self.str_1_block_1]
 
     def attack_7(self, player, list_of_enemies):
         print(f">> {self.name} attacks!")
@@ -74,8 +73,7 @@ class Worm(Enemy):
         self.rect_sprite = self.image_sprite.get_rect()
         self.rect_sprite.bottom = 340
 
-        #self.list_of_actions = [self.attack_2_x2, self.heal_enemies_3, self.give_2_vulnerable]
-        self.list_of_actions = [self.heal_enemies_3, self.give_2_vulnerable]
+        self.list_of_actions = [self.attack_2_x2, self.heal_enemies_3, self.give_2_vulnerable]
 
     def attack_2_x2(self, player, list_of_enemies):
         print(f">> {self.name} attacks twice!")
