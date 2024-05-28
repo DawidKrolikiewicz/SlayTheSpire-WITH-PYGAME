@@ -19,6 +19,7 @@ ON_TURN_START = pygame.USEREVENT + 10
 class Player(characterFile.Character):
     def __init__(self, name, health, starting_deck):
         super().__init__(name, health)
+        self.floor = 0
         self.run_deck = starting_deck
         self.max_hand_size = 10
         self.deck = []

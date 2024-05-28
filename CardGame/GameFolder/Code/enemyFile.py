@@ -7,8 +7,11 @@ import cardsFile
 # ========================================= Enemy (superclass) =========================================
 
 class Enemy(characterFile.Character):
-    def __init__(self, name, health):
-        super().__init__(name, health)
+    def __init__(self):
+        super().__init__()
+        self.name = "Enemy"
+        self.max_health = 1
+        self.cur_health = self.max_health
         self.list_of_actions = []
         self.next_action = None
 
@@ -45,8 +48,11 @@ class Enemy(characterFile.Character):
 # ========================================== Specific Characters ==========================================
 
 class Frog(Enemy):
-    def __init__(self, name, health):
-        super().__init__(name, health)
+    def __init__(self):
+        super().__init__()
+        self.name = "Frog"
+        self.max_health = 12
+        self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Frog.png")
         self.rect_sprite = self.image_sprite.get_rect()
         self.rect_sprite.bottom = 340
@@ -69,8 +75,11 @@ class Frog(Enemy):
 
 
 class Worm(Enemy):
-    def __init__(self, name, health):
-        super().__init__(name, health)
+    def __init__(self):
+        super().__init__()
+        self.name = "Worm"
+        self.max_health = 11
+        self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Worm.png")
         self.rect_sprite = self.image_sprite.get_rect()
         self.rect_sprite.bottom = 340
@@ -93,8 +102,11 @@ class Worm(Enemy):
 
 
 class Icecream(Enemy):
-    def __init__(self, name, health):
-        super().__init__(name, health)
+    def __init__(self):
+        super().__init__()
+        self.name = "EVIL ICECREAM"
+        self.max_health = 30
+        self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Icecream.png")
         self.rect_sprite = self.image_sprite.get_rect()
         self.rect_sprite.bottom = 340
@@ -128,17 +140,60 @@ class Icecream(Enemy):
 
 
 class Cultist(Enemy):
-    def __init__(self, name, health):
-        super().__init__(name, health)
-        self.list_of_actions = [self.attack_5, self.gain_2_str]
+    def __init__(self):
+        super().__init__()
+        self.name = "Cultist Bro"
+        self.max_health = random.randint(48, 54)
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Cultist.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+        self.state = 0
 
-    def attack_5(self, player, list_of_enemies):
-        print(">> Enemy1 attacks!")
-        self.deal_damage(5, player)
-        print(f"==============================================================================")
+    def declare_action(self, player, list_of_enemies):
+        if self.state == 0:
+            self.next_action = self.gain_3_ritual
+            self.state = 1
+        else:
+            self.next_action = self.attack_6
 
-    def gain_2_str(self, player, list_of_enemies):
-        print(">> Enemy puts up his defences!")
-        self.add_strength(2, self)
-        print(f"==============================================================================")
+    def gain_3_ritual(self, player, list_of_enemies):
+        self.add_ritual(3, self)
 
+    def attack_6(self, player, list_of_enemies):
+        self.deal_damage(6, player)
+
+
+class JawWorm(Enemy):
+    def __init__(self):
+        super().__init__()
+        self.name = "Jeff"
+        self.max_health = random.randint(40, 44)
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Jaw Worm.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+
+        self.list_of_actions = [self.attack_11, self.attack_7_block_5, self.gain_3_strength_block_6]
+        self.list_of_previous = []
+        self.state = 0
+
+    def declare_action(self, player, list_of_enemies):
+        if self.state == 0:
+            self.next_action = self.attack_11
+            self.state = 1
+        else:
+            while True:
+                self.next_action = random.choice(self.list_of_actions)  # No weights yet :(
+                break
+
+    def attack_11(self, player, list_of_enemies):
+        self.deal_damage(11, player)
+
+    def attack_7_block_5(self, player, list_of_enemies):
+        self.deal_damage(7, player)
+        self.add_block(5, self)
+
+    def gain_3_strength_block_6(self, player, list_of_enemies):
+        self.add_strength(3, self)
+        self.add_block(6, self)

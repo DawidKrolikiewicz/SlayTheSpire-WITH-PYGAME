@@ -6,12 +6,12 @@ text_font = pygame.font.Font("../Fonts/Kreon-Regular.ttf", 20)
 
 
 class Character(pygame.sprite.Sprite):
-    def __init__(self, name, health):
+    def __init__(self, name="PlayerName", health=70):
         # GAMEPLAY RELATED
         pygame.sprite.Sprite.__init__(self)
         self.name = name
         self.max_health = health
-        self.cur_health = health
+        self.cur_health = self.max_health
         self.block = 0
         self.dict_of_ongoing = {o.Effect.STRENGTH: o.Strength(),
                                 o.Effect.DEXTERITY: o.Dexterity(),
