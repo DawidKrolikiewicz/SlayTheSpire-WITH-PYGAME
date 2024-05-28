@@ -73,7 +73,8 @@ class Menu(Room):
                 player.current_room = Shop()
                 pass
             elif self.menu_button_3_rect.collidepoint(pos):
-                player.current_room = Ritual()
+                list_of_encounters = [Ritual(), Beggar()]
+                player.current_room = random.choice(list_of_encounters)
             elif self.menu_button_4_rect.collidepoint(pos):
                 pass
 
@@ -357,7 +358,7 @@ class Ritual(InGame):
                     self.state = 2
                 elif self.choice_3_rect.collidepoint(pos):
                     self.state = 3
-            elif self.state in (2,3):
+            elif self.state in (2, 3):
                 if self.exit_rect.collidepoint(pos):
                     player.current_room = Menu(None)
 
@@ -389,55 +390,86 @@ class Ritual(InGame):
             pygame.draw.rect(screen, self.exit_color, self.exit_rect)
 
 
-class Beggar:
+class Beggar(InGame):
     def __init__(self):
+        super().__init__()
         self.name = self.__class__.__name__
 
-    def encounter(self, player):
-        while True:
-            choice = int(input(("A lone beggar approaches you, begging for your help.\n"
-                                "He looks hungry, yet there's some kind of spark in his eyes.\n"
-                                "What do you do?\n"
-                                "1) Give him some gold (30)\n"
-                                "2) Give him some food (Lose Buff card)\n"
-                                "3) Ignore his plea\nChoice: ")))
-            if choice == 1:
-                if player.coins >= 30:
-                    player.coins -= 30
-                    player.add_card_do_deck(cardsFile.Fireball())
-                    print("Delighted beggar takes your coins, counting every one of them.\n"
-                          "He then looks you in the eyes, leans slightly and touches your left temple.\n"
-                          "New knowledge floods your mind, leaving you with new ability.\n"
-                          "When you open your eyes, the beggar is gone.")
-                    break
-                else:
-                    print("You don't have enough coins!")
-            elif choice == 2:
-                buff_card = None
-                for card in player.deck:
-                    if isinstance(card, cardsFile.Buff):
-                        buff_card = card
-                        break
-                if buff_card:
-                    player.remove_card_from_deck(buff_card)
-                    player.add_card_do_deck(cardsFile.Fireball())
-                    print("Delighted beggar takes bread you gave him, biting on it eagerly.\n"
-                          "He then looks you in the eyes, leans slightly and touches your left temple.\n"
-                          "New knowledge floods your mind, leaving you with new ability.\n"
-                          "When you open your eyes, the beggar is gone.")
-                    break
-                else:
-                    print("You don't have that card!")
-            elif choice == 3:
-                print("Beggar looks you in the eyes for a while, slowly shaking.\n"
-                      "Then, you see anger rising in his eyes.\n"
-                      "\"You rich fellas think you're better than us, huh?\".\n"
-                      "Then, a large fireball grows in his hand.\n"
-                      "You try to run away, but some of the fire still catches up to you.")
-                player.health -= 10
-                break
-            else:
-                print("Wrong input!")
+        self.choice_1_color = BLUE
+        self.choice_1_rect = pygame.Rect((205, 400, 250, 250))
+        self.choice_2_color = GREEN
+        self.choice_2_rect = pygame.Rect((505, 400, 250, 250))
+        self.choice_3_color = PURPLE
+        self.choice_3_rect = pygame.Rect((805, 400, 250, 250))
+        self.exit_color = BLACK
+        self.exit_rect = pygame.Rect((1116, 0, 250, 250))
+
+    def multi_text_render(self, text, screen):
+        rendered_fonts = []
+        for i, line in enumerate(text.split('\n')):
+            txt_surf = text_font.render(line, True, (0, 0, 0))
+            txt_rect = txt_surf.get_rect()
+            txt_rect.topleft = (350, 10 + i * 24)
+            rendered_fonts.append((txt_surf, txt_rect))
+        for txt_surf, txt_rect in rendered_fonts:
+            screen.blit(txt_surf, txt_rect)
+
+    def event_listener(self, ev, player):
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            if self.state == 0:
+                if self.choice_1_rect.collidepoint(pos):
+                    if player.coins >= 30:
+                        player.coins -= 30
+                        player.add_card_to_deck(cardsFile.Fireball())
+                        self.state = 1
+                elif self.choice_2_rect.collidepoint(pos):
+                    buff_card = None
+                    for card in player.run_deck:
+                        if isinstance(card, cardsFile.Buff):
+                            buff_card = card
+                            break
+                    if buff_card:
+                        player.remove_card_from_deck(buff_card)
+                        player.add_card_to_deck(cardsFile.Fireball())
+                        self.state = 2
+                elif self.choice_3_rect.collidepoint(pos):
+                    player.max_health -= 10
+                    self.state = 3
+            elif self.state in (1, 2, 3):
+                if self.exit_rect.collidepoint(pos):
+                    player.current_room = Menu(None)
+
+    def update(self, screen, player):
+        if self.state == 0:
+            pygame.draw.rect(screen, self.choice_1_color, self.choice_1_rect)
+            pygame.draw.rect(screen, self.choice_2_color, self.choice_2_rect)
+            pygame.draw.rect(screen, self.choice_3_color, self.choice_3_rect)
+            self.multi_text_render("A lone beggar approaches you, begging for your help.\n"
+                                   "He looks hungry, yet there's some kind of spark in his eyes.\n"
+                                   "What do you do?\n"
+                                   "1) Give him some gold (30)\n"
+                                   "2) Give him some food (Lose Buff card)\n"
+                                   "3) Ignore his plea", screen)
+        elif self.state == 1:
+            self.multi_text_render("Delighted beggar takes your coins, counting every one of them.\n"
+                                   "He then looks you in the eyes, leans slightly and touches your left temple.\n"
+                                   "New knowledge floods your mind, leaving you with new ability.\n"
+                                   "When you open your eyes, the beggar is gone.", screen)
+            pygame.draw.rect(screen, self.exit_color, self.exit_rect)
+        elif self.state == 2:
+            self.multi_text_render("Delighted beggar takes bread you gave him, biting on it eagerly.\n"
+                                   "He then looks you in the eyes, leans slightly and touches your left temple.\n"
+                                   "New knowledge floods your mind, leaving you with new ability.\n"
+                                   "When you open your eyes, the beggar is gone.", screen)
+            pygame.draw.rect(screen, self.exit_color, self.exit_rect)
+        elif self.state == 3:
+            self.multi_text_render("Beggar looks you in the eyes for a while, slowly shaking.\n"
+                                   "Then, you see anger rising in his eyes.\n"
+                                   "\"You rich fellas think you're better than us, huh?\".\n"
+                                   "Then, a large fireball grows in his hand.\n"
+                                   "You try to run away, but some of the fire still catches up to you.", screen)
+            pygame.draw.rect(screen, self.exit_color, self.exit_rect)
 
 
 class Bridge:

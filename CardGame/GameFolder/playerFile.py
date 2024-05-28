@@ -115,6 +115,12 @@ class Player(characterFile.Character):
     def add_card_to_deck(self, card):
         self.deck.append(card)
 
+    def remove_card_from_deck(self, card):
+        card_id = id(card)
+        for card in self.run_deck:
+            if id(card) == card_id:
+                self.run_deck.remove(card)
+
     def add_card_to_hand(self, card):
         if len(self.hand) <= self.max_hand_size:
             self.hand.append(card)
