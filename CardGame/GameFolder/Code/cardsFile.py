@@ -95,6 +95,19 @@ class CardBase(pygame.sprite.Sprite):
             
             self.draw(screen)
 
+        if player.current_room.__class__.__name__ == "Rewards":
+            spacing = (hand_rect.width - self.rect.width) / 1.2
+
+            self.place = pygame.Vector2(
+                hand_rect.left + (index + 0.4) * spacing,
+                hand_rect.top + hand_rect.height / 2.2
+            )
+            current = pygame.Vector2(self.rect.center)
+            current.move_towards_ip(self.place, self.move_speed)
+            self.rect.center = current
+
+            self.draw(screen)
+
     def draw(self, screen):
         # pygame.draw.rect(screen, (255, 0, 0), self.rect)
         screen.blit(self.image, self.rect.topleft)

@@ -10,6 +10,8 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 PURPLE = (150, 0, 250)
+GOLD = (219, 172, 52)
+
 
 # > Room   (superclass)
 # - Menu
@@ -84,7 +86,7 @@ class Menu(Room):
                 list_of_encounters = [Ritual(), Beggar(), Bridge()]
                 player.current_room = random.choice(list_of_encounters)
             elif self.menu_button_4_rect.collidepoint(pos):
-                pass
+                player.current_room = Rewards(2)
 
     def update(self, screen, player):
         pygame.draw.rect(screen, self.button_colors, self.menu_button_1_rect)
@@ -150,6 +152,7 @@ class CombatEncounter(InGame):
             self.list_of_enemies = custom_list_of_enemies
 
         self._position_enemies()
+        self.number_of_enemies = len(self.list_of_enemies)
 
     def event_listener(self, ev, player):
         super().event_listener(ev, player)
@@ -226,7 +229,7 @@ class CombatEncounter(InGame):
                 print(f">> (((  WIN!  )))")
                 player.end_combat()
                 player.floor += 1
-                player.current_room = Menu(None)  # NEXT ROOM CHOICE
+                player.current_room = Rewards(self.number_of_enemies)
 
         if self.state == 3:
             # END TURN
@@ -323,7 +326,8 @@ class Shop(InGame):
             if self.leave_rect.collidepoint(pos):
                 print(f"LEAVING SHOP")
                 player.floor += 1
-                player.current_room = Menu(None)  # NEXT ROOM CHOICE
+                player.current_room = Rewards(0)
+
             for i, card in enumerate(self.list_of_cards):
                 if card.rect.collidepoint(pos):
                     self._buy_card(i, player)
@@ -386,8 +390,7 @@ class Ritual(RandomEncounter):
             elif self.state in (2, 3):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
-                    player.current_room = Menu(None)  # NEXT ROOM CHOICE HERE
-
+                    player.current_room = Rewards(0)
 
     def update(self, screen, player):
         if self.state == 0:
@@ -472,7 +475,8 @@ class Beggar(RandomEncounter):
             elif self.state in (1, 2, 3):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
-                    player.current_room = Menu(None)  # NEXT ROOM CHOICE
+                    player.current_room = Rewards(0)
+
 
     def update(self, screen, player):
         if self.state == 0:
@@ -533,6 +537,9 @@ class Beggar(RandomEncounter):
             pygame.draw.rect(screen, self.exit_color, self.exit_rect)
 
 
+# ======================================================================================================================
+
+
 class Bridge(RandomEncounter):
     def __init__(self):
         super().__init__()
@@ -551,7 +558,7 @@ class Bridge(RandomEncounter):
             elif self.state in (1, 2, 3):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
-                    player.current_room = Menu(None)  # NEXT ROOM CHOICE
+                    player.current_room = Rewards(0)
 
     def update(self, screen, player):
         if self.state == 0:
@@ -596,3 +603,79 @@ class Bridge(RandomEncounter):
                               "Yet, the further road awaits...\n\n"
                               "You gained card: Depression", screen)
             pygame.draw.rect(screen, self.exit_color, self.exit_rect)
+
+
+# ======================================================================================================================
+
+class Rewards(InGame):
+    def __init__(self, enemies_numb):
+        super().__init__()
+        self.rewards_cards = []
+        self.gold = 0
+
+        self.choice_1_color = BLUE
+        self.choice_1_rect = pygame.Rect((205, 400, 250, 250))
+        self.choice_1_room = Menu(None)
+
+        self.choice_2_color = GREEN
+        self.choice_2_rect = pygame.Rect((911, 400, 250, 250))
+        self.choice_2_room = Menu(None)
+
+        self.cards_color = PURPLE
+        self.cards_rect = pygame.Rect((1166, 0, 200, 150))
+
+        self.get_gold_color = GOLD
+        self.get_gold_rect = pygame.Rect((0, 0, 200, 150))
+
+        self.cards_leave_color = BLACK
+        self.cards_leave_rect = pygame.Rect((1216, 618, 150, 150))
+
+        self.cards_bg_color = RED
+        self.cards_bg_rect = pygame.Rect((0, 220, 783, 480))
+
+        self.available_cards = [cardsFile.Covid19Vaccine, cardsFile.PanicRoll,
+                                cardsFile.A100pNatural, cardsFile.Covid19,
+                                cardsFile.TinCanArmor, cardsFile.Bonk]
+
+        self.set_rewards(enemies_numb)
+
+    def set_rewards(self, enemies_numb):
+        if enemies_numb > 0:
+            cards_weights = [available_card().weight for available_card in self.available_cards]
+            self.rewards_cards = [random.choices(self.available_cards, cards_weights)[0]() for _ in range(2)]
+            self.gold = (enemies_numb * random.randint(20, 25))
+
+    def event_listener(self, ev, player):
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            if not self.state:
+                if self.choice_1_rect.collidepoint(pos):
+                    player.current_room = self.choice_1_room
+                elif self.choice_2_rect.collidepoint(pos):
+                    player.current_room = self.choice_2_room
+                elif self.get_gold_rect.collidepoint(pos):
+                    player.coins += self.gold
+                    self.gold = 0
+                    print(f"You gold: {player.coins}")
+                elif self.cards_rect.collidepoint(pos):
+                    self.state = 1
+            else:
+                if self.cards_leave_rect.collidepoint(pos):
+                    self.state = 0
+                for card in self.rewards_cards:
+                    if card.rect.collidepoint(pos):
+                        player.run_deck.append(card)
+                        self.rewards_cards.clear()
+
+    def update(self, screen, player):
+        if self.state == 0:
+            pygame.draw.rect(screen, self.choice_1_color, self.choice_1_rect)
+            pygame.draw.rect(screen, self.choice_2_color, self.choice_2_rect)
+            pygame.draw.rect(screen, self.cards_color, self.cards_rect)
+            pygame.draw.rect(screen, self.get_gold_color, self.get_gold_rect)
+        if self.state == 1:
+            pygame.draw.rect(screen, self.cards_leave_color, self.cards_leave_rect)
+            pygame.draw.rect(screen, self.cards_bg_color, self.cards_bg_rect)
+            self.cards_bg_rect.update(0, 220, 783, 480)
+            for index, card in enumerate(self.rewards_cards):
+                card.update(screen, player, index, self.cards_bg_rect)
