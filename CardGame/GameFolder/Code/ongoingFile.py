@@ -39,8 +39,7 @@ class Ongoing(pygame.sprite.Sprite):
         pass
 
     def update(self, character, screen):
-        if ((self.counter is not None and self.counter > 0) or (self.duration is not None and self.duration > 0) or
-                (self.intensity is not None and self.intensity != 0)):
+        if self.value is not None and self.value != 0:
             self.rect.topleft = character.rect_ongoing.topleft
             self.rect.right = character.rect_ongoing.right - (character.counter * self.rect.width)
             character.counter -= 1

@@ -89,10 +89,16 @@ class Character(pygame.sprite.Sprite):
 
     def deal_damage(self, damage, target, is_attack=True, hit_block=True):
         if is_attack:
-            damage = damage + self.dict_of_ongoing[o.Effect.STRENGTH].intensity
+            if o.Effect.STRENGTH in self.dict_of_ongoing:
+                damage = damage + self.dict_of_ongoing[o.Effect.STRENGTH].intensity
 
-        if target.dict_of_ongoing[o.Effect.VULNERABLE].duration > 0:
-            damage = int(damage * 1.5)
+            if o.Effect.WEAK in self.dict_of_ongoing and self.dict_of_ongoing[o.Effect.WEAK].duration > 0:
+                damage = damage * 0.75
+
+            if o.Effect.VULNERABLE in self.dict_of_ongoing and target.dict_of_ongoing[o.Effect.VULNERABLE].duration > 0:
+                damage = damage * 1.5
+
+        damage = int(damage)
 
         if hit_block:
             og_block = target.block

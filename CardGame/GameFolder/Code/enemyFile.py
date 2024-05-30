@@ -175,7 +175,6 @@ class JawWorm(Enemy):
         self.rect_sprite.bottom = 340
 
         self.list_of_actions = [self.attack_11, self.attack_7_block_5, self.gain_3_strength_block_6]
-        self.list_of_previous = []
         self.state = 0
 
     def declare_action(self, player, list_of_enemies):
@@ -183,9 +182,10 @@ class JawWorm(Enemy):
             self.next_action = self.attack_11
             self.state = 1
         else:
-            while True:
-                self.next_action = random.choice(self.list_of_actions)  # No weights yet :(
-                break
+            # IDK HOW TO DO IT :(
+            # WEIGHTED + REPEATABLE PREVENTION
+            self.next_action = random.choice(self.list_of_actions)
+            pass
 
     def attack_11(self, player, list_of_enemies):
         self.deal_damage(11, player)
@@ -197,3 +197,4 @@ class JawWorm(Enemy):
     def gain_3_strength_block_6(self, player, list_of_enemies):
         self.add_strength(3, self)
         self.add_block(6, self)
+
