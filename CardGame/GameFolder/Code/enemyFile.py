@@ -1,7 +1,7 @@
 import random
 import pygame
 import characterFile
-from GameFolder import cardsFile
+import cardsFile
 
 
 # ========================================= Enemy (superclass) =========================================
@@ -197,4 +197,3 @@ class JawWorm(Enemy):
     def gain_3_strength_block_6(self, player, list_of_enemies):
         self.add_strength(3, self)
         self.add_block(6, self)
-

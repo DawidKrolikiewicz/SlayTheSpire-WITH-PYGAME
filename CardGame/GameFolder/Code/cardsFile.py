@@ -1,8 +1,6 @@
 import enum
 import pygame
 
-pygame.font.init()
-text_font = pygame.font.Font("Fonts/Kreon-Regular.ttf", 20)
 
 def event_listener(ev, player, list_of_enemies, play_rect):
     # COMBAT ENCOUNTER EVENT LISTENER
@@ -55,7 +53,7 @@ class CardBase(pygame.sprite.Sprite):
         self.exhaust = False
 
         # VISUAL RELATED
-        self.image = pygame.image.load("Sprites/Cards/Steroids.png")
+        self.image = pygame.image.load("../Sprites/Cards/Steroids.png")
         self.rect = self.image.get_rect()
         self.rect.topleft = (1366, 440)
 
@@ -98,7 +96,7 @@ class CardBase(pygame.sprite.Sprite):
             self.draw(screen)
 
     def draw(self, screen):
-        #pygame.draw.rect(screen, (255, 0, 0), self.rect)
+        # pygame.draw.rect(screen, (255, 0, 0), self.rect)
         screen.blit(self.image, self.rect.topleft)
 
     def action(self, player, list_of_enemies, target):
@@ -118,7 +116,7 @@ class Covid19Vaccine(CardBase):
         self.text = "There is no text here!"
         self.target = Targeting.ANY
         # VISUAL RELATED
-        self.image = pygame.image.load("Sprites/Cards/Covid19Vaccine.png")
+        self.image = pygame.image.load("../Sprites/Cards/Covid19Vaccine.png")
         # SHOP RELATED
         self.price_range = (30, 40)
         self.weight = 1
@@ -138,7 +136,7 @@ class Bonk(CardBase):
         self.text = "There is no text here!"
         self.target = Targeting.ENEMY
         # VISUAL RELATED
-        self.image = pygame.image.load("Sprites/Cards/Bonk.png")
+        self.image = pygame.image.load("../Sprites/Cards/Bonk.png")
         # SHOP RELATED
         self.price_range = (15, 20)
         self.weight = 3
@@ -157,7 +155,7 @@ class PanicRoll(CardBase):
         self.text = "There is no text here!"
         self.target = Targeting.ANY
         # VISUAL RELATED
-        self.image = pygame.image.load("Sprites/Cards/PanicRoll.png")
+        self.image = pygame.image.load("../Sprites/Cards/PanicRoll.png")
         # SHOP RELATED
         self.price_range = (18, 25)
         self.weight = 2
@@ -176,7 +174,7 @@ class TinCanArmor(CardBase):
         self.text = "There is no text here!"
         self.target = Targeting.ANY
         # VISUAL RELATED
-        self.image = pygame.image.load("Sprites/Cards/TinCanArmor.png")
+        self.image = pygame.image.load("../Sprites/Cards/TinCanArmor.png")
         # SHOP RELATED
         self.price_range = (15, 20)
         self.weight = 3
@@ -195,7 +193,7 @@ class A100pNatural(CardBase):
         self.text = "There is no text here!"
         self.target = Targeting.ANY
         # VISUAL RELATED
-        self.image = pygame.image.load("Sprites/Cards/100%Natural.png")
+        self.image = pygame.image.load("../Sprites/Cards/100%Natural.png")
         # SHOP RELATED
         self.price_range = (25, 35)
         self.weight = 1
@@ -215,7 +213,7 @@ class Covid19(CardBase):
         self.text = "There is no text here!"
         self.target = Targeting.ENEMY
         # VISUAL RELATED
-        self.image = pygame.image.load("Sprites/Cards/Covid19.png")
+        self.image = pygame.image.load("../Sprites/Cards/Covid19.png")
         # SHOP RELATED
         self.price_range = (18, 25)
         self.weight = 2
@@ -235,7 +233,7 @@ class Depression(CardBase):
         self.text = "There is no text here!"
         self.target = Targeting.ANY
         # VISUAL RELATED
-        self.image = pygame.image.load("Sprites/Cards/Depression.png")
+        self.image = pygame.image.load("../Sprites/Cards/Depression.png")
         # SHOP RELATED
         self.price_range = (99, 99)
         self.weight = 0
@@ -256,7 +254,7 @@ class Juggernaut(CardBase):
         self.text = Targeting.ANY
         self.exhaust = False
         # VISUAL RELATED
-        self.image = pygame.image.load("Sprites/Cards/Juggernaut.png")
+        self.image = pygame.image.load("../Sprites/Cards/Juggernaut.png")
         # SHOP RELATED
         self.price_range = (99, 99)
         self.weight = 0
@@ -271,7 +269,7 @@ class Ritual(CardBase):
         self.cost = 3
         self.text = "There is no text here!"
         self.target = Targeting.ANY
-        self.image = pygame.image.load("Sprites/Cards/Steroids.png")
+        self.image = pygame.image.load("../Sprites/Cards/Steroids.png")
 
     def action(self, player, list_of_enemies, target):
         player.deal_damage(3, list_of_enemies[0])
@@ -284,8 +282,7 @@ class Fireball(CardBase):
         self.cost = 3
         self.text = "There is no text here!"
         self.target = Targeting.ENEMY
-        self.image = pygame.image.load("Sprites/Cards/NotSoGentlePush.png")
+        self.image = pygame.image.load("../Sprites/Cards/NotSoGentlePush.png")
 
     def action(self, player, list_of_enemies, target):
         player.deal_damage(20, target)
-

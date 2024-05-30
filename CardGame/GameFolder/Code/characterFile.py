@@ -1,8 +1,6 @@
 import pygame.sprite
 import ongoingFile as o
-
-pygame.font.init()
-text_font = pygame.font.Font("../Fonts/Kreon-Regular.ttf", 20)
+from fontsFile import text_font
 
 
 class Character(pygame.sprite.Sprite):
@@ -115,8 +113,10 @@ class Character(pygame.sprite.Sprite):
 
     def add_block(self, value, target, affected_by_ongoing=True):
         if affected_by_ongoing:
-            value += target.dict_of_ongoing[o.Effect.DEXTERITY].intensity
-            if target.dict_of_ongoing[o.Effect.FRAIL].duration > 0:
+            if o.Effect.DEXTERITY in target.dict_of_ongoing:
+                value += target.dict_of_ongoing[o.Effect.DEXTERITY].intensity
+
+            if o.Effect.FRAIL in target.dict_of_ongoing and target.dict_of_ongoing[o.Effect.FRAIL].duration > 0:
                 value = int(value * 0.75)
 
         target.block += value
@@ -173,4 +173,3 @@ class Character(pygame.sprite.Sprite):
             target.dict_of_ongoing[o.Effect.JUGGERNAUT] = o.Juggernaut()
 
         target.dict_of_ongoing[o.Effect.JUGGERNAUT].intensity += value
-

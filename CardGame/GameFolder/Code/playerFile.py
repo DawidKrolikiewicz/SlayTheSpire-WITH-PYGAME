@@ -2,7 +2,7 @@ import random
 import pygame.image
 import characterFile
 import roomsFile
-from GameFolder import cardsFile
+import cardsFile
 
 ON_CARD_EXHAUSTED = pygame.USEREVENT + 1
 ON_STATUS_CARD_DRAWN = pygame.USEREVENT + 2
@@ -31,7 +31,7 @@ class Player(characterFile.Character):
         self.highlight = None
         self.drag = None
 
-        self.image_sprite = pygame.image.load("Sprites/Characters/Player.png")
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Player.png")
         self.rect_sprite = self.image_sprite.get_rect()
         self.rect_sprite.bottom = 340
         self.rect_sprite.centerx = 250
@@ -117,7 +117,7 @@ class Player(characterFile.Character):
             # Post event
             pygame.event.post(pygame.event.Event(ON_PLAYER_LOSE_HP_FROM_CARD))
 
-    def add_block(self, value, target):
+    def add_block(self, value, target, affected_by_ongoing=True):
         super().add_block(value, target)
         if target == self:
             # Post event
@@ -180,5 +180,3 @@ class Player(characterFile.Character):
         while self.hand:
             self.discard_card(self.hand[0])
         pygame.event.post(pygame.event.Event(ON_TURN_END))
-
-

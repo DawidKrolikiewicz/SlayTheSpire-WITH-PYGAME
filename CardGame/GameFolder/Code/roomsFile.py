@@ -1,8 +1,8 @@
 import pygame
 import random
 import enemyFile
-
-from GameFolder import cardsFile
+import cardsFile
+from fontsFile import text_font
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -11,15 +11,22 @@ BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 PURPLE = (150, 0, 250)
 
-pygame.font.init()
-text_font = pygame.font.Font("Fonts/Kreon-Regular.ttf", 20)
-
-
 # > Room   (superclass)
 # - Menu
 # > InGame (superclass)
 # - CombatEncounter
 # - Shop
+
+
+def multi_text_render(text, screen):
+    rendered_fonts = []
+    for i, line in enumerate(text.split('\n')):
+        txt_surf = text_font.render(line, True, (0, 0, 0))
+        txt_rect = txt_surf.get_rect()
+        txt_rect.topleft = (350, 10 + i * 24)
+        rendered_fonts.append((txt_surf, txt_rect))
+    for txt_surf, txt_rect in rendered_fonts:
+        screen.blit(txt_surf, txt_rect)
 
 
 # ======================================================================================================================
@@ -94,7 +101,7 @@ class InGame(Room):
         super().__init__()
         self.menu_button_rect = pygame.Rect((1266, 0, 100, 100))
         self.menu_button_color = WHITE
-        pygame.display.set_caption("INGAME")
+        pygame.display.set_caption("IN GAME")
 
     def event_listener(self, ev, player):
         if ev.type == pygame.MOUSEBUTTONDOWN:
@@ -284,7 +291,6 @@ class Shop(InGame):
         self.list_of_cards = [random.choices(self.available_cards, cards_weights)[0]() for _ in range(4)]
         self._set_prices()
 
-
     def _set_prices(self):
         for i, card in enumerate(self.list_of_cards):
             self.card_prices.append(random.randint(card.price_range[0], card.price_range[1]))
@@ -343,16 +349,7 @@ class RandomEncounter(InGame):
         self.exit_rect = pygame.Rect((1116, 0, 250, 250))
 
 
-    def multi_text_render(text, screen):
-        rendered_fonts = []
-        for i, line in enumerate(text.split('\n')):
-            txt_surf = text_font.render(line, True, (0, 0, 0))
-            txt_rect = txt_surf.get_rect()
-            txt_rect.topleft = (350, 10 + i * 24)
-            rendered_fonts.append((txt_surf, txt_rect))
-        for txt_surf, txt_rect in rendered_fonts:
-            screen.blit(txt_surf, txt_rect)
-
+# ======================================================================================================================
 
 class Ritual(RandomEncounter):
     def __init__(self):
@@ -414,9 +411,7 @@ class Ritual(RandomEncounter):
                               "One of them rises up his jagged dagger, whispering a prayer to his goddess. What do you do?\n",
                               screen)
         elif self.state == 1:
-            k1 = enemyFile.Cultist(player)
-            k2 = enemyFile.Cultist(player)
-            player.current_room = CombatEncounter()
+            player.current_room = CombatEncounter([enemyFile.Cultist(), enemyFile.Cultist()])
         elif self.state == 2:
             multi_text_render("You join in the prayers, mumbling something under your breath.\n"
                               "The screams of killed man slowly fade away, leaving you with nothing but silence.\n"
@@ -429,6 +424,8 @@ class Ritual(RandomEncounter):
                               "His problems are not yours.\n", screen)
             pygame.draw.rect(screen, self.exit_color, self.exit_rect)
 
+
+# ======================================================================================================================
 
 class Beggar(RandomEncounter):
     def __init__(self):
@@ -448,7 +445,7 @@ class Beggar(RandomEncounter):
                 elif self.choice_2_rect.collidepoint(pos):
                     buff_card = None
                     for card in player.run_deck:
-                        if isinstance(card, cardsFile.Buff):
+                        if isinstance(card, cardsFile.A100pNatural):
                             buff_card = card
                             break
                     if buff_card:
@@ -575,7 +572,7 @@ class Bridge(RandomEncounter):
             pygame.draw.rect(screen, self.exit_color, self.exit_rect)
         elif self.state == 2:
             multi_text_render("You slowly get to the other side of a chasm.\n"
-                              "Though stressful, the journey left you unscrached.", screen)
+                              "Though stressful, the journey left you unscratched.", screen)
             pygame.draw.rect(screen, self.exit_color, self.exit_rect)
         elif self.state == 3:
             multi_text_render("The journey through the bridge is long and tiring.\n"

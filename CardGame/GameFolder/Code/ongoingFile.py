@@ -1,6 +1,6 @@
 import random
 import pygame.sprite
-from GameFolder import playerFile
+import playerFile
 import characterFile
 import enum
 
@@ -210,5 +210,3 @@ class Juggernaut(Ongoing):
     def update(self, character, screen):
         self.value = self.intensity
         super().update(character, screen)
-
-
