@@ -1,6 +1,8 @@
 import enum
 import pygame
 
+pygame.font.init()
+text_font = pygame.font.Font("Fonts/Kreon-Regular.ttf", 20)
 
 def event_listener(ev, player, list_of_enemies, play_rect):
     # COMBAT ENCOUNTER EVENT LISTENER
@@ -83,17 +85,16 @@ class CardBase(pygame.sprite.Sprite):
             self.draw(screen)
 
         if player.current_room.__class__.__name__ == "Shop":
-            pos = pygame.mouse.get_pos()
-            if player.drag == self:
-                # Follow mouse
-                self.rect.center = (pos[0], pos[1])
-            else:
-                # Move to default position based on index in hand
-                self.place = pygame.Vector2(hand_rect.left + (index * 140), 600)
-                current = pygame.Vector2(self.rect.center)
-                current.move_towards_ip(self.place, self.move_speed)
-                self.rect.center = current
+            spacing = (hand_rect.width - self.rect.width) / 3
 
+            self.place = pygame.Vector2(
+                hand_rect.left + (index + 0.335) * spacing,
+                hand_rect.top + hand_rect.height / 3
+            )
+            current = pygame.Vector2(self.rect.center)
+            current.move_towards_ip(self.place, self.move_speed)
+            self.rect.center = current
+            
             self.draw(screen)
 
     def draw(self, screen):
