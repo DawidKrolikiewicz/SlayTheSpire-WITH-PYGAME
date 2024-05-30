@@ -40,6 +40,9 @@ while is_running:
             is_running = False
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             is_running = False
+        # ====== CHECK CURRENT FLOOR NUMBER ======
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+            print(f"CURRENT FLOOR COUNT: {PLAYER.floor}")
         # ===========   EVENT LISTEN IN THIS ROOM ONLY  ===========
         PLAYER.current_room.event_listener(event, PLAYER)
 

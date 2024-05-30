@@ -19,18 +19,21 @@ ON_TURN_START = pygame.USEREVENT + 10
 class Player(characterFile.Character):
     def __init__(self, name, health, starting_deck):
         super().__init__(name, health)
+        # RUN RELATED
         self.floor = 0
+        self.coins = 40
         self.run_deck = starting_deck
+        # COMBAT RELATED
         self.max_hand_size = 10
         self.deck = []
         self.hand = []
         self.discard = []
         self.mana = 3
-        self.coins = 40
         self.current_room = roomsFile.Menu(None)
         self.highlight = None
         self.drag = None
 
+        # VISUAL RELATED
         self.image_sprite = pygame.image.load("../Sprites/Characters/Player.png")
         self.rect_sprite = self.image_sprite.get_rect()
         self.rect_sprite.bottom = 340

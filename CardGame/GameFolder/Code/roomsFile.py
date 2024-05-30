@@ -64,18 +64,17 @@ class Menu(Room):
             pos = pygame.mouse.get_pos()
             if self.menu_button_1_rect.collidepoint(pos):
                 # Start Button
-                if self.last_room.__class__.__name__ == "CombatEncounter":
-                    # Continue Current Run
-                    print("Cont Last Combat")
-                    player.current_room = self.last_room
-                    for i in range(25):
-                        print(f"")
-                else:
+                if player.floor == 0 or player.cur_health <= 0:
                     # Start New Run
-                    print("Start New Combat!!!")
+                    print("Start New Run!!!")
+                    player.floor = 1
                     player.current_room = CombatEncounter()
-                    for i in range(25):
-                        print(f"")
+
+                else:
+                    # Continue Current Run
+                    print("Cont from last room")
+                    player.current_room = self.last_room
+
                 pass
             elif self.menu_button_2_rect.collidepoint(pos):
                 player.current_room = Shop()
@@ -91,6 +90,16 @@ class Menu(Room):
         pygame.draw.rect(screen, self.button_colors, self.menu_button_2_rect)
         pygame.draw.rect(screen, self.button_colors, self.menu_button_3_rect)
         pygame.draw.rect(screen, self.button_colors, self.menu_button_4_rect)
+
+        if player.floor == 0 or player.cur_health <= 0:
+            button_1_text = text_font.render("START NEW RUN (player.floor == 0 OR player.cur_health <= 0)", True, (0, 0, 0))
+        else:
+            button_1_text = text_font.render("CONT FROM LAST ROOM (player.floor != 0 OR player.cur_health < 0)", True, (0, 0, 0))
+
+        button_1_text_rect = button_1_text.get_rect()
+        button_1_text_rect.topleft = self.menu_button_1_rect.topright
+
+        screen.blit(button_1_text, button_1_text_rect)
 
 
 # ======================================================================================================================
@@ -210,12 +219,13 @@ class CombatEncounter(InGame):
 
             if player.cur_health <= 0:
                 print(f">> (((  LOSE  )))")
-                player.current_room = Menu(None)
                 player.end_combat()
+                player.current_room = Menu(None)  # LOSE
             elif all(enemy.cur_health <= 0 for enemy in self.list_of_enemies):
                 print(f">> (((  WIN!  )))")
-                player.current_room = Menu(None)
                 player.end_combat()
+                player.floor += 1
+                player.current_room = Menu(None)  # NEXT ROOM CHOICE
 
         if self.state == 3:
             # END TURN
@@ -311,7 +321,8 @@ class Shop(InGame):
             pos = pygame.mouse.get_pos()
             if self.leave_rect.collidepoint(pos):
                 print(f"LEAVING SHOP")
-                player.current_room = Menu(None)
+                player.floor += 1
+                player.current_room = Menu(None)  # NEXT ROOM CHOICE
             for i, card in enumerate(self.list_of_cards):
                 if card.rect.collidepoint(pos):
                     self._buy_card(i, player)
@@ -373,7 +384,9 @@ class Ritual(RandomEncounter):
                     self.state = 3
             elif self.state in (2, 3):
                 if self.exit_rect.collidepoint(pos):
-                    player.current_room = Menu(None)
+                    player.floor += 1
+                    player.current_room = Menu(None)  # NEXT ROOM CHOICE HERE
+
 
     def update(self, screen, player):
         if self.state == 0:
@@ -457,7 +470,8 @@ class Beggar(RandomEncounter):
                     self.state = 3
             elif self.state in (1, 2, 3):
                 if self.exit_rect.collidepoint(pos):
-                    player.current_room = Menu(None)
+                    player.floor += 1
+                    player.current_room = Menu(None)  # NEXT ROOM CHOICE
 
     def update(self, screen, player):
         if self.state == 0:
@@ -535,7 +549,8 @@ class Bridge(RandomEncounter):
                         player.add_card_to_deck(cardsFile.Depression())
             elif self.state in (1, 2, 3):
                 if self.exit_rect.collidepoint(pos):
-                    player.current_room = Menu(None)
+                    player.floor += 1
+                    player.current_room = Menu(None)  # NEXT ROOM CHOICE
 
     def update(self, screen, player):
         if self.state == 0:
