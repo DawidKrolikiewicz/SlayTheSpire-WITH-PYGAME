@@ -1,12 +1,10 @@
-import random
 import pygame
-import playerFile
 import cardsFile
-import enemyFile
-import roomsFile
+import playerFile
 
 pygame.init()
 
+# 1366 x 768
 SCREEN_WIDTH = 1366
 SCREEN_HEIGHT = 768
 SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
@@ -18,30 +16,21 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 
-TO_ROOM = pygame.USEREVENT + 1
-TO_COMBAT = pygame.USEREVENT + 2
-TO_SHOP = pygame.USEREVENT + 3
-DISPLAY_INFO = pygame.USEREVENT + 4
-
 timer = pygame.time.Clock()
 
 PLAYER_NAME = "VictoriousGuy"
-STARTING_HEALTH = 25
-STARTING_DECK = [cardsFile.Draw2Heal3(), cardsFile.Draw2Heal3(),
-                 cardsFile.Deal5Damage(), cardsFile.Deal5Damage(),
-                 cardsFile.Draw1(), cardsFile.Draw1(),
-                 cardsFile.Armor4(), cardsFile.Armor4(),
-                 cardsFile.Buff(), cardsFile.Debuff(), cardsFile.Depression()]
+STARTING_HEALTH = 70
+STARTING_DECK = [cardsFile.Covid19Vaccine(), cardsFile.Covid19Vaccine(),
+                 cardsFile.Bonk(), cardsFile.Bonk(),
+                 cardsFile.PanicRoll(), cardsFile.PanicRoll(),
+                 cardsFile.TinCanArmor(), cardsFile.TinCanArmor(),
+                 cardsFile.A100pNatural(), cardsFile.Covid19(), cardsFile.Juggernaut()]
 
 PLAYER = playerFile.Player(PLAYER_NAME, STARTING_HEALTH, STARTING_DECK)
 
 # ======================================================================================================================
 
 is_running = True
-
-test_card = cardsFile.CardBase()
-
-scene = 1
 
 while is_running:
     # =========== CHECK ALL EVENTS ===========
