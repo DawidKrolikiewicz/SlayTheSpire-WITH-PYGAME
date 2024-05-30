@@ -68,6 +68,7 @@ class Menu(Room):
                     # Start New Run
                     print("Start New Run!!!")
                     player.floor = 1
+                    player.cur_health = player.max_health
                     player.current_room = CombatEncounter()
 
                 else:
