@@ -1,6 +1,6 @@
 import random
 import pygame.sprite
-import playerFile
+from GameFolder import playerFile
 import characterFile
 import enum
 

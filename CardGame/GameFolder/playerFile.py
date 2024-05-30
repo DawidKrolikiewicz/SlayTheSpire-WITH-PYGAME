@@ -2,7 +2,7 @@ import random
 import pygame.image
 import characterFile
 import roomsFile
-import cardsFile
+from GameFolder import cardsFile
 
 ON_CARD_EXHAUSTED = pygame.USEREVENT + 1
 ON_STATUS_CARD_DRAWN = pygame.USEREVENT + 2
@@ -31,7 +31,7 @@ class Player(characterFile.Character):
         self.highlight = None
         self.drag = None
 
-        self.image_sprite = pygame.image.load("../Sprites/Characters/Player.png")
+        self.image_sprite = pygame.image.load("Sprites/Characters/Player.png")
         self.rect_sprite = self.image_sprite.get_rect()
         self.rect_sprite.bottom = 340
         self.rect_sprite.centerx = 250

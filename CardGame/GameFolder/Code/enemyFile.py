@@ -1,7 +1,7 @@
 import random
 import pygame
 import characterFile
-import cardsFile
+from GameFolder import cardsFile
 
 
 # ========================================= Enemy (superclass) =========================================

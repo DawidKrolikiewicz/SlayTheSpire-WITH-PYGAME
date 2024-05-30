@@ -1,6 +1,5 @@
 import pygame
-import playerFile
-import cardsFile
+from GameFolder import cardsFile, playerFile
 
 pygame.init()
 
