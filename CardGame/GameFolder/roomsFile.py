@@ -1,7 +1,8 @@
 import pygame
 import random
 import enemyFile
-import cardsFile
+
+from GameFolder import cardsFile
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -110,8 +111,10 @@ class InGame(Room):
 # ======================================================================================================================
 
 class CombatEncounter(InGame):
-    def __init__(self):
+    def __init__(self, custom_list_of_enemies=None):
         super().__init__()
+        if custom_list_of_enemies is None:
+            custom_list_of_enemies = []
         pygame.display.set_caption("COMBAT ENCOUNTER")
         self.bg_play_color = BLUE
         self.bg_play_rect = pygame.Rect((0, 0, 1366, 528))
@@ -123,8 +126,11 @@ class CombatEncounter(InGame):
         self.end_turn_color = BLACK
         self.end_turn_rect = pygame.Rect((1266, 668, 100, 100))
 
-        self.list_of_enemies = []
-        self._get_random_combat()
+        if not custom_list_of_enemies:
+            self.list_of_enemies = []
+            self._get_random_combat()
+        else:
+            self.list_of_enemies = custom_list_of_enemies
 
         self._position_enemies()
 
@@ -139,11 +145,12 @@ class CombatEncounter(InGame):
             if ev.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
                 if self.end_turn_rect.collidepoint(pos):
-                    player.end_turn()
                     print(f"END TURN")
                     self.state = 3
         cardsFile.event_listener(ev, player, self.list_of_enemies, self.bg_play_rect)
-        player.event_listener(ev, self.list_of_enemies)
+        player.event_listener(ev, player, self.list_of_enemies)
+        for enemy in self.list_of_enemies:
+            enemy.event_listener(ev, player, self.list_of_enemies)
 
     def update(self, screen, player):
         # Draw backgrounds Rects
@@ -215,7 +222,11 @@ class CombatEncounter(InGame):
 
     def _get_random_combat(self):
         # Get random combat encounter from the list
-        fights = [[enemyFile.Worm("Wormmer", 6), enemyFile.Frog("Frogger", 6), enemyFile.Enemy("BaseEnemy", 6)]]
+        fights = ([enemyFile.Cultist()],
+                  [enemyFile.JawWorm()],
+                  [enemyFile.Frog(), enemyFile.Frog(), enemyFile.Worm()],
+                  [enemyFile.Worm(), enemyFile.Icecream(), enemyFile.Worm()]
+                  )
         self.list_of_enemies += random.choice(fights)
 
     def _position_enemies(self):
@@ -254,9 +265,9 @@ class Shop(InGame):
         super().__init__()
         self.bg_color = GREEN
         pygame.display.set_caption("SHOP")
-        self.available_cards = [cardsFile.Draw2Heal3, cardsFile.Draw1,
-                                cardsFile.Buff, cardsFile.Debuff,
-                                cardsFile.Armor4, cardsFile.Deal5Damage]
+        self.available_cards = [cardsFile.Covid19Vaccine, cardsFile.PanicRoll,
+                                cardsFile.A100pNatural, cardsFile.Covid19,
+                                cardsFile.TinCanArmor, cardsFile.Bonk]
         self.list_of_cards = []
         self.card_prices = []
 
@@ -272,6 +283,7 @@ class Shop(InGame):
         cards_weights = [available_card().weight for available_card in self.available_cards]
         self.list_of_cards = [random.choices(self.available_cards, cards_weights)[0]() for _ in range(4)]
         self._set_prices()
+
 
     def _set_prices(self):
         for i, card in enumerate(self.list_of_cards):
@@ -323,7 +335,6 @@ class RandomEncounter(InGame):
     def __init__(self):
         super().__init__()
         self.name = self.__class__.__name__
-
         self.choice_1_color = BLUE
         self.choice_1_rect = pygame.Rect((205, 400, 250, 250))
         self.choice_2_color = GREEN
@@ -332,15 +343,15 @@ class RandomEncounter(InGame):
         self.exit_rect = pygame.Rect((1116, 0, 250, 250))
 
 
-def multi_text_render(text, screen):
-    rendered_fonts = []
-    for i, line in enumerate(text.split('\n')):
-        txt_surf = text_font.render(line, True, (0, 0, 0))
-        txt_rect = txt_surf.get_rect()
-        txt_rect.topleft = (350, 10 + i * 24)
-        rendered_fonts.append((txt_surf, txt_rect))
-    for txt_surf, txt_rect in rendered_fonts:
-        screen.blit(txt_surf, txt_rect)
+    def multi_text_render(text, screen):
+        rendered_fonts = []
+        for i, line in enumerate(text.split('\n')):
+            txt_surf = text_font.render(line, True, (0, 0, 0))
+            txt_rect = txt_surf.get_rect()
+            txt_rect.topleft = (350, 10 + i * 24)
+            rendered_fonts.append((txt_surf, txt_rect))
+        for txt_surf, txt_rect in rendered_fonts:
+            screen.blit(txt_surf, txt_rect)
 
 
 class Ritual(RandomEncounter):
