@@ -17,6 +17,7 @@ class Effect(enum.Enum):
     CURLUP = 7
     # UNIQUE CARD EFFECTS
     JUGGERNAUT = 8
+    STRENGTH_DOWN = 9
 
 
 # ======================= Ongoing Icons (superclass) =======================
@@ -186,7 +187,7 @@ class CurlUp(Ongoing):
 
     def action(self, character):
         character.add_block(self.intensity, character)
-        del character.dict_of_ongoing[Effect.CURLUP]
+        character.dict_of_ongoing[Effect.CURLUP] = 0
 
 
 # /////////////////////////// CARDS EFFECTS ///////////////////////////
@@ -210,3 +211,27 @@ class Juggernaut(Ongoing):
     def update(self, character, screen):
         self.value = self.intensity
         super().update(character, screen)
+
+
+# =========================== Strength Down ==========================
+
+class StrengthDown(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = value
+        self.value = self.intensity
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/StrengthDownIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        if ev.type == playerFile.ON_TURN_END:
+            if Effect.STRENGTH in character.dict_of_ongoing:
+                character.dict_of_ongoing[Effect.STRENGTH].intensity -= self.intensity
+                character.dict_of_ongoing[Effect.STRENGTH_DOWN].intensity = 0
+
+    def update(self, character, screen):
+        pass
+
+
+

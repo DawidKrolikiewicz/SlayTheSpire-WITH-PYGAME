@@ -109,7 +109,8 @@ class Character(pygame.sprite.Sprite):
             if o.Effect.CURLUP in target.dict_of_ongoing:
                 target.dict_of_ongoing[o.Effect.CURLUP].action(target)
 
-        target.cur_health -= damage
+        if damage >= 0:
+            target.cur_health -= damage
 
     def add_block(self, value, target, affected_by_ongoing=True):
         if affected_by_ongoing:
@@ -173,3 +174,10 @@ class Character(pygame.sprite.Sprite):
             target.dict_of_ongoing[o.Effect.JUGGERNAUT] = o.Juggernaut()
 
         target.dict_of_ongoing[o.Effect.JUGGERNAUT].intensity += value
+
+    def add_strength_down(self, value, target):
+        if o.Effect.STRENGTH_DOWN not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.STRENGTH_DOWN] = o.StrengthDown()
+
+        target.dict_of_ongoing[o.Effect.STRENGTH_DOWN].intensity += value
+

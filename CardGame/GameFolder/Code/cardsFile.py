@@ -1,5 +1,7 @@
 import enum
+import random
 import pygame
+import ongoingFile as o
 
 
 def event_listener(ev, player, list_of_enemies, play_rect):
@@ -28,6 +30,7 @@ def event_listener(ev, player, list_of_enemies, play_rect):
 class Targeting(enum.Enum):
     ANY = 1
     ENEMY = 2
+    UNPLAYABLE = 3
 
 
 # ====================== CARD TYPE =======================
@@ -47,9 +50,9 @@ class CardBase(pygame.sprite.Sprite):
         # GAME RELATED
         self.name = self.__class__.__name__
         self.type = CardType.ATTACK
+        self.target = Targeting.ANY
         self.cost = 99
         self.text = "There is no text here!"
-        self.target = Targeting.ANY
         self.exhaust = False
 
         # VISUAL RELATED
@@ -119,7 +122,486 @@ class CardBase(pygame.sprite.Sprite):
         self.rect.center = (1500, 600)
 
 
-# ======================= Card1 =======================
+# ======================================== CARDS FROM HIT GAME SLAY THE SPIRE ======================================== #
+# ==================================================================================================================== #
+
+# ===================================================== STARTER ====================================================== #
+# ==================================================================================================================== #
+
+class Strike(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ENEMY
+        self.cost = 1
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Strike.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.deal_damage(6, target)
+
+
+# ==================================================================================================================== #
+
+class Defend(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.SKILL
+        self.target = Targeting.ANY
+        self.cost = 1
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Defend.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_block(5, player)
+
+
+# ==================================================================================================================== #
+
+class Bash(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ENEMY
+        self.cost = 2
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Bash.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.deal_damage(8, target)
+        player.add_vulnerable(2, target)
+
+
+# ===================================================== COMMONS ====================================================== #
+# ==================================================================================================================== #
+
+class Anger(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ENEMY
+        self.cost = 0
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Anger.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.deal_damage(6, target)
+        player.add_card_to_discard(Anger())
+
+
+# ==================================================================================================================== #
+
+class Armements(CardBase):
+    # UPGRADE A CARD IN HAND FOR THE REST OF COMBAT (Upgrade for EVERY card needed and then some ._.)
+    pass
+
+
+# ==================================================================================================================== #
+
+class BodySlam(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ENEMY
+        self.cost = 1
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/BodySlam.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.deal_damage(player.block, target)
+
+
+# ==================================================================================================================== #
+
+class Clash(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ENEMY
+        self.cost = 0
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Clash.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def update(self, screen, player, index, hand_rect):
+        super().update(screen, player, index, hand_rect)
+        if all(card.type == CardType.ATTACK for card in player.hand):
+            self.target = Targeting.ENEMY
+        else:
+            self.target = Targeting.UNPLAYABLE
+
+    def action(self, player, list_of_enemies, target):
+        player.deal_damage(14, target)
+
+
+# ==================================================================================================================== #
+
+class Cleave(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ANY
+        self.cost = 1
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Cleave.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        for enemy in list_of_enemies:
+            player.deal_damage(8, enemy)
+
+
+# ==================================================================================================================== #
+
+class Clothesline(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ENEMY
+        self.cost = 2
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Clothesline.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.deal_damage(12, target)
+        player.add_weak(2, target)
+
+
+# ==================================================================================================================== #
+
+class Flex(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.SKILL
+        self.target = Targeting.ANY
+        self.cost = 0
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Flex.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_strength(2, player)
+        player.add_strength_down(2, player)
+
+
+# ==================================================================================================================== #
+
+class Havoc(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.SKILL
+        self.target = Targeting.ANY
+        self.cost = 1
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Havoc.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        card = player.draw_card(1)
+        card.exhaust = True
+        player.play_card(player, list_of_enemies, random.choice(list_of_enemies), card, use_mana=False)
+        print(card.name)
+
+
+# ==================================================================================================================== #
+
+class Headbutt(CardBase):
+    # PUT A CARD FROM YOUR DISCARD PILE ON TOP OF YOUR DRAW PILE (Deck browsing needed)
+    pass
+
+
+# ==================================================================================================================== #
+
+class HeavyBlade(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ENEMY
+        self.cost = 2
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/HeavyBlade.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        damage = 14
+        if o.Effect.STRENGTH in player.dict_of_ongoing:
+            damage += (player.dict_of_ongoing[o.Effect.STRENGTH].intensity * 2)
+
+        player.deal_damage(damage, target)
+
+
+# ==================================================================================================================== #
+
+class IronWave(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ENEMY
+        self.cost = 1
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/IronWave.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.deal_damage(5, target)
+        player.add_block(5, player)
+
+
+# ==================================================================================================================== #
+
+class PommelStrike(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ENEMY
+        self.cost = 1
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/PommelStrike.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.deal_damage(9, target)
+        player.draw_card(1)
+
+
+# ==================================================================================================================== #
+
+class ShrugItOff(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.SKILL
+        self.target = Targeting.ANY
+        self.cost = 1
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/ShrugItOff.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_block(8, player)
+        player.draw_card(1)
+
+
+# ==================================================================================================================== #
+
+class SwordBoomerang(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ANY
+        self.cost = 1
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/SwordBoomerang.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        for i in range(3):
+            player.deal_damage(3, random.choice(list_of_enemies))
+
+
+# ==================================================================================================================== #
+
+class Thunderclap(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ANY
+        self.cost = 1
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Thunderclap.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        for enemy in list_of_enemies:
+            player.deal_damage(4, enemy)
+            player.add_vulnerable(1, enemy)
+
+
+# ==================================================================================================================== #
+
+class TrueGrit(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.SKILL
+        self.target = Targeting.ANY
+        self.cost = 1
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/TrueGrit.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_block(7, player)
+        card = random.choice(player.hand)
+        player.exhaust_card(card)
+
+
+# ==================================================================================================================== #
+
+class TwinStrike(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ENEMY
+        self.cost = 1
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/TwinStrike.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        for i in range(2):
+            player.deal_damage(5, target)
+
+
+# ==================================================================================================================== #
+
+class Warcry(CardBase):
+    # PUT A CARD FROM YOUR HAND ON TOP OF YOUR DRAW PILE (Hand Browsing needed)
+    pass
+
+
+# ==================================================================================================================== #
+
+class WildStrike(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ENEMY
+        self.cost = 1
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/WildStrike.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.deal_damage(12, target)
+        player.add_card_to_deck(Wound())
+
+# ==================================================== UNCOMMONS ===================================================== #
+# ==================================================================================================================== #
+
+
+# ====================================================== RARES ======================================================= #
+# ==================================================================================================================== #
+
+class Juggernaut(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.POWER
+        self.cost = 1
+        self.text = "There is no text here!"
+        self.target = Targeting.ANY
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Juggernaut.png")
+        # SHOP RELATED
+        self.price_range = (99, 99)
+        self.weight = 0
+
+    def action(self, player, list_of_enemies, target):
+        player.add_juggernaut(5, player)
+
+
+# ====================================================== STATUS ====================================================== #
+# ==================================================================================================================== #
+
+class Wound(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.STATUS
+        self.cost = 99
+        self.text = "There is no text here!"
+        self.target = Targeting.UNPLAYABLE
+        self.exhaust = False
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Wound.png")
+        # SHOP RELATED
+        self.price_range = (99, 99)
+        self.weight = 0
+
+
+# ============================================ MEME TESTING CARDS AREA :) ============================================ #
+# ==================================================================================================================== #
 
 class Covid19Vaccine(CardBase):
     def __init__(self):
@@ -139,7 +621,7 @@ class Covid19Vaccine(CardBase):
         player.draw_card(2)
 
 
-# ======================= Card2 =======================
+# ==========================================================================
 
 class Bonk(CardBase):
     def __init__(self):
@@ -158,7 +640,7 @@ class Bonk(CardBase):
         player.deal_damage(6, target)
 
 
-# ======================= Card3 =======================
+# ==========================================================================
 
 class PanicRoll(CardBase):
     def __init__(self):
@@ -177,7 +659,7 @@ class PanicRoll(CardBase):
         player.draw_card(1)
 
 
-# ======================= Card4 =======================
+# ==========================================================================
 
 class TinCanArmor(CardBase):
     def __init__(self):
@@ -196,7 +678,7 @@ class TinCanArmor(CardBase):
         player.add_block(4, player)
 
 
-# ======================= Card5 =======================
+# ==========================================================================
 
 class A100pNatural(CardBase):
     def __init__(self):
@@ -216,7 +698,7 @@ class A100pNatural(CardBase):
         player.add_strength(1, player)
 
 
-# ======================= Card6 =======================
+# ==========================================================================
 
 class Covid19(CardBase):
     def __init__(self):
@@ -236,7 +718,7 @@ class Covid19(CardBase):
         player.add_vulnerable(1, target)
 
 
-# ======================= Card6 =======================
+# ==========================================================================
 
 class Depression(CardBase):
     def __init__(self):
@@ -255,26 +737,7 @@ class Depression(CardBase):
         player.deal_damage(5, player)
 
 
-# ======================= Card7 =======================
-
-class Juggernaut(CardBase):
-    def __init__(self):
-        super().__init__()
-        # GAME RELATED
-        self.type = CardType.POWER
-        self.cost = 1
-        self.text = "There is no text here!"
-        self.text = Targeting.ANY
-        self.exhaust = False
-        # VISUAL RELATED
-        self.image = pygame.image.load("../Sprites/Cards/Juggernaut.png")
-        # SHOP RELATED
-        self.price_range = (99, 99)
-        self.weight = 0
-
-    def action(self, player, list_of_enemies, target):
-        player.add_juggernaut(5, player)
-
+# ==========================================================================
 
 class Ritual(CardBase):
     def __init__(self):
@@ -289,6 +752,8 @@ class Ritual(CardBase):
         player.add_strength(3, player)
 
 
+# ==========================================================================
+
 class Fireball(CardBase):
     def __init__(self):
         super().__init__()
@@ -299,3 +764,6 @@ class Fireball(CardBase):
 
     def action(self, player, list_of_enemies, target):
         player.deal_damage(20, target)
+
+
+# ==========================================================================

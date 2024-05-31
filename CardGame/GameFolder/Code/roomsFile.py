@@ -288,7 +288,7 @@ class Shop(InGame):
         pygame.display.set_caption("SHOP")
         self.available_cards = [cardsFile.Covid19Vaccine, cardsFile.PanicRoll,
                                 cardsFile.A100pNatural, cardsFile.Covid19,
-                                cardsFile.TinCanArmor, cardsFile.Bonk]
+                                cardsFile.Defend, cardsFile.Strike]
         self.list_of_cards = []
         self.card_prices = []
 
@@ -635,7 +635,7 @@ class Rewards(InGame):
 
         self.available_cards = [cardsFile.Covid19Vaccine, cardsFile.PanicRoll,
                                 cardsFile.A100pNatural, cardsFile.Covid19,
-                                cardsFile.TinCanArmor, cardsFile.Bonk]
+                                cardsFile.Defend, cardsFile.Strike]
 
         self.set_rewards(enemies_numb)
 

@@ -72,16 +72,17 @@ class Player(characterFile.Character):
             print(f"{card.name}[{card.cost}]", end=" / ")
         print()
 
-    def play_card(self, player, list_of_enemies, target, card):
+    def play_card(self, player, list_of_enemies, target, card, use_mana=True):
         if len(self.hand) < 1:
             print(f">>  {self.name}'s hand is EMPTY!")
         else:
             print(f">>  {self.name} is playing a card:")
 
-            if card.cost <= self.mana:
+            if card.cost <= self.mana or use_mana is False:
                 # Post event
                 pygame.event.post(pygame.event.Event(ON_ATTACK_PLAYED))
-                self.mana -= card.cost
+                if use_mana is True:
+                    self.mana -= card.cost
 
                 card.action(player, list_of_enemies, target)
                 card.reset_card_position()
@@ -101,6 +102,7 @@ class Player(characterFile.Character):
         random.shuffle(self.deck)
 
     def draw_card(self, how_much):
+        return_card = None
         for i in range(how_much):
             if not self.deck and not self.discard:
                 break
@@ -113,6 +115,9 @@ class Player(characterFile.Character):
             if len(self.hand) <= self.max_hand_size:
                 card_drawn = self.deck.pop(0)
                 self.hand.append(card_drawn)
+                return_card = card_drawn
+
+        return return_card
 
     def deal_damage(self, damage, target, is_attack=True, hit_block=True):
         super().deal_damage(damage, target)

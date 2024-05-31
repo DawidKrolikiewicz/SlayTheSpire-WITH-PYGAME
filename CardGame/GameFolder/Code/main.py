@@ -20,11 +20,8 @@ timer = pygame.time.Clock()
 
 PLAYER_NAME = "VictoriousGuy"
 STARTING_HEALTH = 70
-STARTING_DECK = [cardsFile.Covid19Vaccine(), cardsFile.Covid19Vaccine(),
-                 cardsFile.Bonk(), cardsFile.Bonk(),
-                 cardsFile.PanicRoll(), cardsFile.PanicRoll(),
-                 cardsFile.TinCanArmor(), cardsFile.TinCanArmor(),
-                 cardsFile.A100pNatural(), cardsFile.Covid19(), cardsFile.Juggernaut()]
+STARTING_DECK = [cardsFile.Wound(), cardsFile.Defend(), cardsFile.Defend(), cardsFile.Flex(), cardsFile.Flex(),
+                 cardsFile.TrueGrit(), cardsFile.Havoc(), cardsFile.Clash(), cardsFile.Clash()]
 
 PLAYER = playerFile.Player(PLAYER_NAME, STARTING_HEALTH, STARTING_DECK)
 
