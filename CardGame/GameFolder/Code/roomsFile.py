@@ -49,6 +49,7 @@ class Room:
     def __init__(self):
         self.bg_color = RED
         self.state = 0
+        self.name = self.__class__.__name__
         pygame.display.set_caption('ROOM (superclass)')
 
     def event_listener(self, ev, player):
@@ -242,7 +243,7 @@ class CombatEncounter(InGame):
                 print(f">> (((  WIN!  )))")
                 player.end_combat()
                 player.floor += 1
-                player.current_room = Rewards(self.number_of_enemies)
+                player.current_room = Rewards(self.number_of_enemies, player)
 
         if self.state == 3:
             # END TURN
@@ -339,7 +340,7 @@ class Shop(InGame):
             if self.leave_rect.collidepoint(pos):
                 print(f"LEAVING SHOP")
                 player.floor += 1
-                player.current_room = Rewards(0)
+                player.current_room = Rewards(0, player)
 
             for i, card in enumerate(self.list_of_cards):
                 if card.rect.collidepoint(pos):
@@ -386,7 +387,7 @@ class Ritual(RandomEncounter):
                     self.state = 1
                 elif self.choice_2_rect.collidepoint(pos):
                     ritual = cardsFile.Ritual()
-                    feeble = cardsFile.Depression()
+                    feeble = cardsFile.Wound()
                     player.add_card_to_deck(ritual)
                     player.add_card_to_deck(feeble)
                     self.state = 2
@@ -395,7 +396,7 @@ class Ritual(RandomEncounter):
             elif self.state in (2, 3):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
-                    player.current_room = Rewards(0)
+                    player.current_room = Rewards(0, player)
 
     def update(self, screen, player):
         if self.state == 0:
@@ -419,7 +420,7 @@ class Ritual(RandomEncounter):
                               "The screams of killed man slowly fade away, leaving you with nothing but silence.\n"
                               "You look at the cultists, feasting on sacrifice's blood, their muscles growing visibly.\n"
                               "You can perform the same ritual now, but the feeling of uneasiness doesn't leave you.\n\n"
-                              "You gain both Ritual and Depression cards", screen)
+                              "You gain both Ritual and Wound cards", screen)
             pygame.draw.rect(screen, self.exit_color, self.exit_rect)
         elif self.state == 3:
             multi_text_render("You leave, ignoring this poor man's cries for help.\n"
@@ -461,7 +462,7 @@ class Beggar(RandomEncounter):
             elif self.state in (1, 2, 3):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
-                    player.current_room = Rewards(0)
+                    player.current_room = Rewards(0, player)
 
     def update(self, screen, player):
         if self.state == 0:
@@ -519,11 +520,11 @@ class Bridge(RandomEncounter):
                 elif self.choice_2_rect.collidepoint(pos):
                     self.state = random.randint(2, 3)
                     if self.state == 3:
-                        player.add_card_to_deck(cardsFile.Depression())
+                        player.add_card_to_deck(cardsFile.Wound())
             elif self.state in (1, 2, 3):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
-                    player.current_room = Rewards(0)
+                    player.current_room = Rewards(0, player)
 
     def update(self, screen, player):
         if self.state == 0:
@@ -552,7 +553,7 @@ class Bridge(RandomEncounter):
             multi_text_render("The journey through the bridge is long and tiring.\n"
                               "When you get on the other side, you're beyond exhausted.\n"
                               "Yet, the further road awaits...\n\n"
-                              "You gained card: Depression", screen)
+                              "You gained card: Wound", screen)
             pygame.draw.rect(screen, self.exit_color, self.exit_rect)
             button_caption("Leave", self.exit_rect, screen)
 
@@ -578,7 +579,7 @@ class RestRoom(InGame):
                 self.heal = 0
             if self.leave_rect.collidepoint(pos):
                 player.floor += 1
-                player.current_room = Rewards(0)
+                player.current_room = Rewards(0, player)
 
     def update(self, screen, player):
         if self.heal:
@@ -592,7 +593,7 @@ class RestRoom(InGame):
 # ======================================================================================================================
 
 class Rewards(InGame):
-    def __init__(self, enemies_numb):
+    def __init__(self, enemies_numb, player):
         super().__init__()
         self.rewards_cards = []
         self.gold = 0
@@ -604,6 +605,10 @@ class Rewards(InGame):
         self.choice_2_color = GREEN
         self.choice_2_rect = pygame.Rect((911, 400, 250, 250))
         self.choice_2_room = Menu(None)
+
+        self.set_rooms(player)
+        self.choice_1_name = "Random Encounter" if self.is_random_encounter(self.choice_1_room) else self.choice_1_room.name
+        self.choice_2_name = "Random Encounter" if self.is_random_encounter(self.choice_2_room) else self.choice_2_room.name
 
         self.cards_color = PURPLE
         self.cards_rect = pygame.Rect((1166, 0, 200, 150))
@@ -629,8 +634,23 @@ class Rewards(InGame):
             self.rewards_cards = [random.choices(self.available_cards, cards_weights)[0]() for _ in range(2)]
             self.gold = (enemies_numb * random.randint(20, 25))
 
-    def set_rooms(self):
-        pass
+    def set_rooms(self, player):
+        room_types = [CombatEncounter, self.choose_random_encounter, Shop, RestRoom]
+        if player.floor < 6:
+            self.choice_1_room = random.choices(room_types, [0.65, 0.25, 0.1, 0])[0]()
+            self.choice_2_room = random.choices(room_types, [0.65, 0.25, 0.1, 0])[0]()
+        elif player.floor == 15:
+            self.choice_1_room, self.choice_2_room = RestRoom(player)
+        else:
+            self.choice_1_room = random.choices(room_types, [0.6, 0.25, 0.1, 0.05])[0]()
+            self.choice_2_room = random.choices(room_types, [0.6, 0.25, 0.1, 0.05])[0]()
+
+    def is_random_encounter(self, room):
+        return isinstance(room, Ritual) or isinstance(room, Beggar) or isinstance(room, Bridge)
+
+    def choose_random_encounter(self):
+        list_of_encounters = [Ritual(), Beggar(), Bridge()]
+        return random.choice(list_of_encounters)
 
     def event_listener(self, ev, player):
         if ev.type == pygame.MOUSEBUTTONDOWN:
@@ -656,10 +676,10 @@ class Rewards(InGame):
     def update(self, screen, player):
         if self.state == 0:
             pygame.draw.rect(screen, self.choice_1_color, self.choice_1_rect)
-            button_caption("-", self.choice_1_rect, screen)
+            button_caption(self.choice_1_name, self.choice_1_rect, screen)
 
             pygame.draw.rect(screen, self.choice_2_color, self.choice_2_rect)
-            button_caption("-", self.choice_2_rect, screen)
+            button_caption(self.choice_2_name, self.choice_2_rect, screen)
 
             if self.rewards_cards:
                 pygame.draw.rect(screen, self.cards_color, self.cards_rect)
