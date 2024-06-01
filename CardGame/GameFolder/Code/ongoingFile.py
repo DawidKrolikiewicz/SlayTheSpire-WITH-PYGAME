@@ -18,6 +18,17 @@ class Effect(enum.Enum):
     # UNIQUE CARD EFFECTS
     JUGGERNAUT = 8
     STRENGTH_DOWN = 9
+    NO_DRAW = 10
+    COMBUST = 11
+    DARK_EMBRACE = 12
+    EVOLVE = 13
+    FEEL_NO_PAIN = 14
+    FIRE_BREATHING = 15
+    FLAME_BARRIER = 16
+    METALLICIZE = 17
+    RAGE = 18
+    RUPTURE = 19
+
 
 
 # ======================= Ongoing Icons (superclass) =======================
@@ -231,7 +242,214 @@ class StrengthDown(Ongoing):
                 character.dict_of_ongoing[Effect.STRENGTH_DOWN].intensity = 0
 
     def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)
         pass
 
 
+# ============================== No Draw =============================
 
+class NoDraw(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.duration = value
+        self.value = self.duration
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/NoDrawIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        pass
+
+    def update(self, character, screen):
+        self.value = self.duration
+        super().update(character, screen)
+        if self.duration > 1:
+            self.duration = 1
+
+
+# ============================== Combust =============================
+
+class Combust(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = value
+        self.value = self.intensity
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/CombustIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        if ev.type == playerFile.ON_TURN_END:
+            character.deal_damage(self.intensity // 5, character, is_attack=False, hit_block=False)
+            for enemy in list_of_enemies:
+                character.deal_damage(self.intensity, enemy)
+
+    def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)
+
+
+# =========================== Dark Embrace ===========================
+
+class DarkEmbrace(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = value
+        self.value = self.intensity
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/DarkEmbraceIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        if ev.type == playerFile.ON_CARD_EXHAUSTED:
+            player.draw_card(self.intensity)
+
+    def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)
+
+
+# =============================== Evolve =============================
+
+class Evolve(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = value
+        self.value = self.intensity
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/EvolveIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        if ev.type == playerFile.ON_STATUS_CARD_DRAWN:
+            player.draw_card(self.intensity)
+
+    def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)
+
+
+# =========================== Feel No Pain ===========================
+
+class FeelNoPain(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = value
+        self.value = self.intensity
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/FeelNoPainIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        if ev.type == playerFile.ON_STATUS_CARD_DRAWN:
+            player.add_block(self.intensity)
+
+    def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)
+
+
+# ========================== Fire Breathing ==========================
+
+class FireBreathing(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = value
+        self.value = self.intensity
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/FireBreathingIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        if ev.type == playerFile.ON_STATUS_CARD_DRAWN or ev.type == playerFile.ON_CURSE_CARD_DRAWN:
+            for enemy in list_of_enemies:
+                character.deal_damage(self.intensity, enemy)
+
+    def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)
+
+
+# =========================== Flame Barrier ==========================
+
+class FlameBarrier(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = value
+        self.value = self.intensity
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/FlameBarrierIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        if ev.type == playerFile.ON_TURN_END:
+            self.intensity = 0
+        pass
+
+    def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)
+
+
+# ============================ Metallicize ===========================
+
+class Metallicize(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = value
+        self.value = self.intensity
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/MetallicizeIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        # EVENT DOESN'T PROCESS BETWEEN PLAYER ENDING TURN AND ENEMY STARTING THEIR ATTACK SO :^)
+        # It's in Player.end_turn()
+        pass
+
+    def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)
+
+
+# =============================== Rage ===============================
+
+class Rage(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = value
+        self.value = self.intensity
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/RageIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        if ev.type == playerFile.ON_ATTACK_PLAYED:
+            player.add_block(self.intensity, player)
+        if ev.type == playerFile.ON_TURN_END:
+            self.intensity = 0
+
+    def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)
+
+
+# ============================== Rupture =============================
+
+class Rupture(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = value
+        self.value = self.intensity
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/RuptureIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        if ev.type == playerFile.ON_PLAYER_LOSE_HP_FROM_CARD:
+            player.add_strength(self.intensity, player)
+
+    def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)

@@ -234,10 +234,10 @@ class CombatEncounter(InGame):
         if self.state == 3:
             # END TURN
             print(f">>--------------------------------------------------------------------------<<")
+            player.end_turn()
+
             for enemy in self.list_of_enemies:
                 enemy.play_action(player, self.list_of_enemies)
-
-            player.end_turn()
             print(f">>--------------------------------------------------------------------------<<")
             self.state = 1
 
