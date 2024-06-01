@@ -1,6 +1,7 @@
 import random
 import pygame
 import characterFile
+import ongoingFile as o
 import cardsFile
 
 
@@ -32,7 +33,14 @@ class Enemy(characterFile.Character):
             pygame.draw.rect(screen, (255, 0, 0), self.rect_next_action)
             screen.blit(self.image_next_action, self.rect_next_action.topleft)
 
+    def deal_damage(self, damage, target, is_attack=True, hit_block=True):
+        super().deal_damage(damage, target, is_attack, hit_block)
+        if target.__class__.__name__ == "Player" and damage > 0:
+            if o.Effect.FLAME_BARRIER in target.dict_of_ongoing and target.dict_of_ongoing[o.Effect.FLAME_BARRIER].intensity > 0:
+                target.deal_damage(target.dict_of_ongoing[o.Effect.FLAME_BARRIER].intensity, self)
+
     def declare_action(self, player, list_of_enemies):
+        self.start_turn()
         if self.list_of_actions:
             self.next_action = self.list_of_actions[random.randint(0, len(self.list_of_actions) - 1)]
             print(f">>  {self.name}'s Next Action: {self.next_action.__name__}")
@@ -42,7 +50,6 @@ class Enemy(characterFile.Character):
     def play_action(self, player, list_of_enemies):
         if self.next_action is not None:
             self.next_action(player, list_of_enemies)
-        self.end_turn()
 
 
 # ========================================== Specific Characters ==========================================

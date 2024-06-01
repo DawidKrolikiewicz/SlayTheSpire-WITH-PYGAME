@@ -3,10 +3,11 @@ import pygame.image
 import characterFile
 import roomsFile
 import cardsFile
+import ongoingFile as o
 
 ON_CARD_EXHAUSTED = pygame.USEREVENT + 1
 ON_STATUS_CARD_DRAWN = pygame.USEREVENT + 2
-ON_STATUS_OR_CURSE_CARD_DRAWN = pygame.USEREVENT + 3
+ON_CURSE_CARD_DRAWN = pygame.USEREVENT + 3
 ON_PLAYER_ATTACKED = pygame.USEREVENT + 4
 ON_ATTACK_PLAYED = pygame.USEREVENT + 5
 ON_PLAYER_LOSE_HP_FROM_CARD = pygame.USEREVENT + 6
@@ -79,13 +80,9 @@ class Player(characterFile.Character):
             print(f">>  {self.name} is playing a card:")
 
             if card.cost <= self.mana or use_mana is False:
-                # Post event
-                pygame.event.post(pygame.event.Event(ON_ATTACK_PLAYED))
                 if use_mana is True:
                     self.mana -= card.cost
 
-                card.action(player, list_of_enemies, target)
-                card.reset_card_position()
                 if card.type == cardsFile.CardType.POWER:
                     self.remove_card(card)
                 elif not card.exhaust:
@@ -94,6 +91,12 @@ class Player(characterFile.Character):
                     self.exhaust_card(card)
                 else:
                     print("There is some CRITICAL error here D:")
+
+                if card.type == cardsFile.CardType.ATTACK:
+                    pygame.event.post(pygame.event.Event(ON_ATTACK_PLAYED))
+
+                card.action(player, list_of_enemies, target)
+                card.reset_card_position()
             else:
                 print(f"Not enough mana to play {card.name}!")
 
@@ -102,6 +105,9 @@ class Player(characterFile.Character):
         random.shuffle(self.deck)
 
     def draw_card(self, how_much):
+        if o.Effect.NO_DRAW in self.dict_of_ongoing and self.dict_of_ongoing[o.Effect.NO_DRAW].duration > 0:
+            return
+
         return_card = None
         for i in range(how_much):
             if not self.deck and not self.discard:
@@ -115,13 +121,17 @@ class Player(characterFile.Character):
             if len(self.hand) <= self.max_hand_size:
                 card_drawn = self.deck.pop(0)
                 self.hand.append(card_drawn)
+                if card_drawn.type == cardsFile.CardType.STATUS:
+                    pygame.event.post(pygame.event.Event(ON_STATUS_CARD_DRAWN))
+                elif card_drawn.type == cardsFile.CardType.CURSE:
+                    pygame.event.post(pygame.event.Event(ON_CURSE_CARD_DRAWN))
                 return_card = card_drawn
 
         return return_card
 
     def deal_damage(self, damage, target, is_attack=True, hit_block=True):
         super().deal_damage(damage, target)
-        if target == self:
+        if target == self and damage > 0:
             # Post event
             pygame.event.post(pygame.event.Event(ON_PLAYER_LOSE_HP_FROM_CARD))
 
@@ -146,6 +156,7 @@ class Player(characterFile.Character):
     def add_card_to_hand(self, card):
         if len(self.hand) <= self.max_hand_size:
             self.hand.append(card)
+        return card
 
     def add_card_to_discard(self, card):
         self.discard.append(card)
@@ -158,6 +169,9 @@ class Player(characterFile.Character):
     def exhaust_card(self, card):
         self.hand.remove(card)
         card.reset_card_position()
+        if card.name == "Sentinel":
+            self.gain_mana(2)
+        pygame.event.post(pygame.event.Event(ON_CARD_EXHAUSTED))
 
     def remove_card(self, card):
         # (For Powers)
@@ -180,14 +194,19 @@ class Player(characterFile.Character):
                 self.dict_of_ongoing[key].value = 0
 
     def start_turn(self):
+        super().start_turn()
         self.block = 0
         self.draw_card(5)
         self.mana = 3
 
     def end_turn(self):
-        super().end_turn()
-
         self.drag = None
         while self.hand:
-            self.discard_card(self.hand[0])
+            if not self.hand[0].ethereal:
+                self.discard_card(self.hand[0])
+            else:
+                self.exhaust_card(self.hand[0])
         pygame.event.post(pygame.event.Event(ON_TURN_END))
+        if o.Effect.METALLICIZE in self.dict_of_ongoing and self.dict_of_ongoing[o.Effect.METALLICIZE].intensity > 0:
+            self.add_block(self.dict_of_ongoing[o.Effect.METALLICIZE].intensity, self)
+

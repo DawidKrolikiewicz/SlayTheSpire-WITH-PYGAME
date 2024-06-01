@@ -1,4 +1,5 @@
 import pygame.sprite
+import cardsFile
 import ongoingFile as o
 from fontsFile import text_font
 
@@ -80,7 +81,7 @@ class Character(pygame.sprite.Sprite):
             if self.dict_of_ongoing[key].value is not None and self.dict_of_ongoing[key].value != 0:
                 print(f"    {self.dict_of_ongoing[key].__class__.__name__}: {self.dict_of_ongoing[key].value}")
 
-    def end_turn(self):
+    def start_turn(self):
         for key in self.dict_of_ongoing:
             if self.dict_of_ongoing[key].duration is not None and self.dict_of_ongoing[key].duration > 0:
                 self.dict_of_ongoing[key].duration -= 1
@@ -105,12 +106,17 @@ class Character(pygame.sprite.Sprite):
             if target.block < 0:
                 target.block = 0
 
-        if damage > 0:
-            if o.Effect.CURLUP in target.dict_of_ongoing:
-                target.dict_of_ongoing[o.Effect.CURLUP].action(target)
+        if damage <= 0:
+            return
 
-        if damage >= 0:
-            target.cur_health -= damage
+        if o.Effect.CURLUP in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.CURLUP].action(target)
+
+        target.cur_health -= damage
+        if target.__class__.__name__ == "Player":
+            if cardsFile.BloodForBlood.cost > 0:
+                cardsFile.BloodForBlood.cost -= 1
+                print(cardsFile.BloodForBlood.cost)
 
     def add_block(self, value, target, affected_by_ongoing=True):
         if affected_by_ongoing:
@@ -181,3 +187,62 @@ class Character(pygame.sprite.Sprite):
 
         target.dict_of_ongoing[o.Effect.STRENGTH_DOWN].intensity += value
 
+    def add_no_draw(self, value, target):
+        if o.Effect.NO_DRAW not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.NO_DRAW] = o.NoDraw()
+
+        target.dict_of_ongoing[o.Effect.NO_DRAW].duration += value
+
+    def add_combust(self, value, target):
+        if o.Effect.COMBUST not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.COMBUST] = o.Combust()
+
+        target.dict_of_ongoing[o.Effect.COMBUST].intensity += value
+
+    def add_dark_embrace(self, value, target):
+        if o.Effect.DARK_EMBRACE not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.DARK_EMBRACE] = o.DarkEmbrace()
+
+        target.dict_of_ongoing[o.Effect.DARK_EMBRACE].intensity += value
+
+    def add_evolve(self, value, target):
+        if o.Effect.EVOLVE not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.EVOLVE] = o.Evolve()
+
+        target.dict_of_ongoing[o.Effect.EVOLVE].intensity += value
+
+    def add_feel_no_pain(self, value, target):
+        if o.Effect.FEEL_NO_PAIN not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.FEEL_NO_PAIN] = o.FeelNoPain()
+
+        target.dict_of_ongoing[o.Effect.FEEL_NO_PAIN].intensity += value
+
+    def add_fire_breathing(self, value, target):
+        if o.Effect.FIRE_BREATHING not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.FIRE_BREATHING] = o.FireBreathing()
+
+        target.dict_of_ongoing[o.Effect.FIRE_BREATHING].intensity += value
+
+    def add_flame_barrier(self, value, target):
+        if o.Effect.FLAME_BARRIER not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.FLAME_BARRIER] = o.FlameBarrier()
+
+        target.dict_of_ongoing[o.Effect.FLAME_BARRIER].intensity += value
+
+    def add_metallicize(self, value, target):
+        if o.Effect.METALLICIZE not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.METALLICIZE] = o.Metallicize()
+
+        target.dict_of_ongoing[o.Effect.METALLICIZE].intensity += value
+
+    def add_rage(self, value, target):
+        if o.Effect.RAGE not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.RAGE] = o.Rage()
+
+        target.dict_of_ongoing[o.Effect.RAGE].intensity += value
+
+    def add_rupture(self, value, target):
+        if o.Effect.RUPTURE not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.RUPTURE] = o.Rupture()
+
+        target.dict_of_ongoing[o.Effect.RUPTURE].intensity += value
