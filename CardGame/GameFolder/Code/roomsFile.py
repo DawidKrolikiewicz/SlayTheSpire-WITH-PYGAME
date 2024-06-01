@@ -31,6 +31,17 @@ def multi_text_render(text, screen):
         screen.blit(txt_surf, txt_rect)
 
 
+def button_caption(text, rect, screen):
+    rend_text = text_font.render(text, True,
+                                 (0, 0, 0))
+    rect_text = rend_text.get_rect()
+    text_pos = pygame.Vector2(
+        rect.centerx - rect_text.width / 2,
+        rect.bottom + 5
+    )
+    screen.blit(rend_text, text_pos)
+
+
 # ======================================================================================================================
 
 class Room:
@@ -86,7 +97,7 @@ class Menu(Room):
                 list_of_encounters = [Ritual(), Beggar(), Bridge()]
                 player.current_room = random.choice(list_of_encounters)
             elif self.menu_button_4_rect.collidepoint(pos):
-                player.current_room = Rewards(2)
+                player.current_room = RestRoom(player)
 
     def update(self, screen, player):
         pygame.draw.rect(screen, self.button_colors, self.menu_button_1_rect)
@@ -95,9 +106,11 @@ class Menu(Room):
         pygame.draw.rect(screen, self.button_colors, self.menu_button_4_rect)
 
         if player.floor == 0 or player.cur_health <= 0:
-            button_1_text = text_font.render("START NEW RUN (player.floor == 0 OR player.cur_health <= 0)", True, (0, 0, 0))
+            button_1_text = text_font.render("START NEW RUN (player.floor == 0 OR player.cur_health <= 0)", True,
+                                             (0, 0, 0))
         else:
-            button_1_text = text_font.render("CONT FROM LAST ROOM (player.floor != 0 OR player.cur_health < 0)", True, (0, 0, 0))
+            button_1_text = text_font.render("CONT FROM LAST ROOM (player.floor != 0 OR player.cur_health < 0)", True,
+                                             (0, 0, 0))
 
         button_1_text_rect = button_1_text.get_rect()
         button_1_text_rect.topleft = self.menu_button_1_rect.topright
@@ -339,15 +352,7 @@ class Shop(InGame):
         self.bg_cards_rect.update(0, 220, 1366, 480)
         for index, card in enumerate(self.list_of_cards):
             card.update(screen, player, index, self.bg_cards_rect)
-            image_price = text_font.render(f"Price: [{self.card_prices[index]}]", True,
-                                           (0, 0, 0))
-            rect_price = image_price.get_rect()
-            price_pos = pygame.Vector2(
-                card.rect.centerx - rect_price.width / 2,
-                card.rect.bottom + 5
-            )
-            screen.blit(image_price, price_pos)
-
+            button_caption(f"{card.name}: [{self.card_prices[index]}]", card.rect, screen)
         super().update(screen, player)
 
 
@@ -395,34 +400,14 @@ class Ritual(RandomEncounter):
     def update(self, screen, player):
         if self.state == 0:
             pygame.draw.rect(screen, self.choice_1_color, self.choice_1_rect)
-            c1_text = text_font.render("Attack them", True,
-                                       (0, 0, 0))
-            rect_c1 = c1_text.get_rect()
-            c1_pos = pygame.Vector2(
-                self.choice_1_rect.centerx - rect_c1.width / 2,
-                self.choice_1_rect.bottom + 5
-            )
-            screen.blit(c1_text, c1_pos)
+            button_caption("Attack them", self.choice_1_rect, screen)
 
             pygame.draw.rect(screen, self.choice_2_color, self.choice_2_rect)
-            c2_text = text_font.render("Join the prayer, as they slaughter their pray", True,
-                                       (0, 0, 0))
-            rect_c2 = c2_text.get_rect()
-            c2_pos = pygame.Vector2(
-                self.choice_2_rect.centerx - rect_c2.width / 2,
-                self.choice_2_rect.bottom + 5
-            )
-            screen.blit(c2_text, c2_pos)
+            button_caption("Join the prayer, as they slaughter their pray", self.choice_2_rect, screen)
 
             pygame.draw.rect(screen, self.choice_3_color, self.choice_3_rect)
-            c3_text = text_font.render("Leave before they notice you", True,
-                                       (0, 0, 0))
-            rect_c3 = c3_text.get_rect()
-            c3_pos = pygame.Vector2(
-                self.choice_3_rect.centerx - rect_c3.width / 2,
-                self.choice_3_rect.bottom + 5
-            )
-            screen.blit(c3_text, c3_pos)
+            button_caption("Leave before they notice you", self.choice_3_rect, screen)
+
             multi_text_render("You have stumbled upon two masked man, trying to sacrifice poor, emaciated man.\n"
                               "They haven't noticed you yet.\n"
                               "One of them rises up his jagged dagger, whispering a prayer to his goddess. What do you do?\n",
@@ -440,6 +425,7 @@ class Ritual(RandomEncounter):
             multi_text_render("You leave, ignoring this poor man's cries for help.\n"
                               "His problems are not yours.\n", screen)
             pygame.draw.rect(screen, self.exit_color, self.exit_rect)
+            button_caption("Leave", self.exit_rect, screen)
 
 
 # ======================================================================================================================
@@ -477,38 +463,16 @@ class Beggar(RandomEncounter):
                     player.floor += 1
                     player.current_room = Rewards(0)
 
-
     def update(self, screen, player):
         if self.state == 0:
             pygame.draw.rect(screen, self.choice_1_color, self.choice_1_rect)
-            c1_text = text_font.render("Give him some gold (30)", True,
-                                       (0, 0, 0))
-            rect_c1 = c1_text.get_rect()
-            c1_pos = pygame.Vector2(
-                self.choice_1_rect.centerx - rect_c1.width / 2,
-                self.choice_1_rect.bottom + 5
-            )
-            screen.blit(c1_text, c1_pos)
+            button_caption("Give him some gold (30)", self.choice_1_rect, screen)
 
             pygame.draw.rect(screen, self.choice_2_color, self.choice_2_rect)
-            c2_text = text_font.render("Give him some food (Lose Buff card)", True,
-                                       (0, 0, 0))
-            rect_c2 = c2_text.get_rect()
-            c2_pos = pygame.Vector2(
-                self.choice_2_rect.centerx - rect_c2.width / 2,
-                self.choice_2_rect.bottom + 5
-            )
-            screen.blit(c2_text, c2_pos)
+            button_caption("Give him some food (Lose Buff card)", self.choice_2_rect, screen)
 
             pygame.draw.rect(screen, self.choice_3_color, self.choice_3_rect)
-            c3_text = text_font.render("Ignore his plea", True,
-                                       (0, 0, 0))
-            rect_c3 = c3_text.get_rect()
-            c3_pos = pygame.Vector2(
-                self.choice_3_rect.centerx - rect_c3.width / 2,
-                self.choice_3_rect.bottom + 5
-            )
-            screen.blit(c3_text, c3_pos)
+            button_caption("Ignore his plea", self.choice_3_rect, screen)
 
             multi_text_render("A lone beggar approaches you, begging for your help.\n"
                               "He looks hungry, yet there's some kind of spark in his eyes.\n"
@@ -535,6 +499,7 @@ class Beggar(RandomEncounter):
                               "You try to run away, but some of the fire still catches up to you.\n\n"
                               "You lose 10 current health", screen)
             pygame.draw.rect(screen, self.exit_color, self.exit_rect)
+            button_caption("Leave", self.exit_rect, screen)
 
 
 # ======================================================================================================================
@@ -563,24 +528,10 @@ class Bridge(RandomEncounter):
     def update(self, screen, player):
         if self.state == 0:
             pygame.draw.rect(screen, self.choice_1_color, self.choice_1_rect)
-            c1_text = text_font.render("Rush to the other side", True,
-                                       (0, 0, 0))
-            rect_c1 = c1_text.get_rect()
-            c1_pos = pygame.Vector2(
-                self.choice_1_rect.centerx - rect_c1.width / 2,
-                self.choice_1_rect.bottom + 5
-            )
-            screen.blit(c1_text, c1_pos)
+            button_caption("Rush to the other side", self.choice_1_rect, screen)
 
             pygame.draw.rect(screen, self.choice_2_color, self.choice_2_rect)
-            c2_text = text_font.render("Slowly and carefully cross the bridge", True,
-                                       (0, 0, 0))
-            rect_c2 = c2_text.get_rect()
-            c2_pos = pygame.Vector2(
-                self.choice_2_rect.centerx - rect_c2.width / 2,
-                self.choice_2_rect.bottom + 5
-            )
-            screen.blit(c2_text, c2_pos)
+            button_caption("Slowly and carefully cross the bridge", self.choice_2_rect, screen)
 
             multi_text_render("A giant chasm blocks your path.\n"
                               "Luckily, there is a old-looking bridge, which can get you to the other side.\n"
@@ -603,6 +554,39 @@ class Bridge(RandomEncounter):
                               "Yet, the further road awaits...\n\n"
                               "You gained card: Depression", screen)
             pygame.draw.rect(screen, self.exit_color, self.exit_rect)
+            button_caption("Leave", self.exit_rect, screen)
+
+
+# ======================================================================================================================
+
+class RestRoom(InGame):
+    def __init__(self, player):
+        super().__init__()
+        self.rest_color = BLUE
+        self.rest_rect = pygame.Rect((205, 400, 250, 250))
+
+        self.leave_color = BLACK
+        self.leave_rect = pygame.Rect((1216, 580, 150, 150))
+
+        self.heal = 0.3 * player.max_health
+
+    def event_listener(self, ev, player):
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            if self.rest_rect.collidepoint(pos) and self.heal:
+                player.heal(self.heal, player)
+                self.heal = 0
+            if self.leave_rect.collidepoint(pos):
+                player.floor += 1
+                player.current_room = Rewards(0)
+
+    def update(self, screen, player):
+        if self.heal:
+            pygame.draw.rect(screen, self.rest_color, self.rest_rect)
+            button_caption("Rest", self.rest_rect, screen)
+
+        pygame.draw.rect(screen, self.leave_color, self.leave_rect)
+        button_caption("Leave", self.leave_rect, screen)
 
 
 # ======================================================================================================================
@@ -645,6 +629,9 @@ class Rewards(InGame):
             self.rewards_cards = [random.choices(self.available_cards, cards_weights)[0]() for _ in range(2)]
             self.gold = (enemies_numb * random.randint(20, 25))
 
+    def set_rooms(self):
+        pass
+
     def event_listener(self, ev, player):
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
@@ -653,11 +640,10 @@ class Rewards(InGame):
                     player.current_room = self.choice_1_room
                 elif self.choice_2_rect.collidepoint(pos):
                     player.current_room = self.choice_2_room
-                elif self.get_gold_rect.collidepoint(pos):
+                elif self.get_gold_rect.collidepoint(pos) and self.gold:
                     player.coins += self.gold
                     self.gold = 0
-                    print(f"You gold: {player.coins}")
-                elif self.cards_rect.collidepoint(pos):
+                elif self.cards_rect.collidepoint(pos) and self.rewards_cards:
                     self.state = 1
             else:
                 if self.cards_leave_rect.collidepoint(pos):
@@ -670,12 +656,26 @@ class Rewards(InGame):
     def update(self, screen, player):
         if self.state == 0:
             pygame.draw.rect(screen, self.choice_1_color, self.choice_1_rect)
+            button_caption("-", self.choice_1_rect, screen)
+
             pygame.draw.rect(screen, self.choice_2_color, self.choice_2_rect)
-            pygame.draw.rect(screen, self.cards_color, self.cards_rect)
-            pygame.draw.rect(screen, self.get_gold_color, self.get_gold_rect)
+            button_caption("-", self.choice_2_rect, screen)
+
+            if self.rewards_cards:
+                pygame.draw.rect(screen, self.cards_color, self.cards_rect)
+                button_caption("Choose a card", self.cards_rect, screen)
+
+            if self.gold:
+                pygame.draw.rect(screen, self.get_gold_color, self.get_gold_rect)
+                button_caption(f"Gold: {self.gold}", self.get_gold_rect, screen)
+
         if self.state == 1:
             pygame.draw.rect(screen, self.cards_leave_color, self.cards_leave_rect)
+            button_caption("Leave", self.cards_leave_rect, screen)
+
             pygame.draw.rect(screen, self.cards_bg_color, self.cards_bg_rect)
+
             self.cards_bg_rect.update(0, 220, 783, 480)
             for index, card in enumerate(self.rewards_cards):
                 card.update(screen, player, index, self.cards_bg_rect)
+                button_caption(card.name, card.rect, screen)
