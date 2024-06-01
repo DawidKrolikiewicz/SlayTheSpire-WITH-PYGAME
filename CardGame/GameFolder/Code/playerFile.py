@@ -21,7 +21,7 @@ class Player(characterFile.Character):
         super().__init__(name, health)
         # RUN RELATED
         self.floor = 0
-        self.coins = 40
+        self.coins = 50
         self.run_deck = starting_deck
         # COMBAT RELATED
         self.max_hand_size = 10
@@ -134,7 +134,10 @@ class Player(characterFile.Character):
     def add_card_to_deck(self, card):
         self.deck.append(card)
 
-    def remove_card_from_deck(self, card):
+    def add_card_to_run_deck(self, card):
+        self.run_deck.append(card)
+
+    def remove_card_from_run_deck(self, card):
         card_id = id(card)
         for card in self.run_deck:
             if id(card) == card_id:

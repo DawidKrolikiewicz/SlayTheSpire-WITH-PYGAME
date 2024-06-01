@@ -3,6 +3,7 @@ import random
 import enemyFile
 import cardsFile
 from fontsFile import text_font
+import inspect
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -11,6 +12,11 @@ BLUE = (0, 0, 255)
 BLACK = (0, 0, 0)
 PURPLE = (150, 0, 250)
 GOLD = (219, 172, 52)
+
+SLIDER_WIDTH = 20
+SLIDER_HEIGHT = 668
+SLIDER_X = 588
+SLIDER_Y = 50
 
 
 # > Room   (superclass)
@@ -40,6 +46,41 @@ def button_caption(text, rect, screen):
         rect.bottom + 5
     )
     screen.blit(rend_text, text_pos)
+
+
+class Slider:
+    def __init__(self, x, y, width, height, total_items, visible_items):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.total_items = total_items
+        self.visible_items = visible_items
+        self.item_width = width / total_items
+        self.visible_width = width / visible_items
+        self.slider_rect = pygame.Rect(x, y, self.visible_width, height)
+        self.dragging = False
+        self.offset_x = 0
+
+    def event_listener(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.slider_rect.collidepoint(event.pos):
+                self.dragging = True
+                self.offset_x = event.pos[0] - self.slider_rect.x
+        elif event.type == pygame.MOUSEBUTTONUP:
+            self.dragging = False
+        elif event.type == pygame.MOUSEMOTION:
+            if self.dragging:
+                self.slider_rect.x = event.pos[0] - self.offset_x
+                self.slider_rect.x = max(self.rect.x, min(self.slider_rect.x,
+                                                          self.rect.x + self.rect.width - self.slider_rect.width))
+
+    def get_offset(self):
+        max_offset = self.total_items - self.visible_items
+        if max_offset <= 0:
+            return 0
+        return (self.slider_rect.x - self.rect.x) / (self.rect.width - self.slider_rect.width) * max_offset
+
+    def update(self, screen):
+        pygame.draw.rect(screen, (180, 180, 180), self.rect)
+        pygame.draw.rect(screen, (100, 100, 100), self.slider_rect)
 
 
 # ======================================================================================================================
@@ -92,7 +133,7 @@ class Menu(Room):
 
                 pass
             elif self.menu_button_2_rect.collidepoint(pos):
-                player.current_room = Shop()
+                player.current_room = Shop(player)
                 pass
             elif self.menu_button_3_rect.collidepoint(pos):
                 list_of_encounters = [Ritual(), Beggar(), Bridge()]
@@ -295,8 +336,9 @@ class CombatEncounter(InGame):
 
 # ======================================================================================================================
 
+
 class Shop(InGame):
-    def __init__(self):
+    def __init__(self, player):
         super().__init__()
         self.bg_color = GREEN
         pygame.display.set_caption("SHOP")
@@ -305,14 +347,21 @@ class Shop(InGame):
                                 cardsFile.Defend, cardsFile.Strike]
         self.list_of_cards = []
         self.card_prices = []
+        self.remove_price = random.randint(30, 50)
+        self.card_bought = 0
 
         self.create_shop_items()
 
+        self.remove_card_color = GOLD
+        self.remove_card_rect = pygame.Rect((50, 0, 100, 100))
+
         self.leave_color = BLACK
-        self.leave_rect = pygame.Rect((1266, 668, 100, 100))
+        self.leave_rect = pygame.Rect((1266, 618, 100, 100))
 
         self.bg_cards_color = PURPLE
         self.bg_cards_rect = pygame.Rect((0, 220, 1366, 480))
+
+        self.slider = Slider(220, 700, 926, 20, len(player.run_deck), 4)
 
     def create_shop_items(self):
         cards_weights = [available_card().weight for available_card in self.available_cards]
@@ -326,7 +375,7 @@ class Shop(InGame):
     def _buy_card(self, card_index, player):
         if self.card_prices[card_index] <= player.coins:
             player.coins -= self.card_prices[card_index]
-            player.add_card_to_deck(self.list_of_cards[card_index])
+            player.add_card_to_run_deck(self.list_of_cards[card_index])
             print(f"You bought {self.list_of_cards[card_index].name} for {self.card_prices[card_index]} coins!")
 
             self.list_of_cards.pop(card_index)
@@ -337,24 +386,51 @@ class Shop(InGame):
     def event_listener(self, ev, player):
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
-            if self.leave_rect.collidepoint(pos):
-                print(f"LEAVING SHOP")
-                player.floor += 1
-                player.current_room = Rewards(0, player)
-
-            for i, card in enumerate(self.list_of_cards):
-                if card.rect.collidepoint(pos):
-                    self._buy_card(i, player)
+            if self.state == 0:
+                if self.leave_rect.collidepoint(pos):
+                    print(f"LEAVING SHOP")
+                    player.floor += 1
+                    player.current_room = Rewards(0, player)
+                elif self.remove_card_rect.collidepoint(pos) and not self.card_bought:
+                    if player.coins >= self.remove_price:
+                        self.state = 1
+                for i, card in enumerate(self.list_of_cards):
+                    if card.rect.collidepoint(pos):
+                        self._buy_card(i, player)
+            else:
+                for card in player.run_deck:
+                    if card.rect.collidepoint(pos):
+                        player.coins -= self.remove_price
+                        player.remove_card_from_run_deck(card)
+                        self.state = 0
+                        self.card_bought = 1
+        self.slider.event_listener(ev)
 
     def update(self, screen, player):
-        pygame.draw.rect(screen, self.bg_cards_color, self.bg_cards_rect)
-        pygame.draw.rect(screen, self.leave_color, self.leave_rect)
+        if self.state == 0:
+            pygame.draw.rect(screen, self.bg_cards_color, self.bg_cards_rect)
+            pygame.draw.rect(screen, self.leave_color, self.leave_rect)
+            button_caption("Leave", self.leave_rect, screen)
 
-        self.bg_cards_rect.update(0, 220, 1366, 480)
-        for index, card in enumerate(self.list_of_cards):
-            card.update(screen, player, index, self.bg_cards_rect)
-            button_caption(f"{card.name}: [{self.card_prices[index]}]", card.rect, screen)
-        super().update(screen, player)
+            if not self.card_bought:
+                pygame.draw.rect(screen, self.remove_card_color, self.remove_card_rect)
+                button_caption(f"Remove Card: {self.remove_price}", self.remove_card_rect, screen)
+
+            self.bg_cards_rect.update(0, 220, 1366, 480)
+            for index, card in enumerate(self.list_of_cards):
+                card.update(screen, player, index, self.bg_cards_rect)
+                button_caption(f"{card.name}: [{self.card_prices[index]}]", card.rect, screen)
+            super().update(screen, player)
+        else:
+            offset = int(self.slider.get_offset())
+            visible_cards = player.run_deck[offset:offset + 4]
+
+            for index, card in enumerate(visible_cards):
+                card.rect.y = 240 + index * 120
+                card.update(screen, player, index, self.bg_cards_rect)
+                button_caption(card.name, card.rect, screen)
+
+            self.slider.update(screen)
 
 
 # ======================================================================================================================
@@ -386,10 +462,8 @@ class Ritual(RandomEncounter):
                 if self.choice_1_rect.collidepoint(pos):
                     self.state = 1
                 elif self.choice_2_rect.collidepoint(pos):
-                    ritual = cardsFile.Ritual()
-                    feeble = cardsFile.Wound()
-                    player.add_card_to_deck(ritual)
-                    player.add_card_to_deck(feeble)
+                    player.add_card_to_run_deck(cardsFile.Ritual())
+                    player.add_card_to_run_deck(cardsFile.Wound())
                     self.state = 2
                 elif self.choice_3_rect.collidepoint(pos):
                     self.state = 3
@@ -444,7 +518,7 @@ class Beggar(RandomEncounter):
                 if self.choice_1_rect.collidepoint(pos):
                     if player.coins >= 30:
                         player.coins -= 30
-                        player.add_card_to_deck(cardsFile.Fireball())
+                        player.add_card_to_run_deck(cardsFile.Fireball())
                         self.state = 1
                 elif self.choice_2_rect.collidepoint(pos):
                     buff_card = None
@@ -453,8 +527,8 @@ class Beggar(RandomEncounter):
                             buff_card = card
                             break
                     if buff_card:
-                        player.remove_card_from_deck(buff_card)
-                        player.add_card_to_deck(cardsFile.Fireball())
+                        player.remove_card_from_run_deck(buff_card)
+                        player.add_card_to_run_deck(cardsFile.Fireball())
                         self.state = 2
                 elif self.choice_3_rect.collidepoint(pos):
                     player.cur_health -= 10
@@ -520,7 +594,7 @@ class Bridge(RandomEncounter):
                 elif self.choice_2_rect.collidepoint(pos):
                     self.state = random.randint(2, 3)
                     if self.state == 3:
-                        player.add_card_to_deck(cardsFile.Wound())
+                        player.add_card_to_run_deck(cardsFile.Wound())
             elif self.state in (1, 2, 3):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
@@ -607,8 +681,10 @@ class Rewards(InGame):
         self.choice_2_room = Menu(None)
 
         self.set_rooms(player)
-        self.choice_1_name = "Random Encounter" if self.is_random_encounter(self.choice_1_room) else self.choice_1_room.name
-        self.choice_2_name = "Random Encounter" if self.is_random_encounter(self.choice_2_room) else self.choice_2_room.name
+        self.choice_1_name = "Random Encounter" if self.is_random_encounter(
+            self.choice_1_room) else self.choice_1_room.name
+        self.choice_2_name = "Random Encounter" if self.is_random_encounter(
+            self.choice_2_room) else self.choice_2_room.name
 
         self.cards_color = PURPLE
         self.cards_rect = pygame.Rect((1166, 0, 200, 150))
@@ -637,13 +713,25 @@ class Rewards(InGame):
     def set_rooms(self, player):
         room_types = [CombatEncounter, self.choose_random_encounter, Shop, RestRoom]
         if player.floor < 6:
-            self.choice_1_room = random.choices(room_types, [0.65, 0.25, 0.1, 0])[0]()
-            self.choice_2_room = random.choices(room_types, [0.65, 0.25, 0.1, 0])[0]()
+            self.choice_1_room = random.choices(room_types, [0.65, 0.25, 0.1, 0])[0]
+            self.choice_1_room = self.check_arguments(player, self.choice_1_room)
+
+            self.choice_2_room = random.choices(room_types, [0.65, 0.25, 0.1, 0])[0]
+            self.choice_2_room = self.check_arguments(player, self.choice_2_room)
         elif player.floor == 15:
             self.choice_1_room, self.choice_2_room = RestRoom(player)
         else:
-            self.choice_1_room = random.choices(room_types, [0.6, 0.25, 0.1, 0.05])[0]()
-            self.choice_2_room = random.choices(room_types, [0.6, 0.25, 0.1, 0.05])[0]()
+            self.choice_1_room = random.choices(room_types, [0.6, 0.25, 0.1, 0.05])[0]
+            self.choice_1_room = self.check_arguments(player, self.choice_1_room)
+
+            self.choice_2_room = random.choices(room_types, [0.6, 0.25, 0.1, 0.05])[0]
+            self.choice_2_room = self.check_arguments(player, self.choice_2_room)
+
+    def check_arguments(self, player, room):
+        if 'player' in inspect.signature(room).parameters:
+            return room(player)
+        else:
+            return room()
 
     def is_random_encounter(self, room):
         return isinstance(room, Ritual) or isinstance(room, Beggar) or isinstance(room, Bridge)
@@ -670,7 +758,7 @@ class Rewards(InGame):
                     self.state = 0
                 for card in self.rewards_cards:
                     if card.rect.collidepoint(pos):
-                        player.run_deck.append(card)
+                        player.add_card_to_run_deck(card)
                         self.rewards_cards.clear()
 
     def update(self, screen, player):

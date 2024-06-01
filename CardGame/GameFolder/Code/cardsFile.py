@@ -92,9 +92,7 @@ class CardBase(pygame.sprite.Sprite):
                 hand_rect.left + (index + 0.335) * spacing,
                 hand_rect.top + hand_rect.height / 3
             )
-            current = pygame.Vector2(self.rect.center)
-            current.move_towards_ip(self.place, self.move_speed)
-            self.rect.center = current
+            self.rect.center = self.place
             
             self.draw(screen)
 
@@ -105,9 +103,7 @@ class CardBase(pygame.sprite.Sprite):
                 hand_rect.left + (index + 0.4) * spacing,
                 hand_rect.top + hand_rect.height / 2.2
             )
-            current = pygame.Vector2(self.rect.center)
-            current.move_towards_ip(self.place, self.move_speed)
-            self.rect.center = current
+            self.rect.center = self.place
 
             self.draw(screen)
 
