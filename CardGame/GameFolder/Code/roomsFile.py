@@ -342,9 +342,58 @@ class Shop(InGame):
         super().__init__()
         self.bg_color = GREEN
         pygame.display.set_caption("SHOP")
-        self.available_cards = [cardsFile.Covid19Vaccine, cardsFile.PanicRoll,
-                                cardsFile.A100pNatural, cardsFile.Covid19,
-                                cardsFile.Defend, cardsFile.Strike]
+        self.available_cards = [cardsFile.Anger,
+                                cardsFile.BattleTrance,
+                                cardsFile.BloodForBlood,
+                                cardsFile.Bloodletting,
+                                cardsFile.BodySlam,
+                                cardsFile.Carnage,
+                                cardsFile.Clash,
+                                cardsFile.Cleave,
+                                cardsFile.Clothesline,
+                                cardsFile.Combust,
+                                cardsFile.DarkEmbrace,
+                                cardsFile.Disarm,
+                                cardsFile.Dropkick,
+                                cardsFile.Entrench,
+                                cardsFile.Evolve,
+                                cardsFile.FeelNoPain,
+                                cardsFile.FireBreathing,
+                                cardsFile.FlameBarrier,
+                                cardsFile.Flex,
+                                cardsFile.GhostlyArmor,
+                                cardsFile.Havoc,
+                                cardsFile.HeavyBlade,
+                                cardsFile.Hemokinesis,
+                                cardsFile.InfernalBlade,
+                                cardsFile.Inflame,
+                                cardsFile.Intimidate,
+                                cardsFile.IronWave,
+                                cardsFile.Juggernaut,
+                                cardsFile.Metallicize,
+                                cardsFile.PommelStrike,
+                                cardsFile.PowerThrough,
+                                cardsFile.Pummel,
+                                cardsFile.Rage,
+                                cardsFile.Rampage,
+                                cardsFile.RecklessCharge,
+                                cardsFile.Rupture,
+                                cardsFile.SecondWind,
+                                cardsFile.SeeingRed,
+                                cardsFile.Sentinel,
+                                cardsFile.SeverSoul,
+                                cardsFile.Shockwave,
+                                cardsFile.ShrugItOff,
+                                cardsFile.SpotWeakness,
+                                cardsFile.SwordBoomerang,
+                                cardsFile.Thunderclap,
+                                cardsFile.TrueGrit,
+                                cardsFile.TwinStrike,
+                                cardsFile.Uppercut,
+                                cardsFile.Whirlwind,
+                                cardsFile.WildStrike
+                                ]
+
         self.list_of_cards = []
         self.card_prices = []
         self.remove_price = random.randint(30, 50)
@@ -698,9 +747,57 @@ class Rewards(InGame):
         self.cards_bg_color = RED
         self.cards_bg_rect = pygame.Rect((0, 220, 783, 480))
 
-        self.available_cards = [cardsFile.Covid19Vaccine, cardsFile.PanicRoll,
-                                cardsFile.A100pNatural, cardsFile.Covid19,
-                                cardsFile.Defend, cardsFile.Strike]
+        self.available_cards = [cardsFile.Anger,
+                                cardsFile.BattleTrance,
+                                cardsFile.BloodForBlood,
+                                cardsFile.Bloodletting,
+                                cardsFile.BodySlam,
+                                cardsFile.Carnage,
+                                cardsFile.Clash,
+                                cardsFile.Cleave,
+                                cardsFile.Clothesline,
+                                cardsFile.Combust,
+                                cardsFile.DarkEmbrace,
+                                cardsFile.Disarm,
+                                cardsFile.Dropkick,
+                                cardsFile.Entrench,
+                                cardsFile.Evolve,
+                                cardsFile.FeelNoPain,
+                                cardsFile.FireBreathing,
+                                cardsFile.FlameBarrier,
+                                cardsFile.Flex,
+                                cardsFile.GhostlyArmor,
+                                cardsFile.Havoc,
+                                cardsFile.HeavyBlade,
+                                cardsFile.Hemokinesis,
+                                cardsFile.InfernalBlade,
+                                cardsFile.Inflame,
+                                cardsFile.Intimidate,
+                                cardsFile.IronWave,
+                                cardsFile.Juggernaut,
+                                cardsFile.Metallicize,
+                                cardsFile.PommelStrike,
+                                cardsFile.PowerThrough,
+                                cardsFile.Pummel,
+                                cardsFile.Rage,
+                                cardsFile.Rampage,
+                                cardsFile.RecklessCharge,
+                                cardsFile.Rupture,
+                                cardsFile.SecondWind,
+                                cardsFile.SeeingRed,
+                                cardsFile.Sentinel,
+                                cardsFile.SeverSoul,
+                                cardsFile.Shockwave,
+                                cardsFile.ShrugItOff,
+                                cardsFile.SpotWeakness,
+                                cardsFile.SwordBoomerang,
+                                cardsFile.Thunderclap,
+                                cardsFile.TrueGrit,
+                                cardsFile.TwinStrike,
+                                cardsFile.Uppercut,
+                                cardsFile.Whirlwind,
+                                cardsFile.WildStrike
+                                ]
 
         self.set_rewards(enemies_numb)
 
@@ -719,7 +816,7 @@ class Rewards(InGame):
             self.choice_2_room = random.choices(room_types, [0.65, 0.25, 0.1, 0])[0]
             self.choice_2_room = self.check_arguments(player, self.choice_2_room)
         elif player.floor == 15:
-            self.choice_1_room, self.choice_2_room = RestRoom(player)
+            self.choice_1_room, self.choice_2_room = RestRoom(player), RestRoom(player)
         else:
             self.choice_1_room = random.choices(room_types, [0.6, 0.25, 0.1, 0.05])[0]
             self.choice_1_room = self.check_arguments(player, self.choice_1_room)

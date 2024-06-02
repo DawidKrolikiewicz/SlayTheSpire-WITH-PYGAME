@@ -189,9 +189,7 @@ class Player(characterFile.Character):
         self.deck.clear()
         self.hand.clear()
         self.discard.clear()
-        for key in self.dict_of_ongoing:
-            if self.dict_of_ongoing[key].value is not None:
-                self.dict_of_ongoing[key].value = 0
+        self.dict_of_ongoing.clear()
 
     def start_turn(self):
         super().start_turn()

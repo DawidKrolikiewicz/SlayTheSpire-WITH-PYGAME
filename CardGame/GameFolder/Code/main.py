@@ -20,8 +20,8 @@ timer = pygame.time.Clock()
 
 PLAYER_NAME = "VictoriousGuy"
 STARTING_HEALTH = 70
-STARTING_DECK = [cardsFile.Strike(), cardsFile.Strike(), cardsFile.Defend(), cardsFile.Defend(), cardsFile.Flex(), cardsFile.Flex(),
-                 cardsFile.TrueGrit(), cardsFile.Havoc(), cardsFile.Clash(), cardsFile.Clash()]
+STARTING_DECK = [cardsFile.Strike(), cardsFile.Strike(), cardsFile.Strike(), cardsFile.Strike(), cardsFile.Strike(),
+                 cardsFile.Defend(), cardsFile.Defend(), cardsFile.Defend(), cardsFile.Defend(), cardsFile.Bash()]
 
 PLAYER = playerFile.Player(PLAYER_NAME, STARTING_HEALTH, STARTING_DECK)
 

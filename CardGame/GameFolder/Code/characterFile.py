@@ -12,11 +12,7 @@ class Character(pygame.sprite.Sprite):
         self.max_health = health
         self.cur_health = self.max_health
         self.block = 0
-        self.dict_of_ongoing = {o.Effect.STRENGTH: o.Strength(),
-                                o.Effect.DEXTERITY: o.Dexterity(),
-                                o.Effect.VULNERABLE: o.Vulnerable(),
-                                o.Effect.FRAIL: o.Frail()
-                                }
+        self.dict_of_ongoing = {}
 
         # DISPLAY RELATED
         self.image_sprite = pygame.image.load("../Sprites/Characters/Don'tMakeInstancesOfBaseEnemyPLS.png")
@@ -94,7 +90,7 @@ class Character(pygame.sprite.Sprite):
             if o.Effect.WEAK in self.dict_of_ongoing and self.dict_of_ongoing[o.Effect.WEAK].duration > 0:
                 damage = damage * 0.75
 
-            if o.Effect.VULNERABLE in self.dict_of_ongoing and target.dict_of_ongoing[o.Effect.VULNERABLE].duration > 0:
+            if o.Effect.VULNERABLE in target.dict_of_ongoing and target.dict_of_ongoing[o.Effect.VULNERABLE].duration > 0:
                 damage = damage * 1.5
 
         damage = int(damage)
