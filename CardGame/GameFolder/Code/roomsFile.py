@@ -397,7 +397,7 @@ class Shop(InGame):
         self.list_of_cards = []
         self.card_prices = []
         self.remove_price = random.randint(30, 50)
-        self.card_bought = 0
+        self.card_sold = 0
 
         self.create_shop_items()
 
@@ -433,6 +433,8 @@ class Shop(InGame):
             print("You don't have enough coins!")
 
     def event_listener(self, ev, player):
+        self.slider.event_listener(ev)
+
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if self.state == 0:
@@ -440,20 +442,24 @@ class Shop(InGame):
                     print(f"LEAVING SHOP")
                     player.floor += 1
                     player.current_room = Rewards(0, player)
-                elif self.remove_card_rect.collidepoint(pos) and not self.card_bought:
+                elif self.remove_card_rect.collidepoint(pos) and not self.card_sold:
                     if player.coins >= self.remove_price:
                         self.state = 1
                 for i, card in enumerate(self.list_of_cards):
                     if card.rect.collidepoint(pos):
                         self._buy_card(i, player)
             else:
-                for card in player.run_deck:
+                offset = int(self.slider.get_offset())
+                visible_cards = player.run_deck[offset:offset + self.slider.visible_items]
+
+                for card in visible_cards:
                     if card.rect.collidepoint(pos):
                         player.coins -= self.remove_price
+                        print(f"Deleted: {card}")
                         player.remove_card_from_run_deck(card)
                         self.state = 0
-                        self.card_bought = 1
-        self.slider.event_listener(ev)
+                        self.card_sold = 1
+                        break
 
     def update(self, screen, player):
         if self.state == 0:
@@ -461,7 +467,7 @@ class Shop(InGame):
             pygame.draw.rect(screen, self.leave_color, self.leave_rect)
             button_caption("Leave", self.leave_rect, screen)
 
-            if not self.card_bought:
+            if not self.card_sold:
                 pygame.draw.rect(screen, self.remove_card_color, self.remove_card_rect)
                 button_caption(f"Remove Card: {self.remove_price}", self.remove_card_rect, screen)
 
@@ -692,7 +698,7 @@ class RestRoom(InGame):
         self.leave_color = BLACK
         self.leave_rect = pygame.Rect((1216, 580, 150, 150))
 
-        self.heal = 0.3 * player.max_health
+        self.heal = int(0.3 * player.max_health)
 
     def event_listener(self, ev, player):
         if ev.type == pygame.MOUSEBUTTONDOWN:
