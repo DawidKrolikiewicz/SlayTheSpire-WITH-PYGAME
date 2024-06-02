@@ -741,7 +741,7 @@ class Dropkick(CardBase):
         player.deal_damage(5, target)
         if o.Effect.VULNERABLE in target.dict_of_ongoing and target.dict_of_ongoing[o.Effect.VULNERABLE].duration > 0:
             player.gain_mana(1)
-            player.draw(1)
+            player.draw_card(1)
 
 
 # ==================================================================================================================== #
@@ -1308,7 +1308,240 @@ class Whirlwind(CardBase):
             for enemy in list_of_enemies:
                 player.deal_damage(5, target)
 
+
 # ====================================================== RARES ======================================================= #
+# ==================================================================================================================== #
+
+class Barricade(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.POWER
+        self.target = Targeting.ANY
+        self.cost = 3
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Barricade.png")
+        # SHOP RELATED
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_barricade(player)
+
+
+# ==================================================================================================================== #
+
+class Berserk(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.POWER
+        self.target = Targeting.ANY
+        self.cost = 0
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Berserk.png")
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_vulnerable(2, player)
+        player.add_berserk(1, player)
+
+
+# ==================================================================================================================== #
+
+class Bludgeon(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ENEMY
+        self.cost = 3
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Bludgeon.png")
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.deal_damage(32, target)
+
+
+# ==================================================================================================================== #
+
+class Brutality(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.POWER
+        self.target = Targeting.ANY
+        self.cost = 0
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Brutality.png")
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_brutality(1, player)
+
+
+# ==================================================================================================================== #
+
+class Corruption(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.POWER
+        self.target = Targeting.ANY
+        self.cost = 3
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Corruption.png")
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_corruption(player)
+
+
+# ==================================================================================================================== #
+
+class DemonForm(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.POWER
+        self.target = Targeting.ANY
+        self.cost = 3
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/DemonForm.png")
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_demon_form(2, player)
+
+
+# ==================================================================================================================== #
+
+class DoubleTap(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.SKILL
+        self.target = Targeting.ANY
+        self.cost = 1
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/DoubleTap.png")
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_double_tap(1, player)
+
+
+# ==================================================================================================================== #
+
+class Exhume(CardBase):
+    # PUT A CARD FROM YOUR EXHAUST PILE INTO YOUR HAND (Exhaust Browsing Needed)
+    pass
+
+
+# ==================================================================================================================== #
+
+class Feed(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ENEMY
+        self.cost = 1
+        self.text = "There is no text here!"
+        self.exhaust = True
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Feed.png")
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.deal_damage(10, target)
+        if target.cur_health <= 0:
+            player.max_health += 3
+            player.cur_health += 3
+
+
+# ==================================================================================================================== #
+
+class FiendFire(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ENEMY
+        self.cost = 2
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/FiendFire.png")
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        to_exhaust = []
+        for card in player.hand:
+            if card is not self:
+                to_exhaust.append(card)
+
+        for card in to_exhaust:
+            player.exhaust_card(card)
+            player.deal_damage(7, target)
+
+
+# ==================================================================================================================== #
+
+class Immolate(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ANY
+        self.cost = 2
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Immolate.png")
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        for enemy in list_of_enemies:
+            player.deal_damage(21, enemy)
+        player.add_card_to_discard(Dazed()) #XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX BLEED NOT DAZED
+
+
+# ==================================================================================================================== #
+
+class Impervious(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.SKILL
+        self.target = Targeting.ANY
+        self.cost = 2
+        self.text = "There is no text here!"
+        self.exhaust = True
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Impervious.png")
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_block(30, player)
+
+
 # ==================================================================================================================== #
 
 class Juggernaut(CardBase):
@@ -1328,6 +1561,75 @@ class Juggernaut(CardBase):
     def action(self, player, list_of_enemies, target):
         player.add_juggernaut(5, player)
 
+
+# ==================================================================================================================== #
+
+class LimitBreak(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.SKILL
+        self.target = Targeting.ANY
+        self.cost = 1
+        self.text = "There is no text here!"
+        self.exhaust = True
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/LimitBreak.png")
+        # SHOP RELATED
+        self.price_range = (99, 99)
+        self.weight = 0
+
+    def action(self, player, list_of_enemies, target):
+        if o.Effect.STRENGTH in player.dict_of_ongoing and player.dict_of_ongoing[o.Effect.STRENGTH].intensity > 0:
+            player.add_strength(player.dict_of_ongoing[o.Effect.STRENGTH].intensity, player)
+
+
+# ==================================================================================================================== #
+
+class Offering(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.SKILL
+        self.target = Targeting.ANY
+        self.cost = 0
+        self.text = "There is no text here!"
+        self.exhaust = True
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Offering.png")
+        # SHOP RELATED
+        self.price_range = (99, 99)
+        self.weight = 0
+
+    def action(self, player, list_of_enemies, target):
+        player.deal_damage(6, player, is_attack=False, hit_block=False)
+        player.gain_mana(2)
+        player.draw_card(3)
+
+
+# ==================================================================================================================== #
+
+class Reaper(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ANY
+        self.cost = 2
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Reaper.png")
+        # SHOP RELATED
+        self.price_range = (99, 99)
+        self.weight = 0
+
+    def action(self, player, list_of_enemies, target):
+        to_heal = 0
+        for enemy in list_of_enemies:
+            to_heal = player.deal_damage(4, enemy)
+            print(to_heal)
+
+        player.heal(to_heal, player)
 
 # ====================================================== STATUS ====================================================== #
 # ==================================================================================================================== #

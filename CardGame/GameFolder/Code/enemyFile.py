@@ -8,8 +8,8 @@ import cardsFile
 # ========================================= Enemy (superclass) =========================================
 
 class Enemy(characterFile.Character):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, name="DEFAULT ENEMY", health=100):
+        super().__init__(name, health)
         self.name = "Enemy"
         self.max_health = 1
         self.cur_health = self.max_health
@@ -40,7 +40,6 @@ class Enemy(characterFile.Character):
                 target.deal_damage(target.dict_of_ongoing[o.Effect.FLAME_BARRIER].intensity, self)
 
     def declare_action(self, player, list_of_enemies):
-        self.start_turn()
         if self.list_of_actions:
             self.next_action = self.list_of_actions[random.randint(0, len(self.list_of_actions) - 1)]
             print(f">>  {self.name}'s Next Action: {self.next_action.__name__}")
@@ -55,10 +54,10 @@ class Enemy(characterFile.Character):
 # ========================================== Specific Characters ==========================================
 
 class Frog(Enemy):
-    def __init__(self):
-        super().__init__()
-        self.name = "Frog"
-        self.max_health = 12
+    def __init__(self, name="Frog", health=12):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Frog.png")
         self.rect_sprite = self.image_sprite.get_rect()
@@ -82,10 +81,10 @@ class Frog(Enemy):
 
 
 class Worm(Enemy):
-    def __init__(self):
-        super().__init__()
-        self.name = "Worm"
-        self.max_health = 11
+    def __init__(self, name="Worm", health=11):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Worm.png")
         self.rect_sprite = self.image_sprite.get_rect()
@@ -109,10 +108,10 @@ class Worm(Enemy):
 
 
 class Icecream(Enemy):
-    def __init__(self):
-        super().__init__()
-        self.name = "EVIL ICECREAM"
-        self.max_health = 30
+    def __init__(self, name="EVIL ICECREAM", health=30):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Icecream.png")
         self.rect_sprite = self.image_sprite.get_rect()
@@ -147,10 +146,10 @@ class Icecream(Enemy):
 
 
 class Cultist(Enemy):
-    def __init__(self):
-        super().__init__()
-        self.name = "Cultist Bro"
-        self.max_health = random.randint(48, 54)
+    def __init__(self, name="Cultist", health=random.randint(48, 54)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Cultist.png")
         self.rect_sprite = self.image_sprite.get_rect()
@@ -172,10 +171,10 @@ class Cultist(Enemy):
 
 
 class JawWorm(Enemy):
-    def __init__(self):
-        super().__init__()
-        self.name = "Jeff"
-        self.max_health = random.randint(40, 44)
+    def __init__(self, name="Jaw Worm", health=random.randint(40, 44)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Jaw Worm.png")
         self.rect_sprite = self.image_sprite.get_rect()
