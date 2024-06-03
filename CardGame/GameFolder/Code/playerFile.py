@@ -79,6 +79,10 @@ class Player(characterFile.Character):
         else:
             print(f">>  {self.name} is playing a card:")
 
+            if o.Effect.CORRUPTION in self.dict_of_ongoing and card.type == cardsFile.CardType.SKILL:
+                card.cost = 0
+                card.exhaust = True
+
             if card.cost <= self.mana or use_mana is False:
                 if use_mana is True:
                     self.mana -= card.cost
@@ -96,6 +100,12 @@ class Player(characterFile.Character):
                     pygame.event.post(pygame.event.Event(ON_ATTACK_PLAYED))
 
                 card.action(player, list_of_enemies, target)
+
+                if (o.Effect.DOUBLE_TAP in self.dict_of_ongoing and card.type == cardsFile.CardType.ATTACK and
+                        self.dict_of_ongoing[o.Effect.DOUBLE_TAP].counter > 0):
+                    card.action(player, list_of_enemies, target)
+                    self.dict_of_ongoing[o.Effect.DOUBLE_TAP].counter -= 1
+
                 card.reset_card_position()
             else:
                 print(f"Not enough mana to play {card.name}!")
@@ -134,6 +144,8 @@ class Player(characterFile.Character):
         if target == self and damage > 0:
             # Post event
             pygame.event.post(pygame.event.Event(ON_PLAYER_LOSE_HP_FROM_CARD))
+
+        return damage
 
     def add_block(self, value, target, affected_by_ongoing=True):
         super().add_block(value, target)
@@ -192,14 +204,27 @@ class Player(characterFile.Character):
         self.dict_of_ongoing.clear()
 
     def start_turn(self):
-        super().start_turn()
-        self.block = 0
         self.draw_card(5)
         self.mana = 3
+        if o.Effect.BARRICADE not in self.dict_of_ongoing:
+            self.block = 0
+
+        if o.Effect.BERSERK in self.dict_of_ongoing:
+            self.gain_mana(self.dict_of_ongoing[o.Effect.BERSERK].intensity)
+
+        if o.Effect.BRUTALITY in self.dict_of_ongoing:
+            self.deal_damage(1, self, is_attack=False, hit_block=False)
+            self.draw_card(self.dict_of_ongoing[o.Effect.BRUTALITY].intensity)
+
+        super().start_turn()
 
     def end_turn(self):
+        super().end_turn()
         self.drag = None
         while self.hand:
+            if self.hand[0].name == "Burn":
+                self.deal_damage(2, self, is_attack=False)
+
             if not self.hand[0].ethereal:
                 self.discard_card(self.hand[0])
             else:

@@ -28,7 +28,12 @@ class Effect(enum.Enum):
     METALLICIZE = 17
     RAGE = 18
     RUPTURE = 19
-
+    BARRICADE = 20
+    BERSERK = 21
+    BRUTALITY = 22
+    CORRUPTION = 23
+    DEMON_FORM = 24
+    DOUBLE_TAP = 25
 
 
 # ======================= Ongoing Icons (superclass) =======================
@@ -40,6 +45,7 @@ class Ongoing(pygame.sprite.Sprite):
         self.counter = None
         self.intensity = None
         self.duration = None
+        self.no_stack = False
         self.value = None
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/StrengthIcon.png")
@@ -56,8 +62,9 @@ class Ongoing(pygame.sprite.Sprite):
             self.rect.right = character.rect_ongoing.right - (character.counter * self.rect.width)
             character.counter -= 1
             screen.blit(self.image, self.rect.topleft)
-            self.image_value = characterFile.text_font.render(f"{self.value}", True, (0, 0, 0))
-            screen.blit(self.image_value, self.rect.topleft)
+            if self.no_stack is False:
+                self.image_value = characterFile.text_font.render(f"{self.value}", True, (0, 0, 0))
+                screen.blit(self.image_value, self.rect.topleft)
 
 
 # ============================= Strength =============================
@@ -169,8 +176,6 @@ class Ritual(Ongoing):
         self.image = pygame.image.load("../Sprites/Ongoing Icons/RitualIcon.png")
 
     def event_listener(self, ev, character, player, list_of_enemies):
-        if ev.type == playerFile.ON_TURN_END:
-            character.add_strength(self.intensity, character)
         pass
 
     def update(self, character, screen):
@@ -453,3 +458,120 @@ class Rupture(Ongoing):
     def update(self, character, screen):
         self.value = self.intensity
         super().update(character, screen)
+
+
+# ============================= Barricade ============================
+
+class Barricade(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.no_stack = True
+        self.value = 1
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/BarricadeIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        pass
+
+    def update(self, character, screen):
+        self.value = 1
+        super().update(character, screen)
+
+
+# ============================== Berserk =============================
+
+class Berserk(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = value
+        self.value = self.intensity
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/BerserkIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        pass
+
+    def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)
+
+
+# ============================= Brutality ============================
+
+class Brutality(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = value
+        self.value = self.intensity
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/BrutalityIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        pass
+
+    def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)
+
+
+# ============================= Corruption ============================
+
+class Corruption(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.no_stack = True
+        self.value = 1
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/CorruptionIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        pass
+
+    def update(self, character, screen):
+        self.value = 1
+        super().update(character, screen)
+
+
+# ============================= Demon Form ============================
+
+class DemonForm(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = value
+        self.value = self.intensity
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/DemonFormIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        pass
+
+    def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)
+
+
+# ============================= Double Tap ============================
+
+class DoubleTap(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.counter = value
+        self.value = self.counter
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/DoubleTapIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        if ev.type == playerFile.ON_TURN_END:
+            self.counter = 0
+        pass
+
+    def update(self, character, screen):
+        self.value = self.counter
+        super().update(character, screen)
+

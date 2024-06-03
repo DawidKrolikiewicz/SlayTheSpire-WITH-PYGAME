@@ -82,6 +82,13 @@ class Character(pygame.sprite.Sprite):
             if self.dict_of_ongoing[key].duration is not None and self.dict_of_ongoing[key].duration > 0:
                 self.dict_of_ongoing[key].duration -= 1
 
+        if o.Effect.DEMON_FORM in self.dict_of_ongoing:
+            self.add_strength(self.dict_of_ongoing[o.Effect.DEMON_FORM].intensity, self)
+
+    def end_turn(self):
+        if o.Effect.RITUAL in self.dict_of_ongoing:
+            self.add_strength(self.dict_of_ongoing[o.Effect.RITUAL].intensity, self)
+
     def deal_damage(self, damage, target, is_attack=True, hit_block=True):
         if is_attack:
             if o.Effect.STRENGTH in self.dict_of_ongoing:
@@ -113,6 +120,8 @@ class Character(pygame.sprite.Sprite):
             if cardsFile.BloodForBlood.cost > 0:
                 cardsFile.BloodForBlood.cost -= 1
                 print(cardsFile.BloodForBlood.cost)
+
+        return damage
 
     def add_block(self, value, target, affected_by_ongoing=True):
         if affected_by_ongoing:
@@ -242,3 +251,36 @@ class Character(pygame.sprite.Sprite):
             target.dict_of_ongoing[o.Effect.RUPTURE] = o.Rupture()
 
         target.dict_of_ongoing[o.Effect.RUPTURE].intensity += value
+
+    def add_barricade(self, target):
+        if o.Effect.BARRICADE not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.BARRICADE] = o.Barricade()
+
+    def add_berserk(self, value, target):
+        if o.Effect.BERSERK not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.BERSERK] = o.Berserk()
+
+        target.dict_of_ongoing[o.Effect.BERSERK].intensity += value
+
+    def add_brutality(self, value, target):
+        if o.Effect.BRUTALITY not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.BRUTALITY] = o.Brutality()
+
+        target.dict_of_ongoing[o.Effect.BRUTALITY].intensity += value
+
+    def add_corruption(self, target):
+        if o.Effect.CORRUPTION not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.CORRUPTION] = o.Corruption()
+
+    def add_demon_form(self, value, target):
+        if o.Effect.DEMON_FORM not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.DEMON_FORM] = o.DemonForm()
+
+        target.dict_of_ongoing[o.Effect.DEMON_FORM].intensity += value
+
+    def add_double_tap(self, value, target):
+        if o.Effect.DOUBLE_TAP not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.DOUBLE_TAP] = o.DoubleTap()
+
+        target.dict_of_ongoing[o.Effect.DOUBLE_TAP].counter += value
+

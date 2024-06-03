@@ -43,6 +43,17 @@ class CardType(enum.Enum):
     CURSE = 5
 
 
+# ======================= RARITY =========================
+
+class Rarity(enum.Enum):
+    NONE = 0
+    STARTER = 1
+    COMMON = 2
+    UNCOMMON = 3
+    RARE = 4
+    STATUS = 5
+
+
 # ======================= CardBase =======================
 class CardBase(pygame.sprite.Sprite):
     def __init__(self):
@@ -67,6 +78,7 @@ class CardBase(pygame.sprite.Sprite):
         self.reset_card_position()
 
         # SHOP RELATED
+        self.rarity = Rarity.NONE
         self.price_range = (0, 0)
         self.weight = 0
 
@@ -136,6 +148,7 @@ class Strike(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Strike.png")
         # SHOP RELATED
+        self.rarity = Rarity.STARTER
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -156,6 +169,7 @@ class Defend(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Defend.png")
         # SHOP RELATED
+        self.rarity = Rarity.STARTER
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -176,6 +190,7 @@ class Bash(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Bash.png")
         # SHOP RELATED
+        self.rarity = Rarity.STARTER
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -198,6 +213,7 @@ class Anger(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Anger.png")
         # SHOP RELATED
+        self.rarity = Rarity.COMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -226,6 +242,7 @@ class BodySlam(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/BodySlam.png")
         # SHOP RELATED
+        self.rarity = Rarity.COMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -246,6 +263,7 @@ class Clash(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Clash.png")
         # SHOP RELATED
+        self.rarity = Rarity.COMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -273,6 +291,7 @@ class Cleave(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Cleave.png")
         # SHOP RELATED
+        self.rarity = Rarity.COMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -294,6 +313,7 @@ class Clothesline(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Clothesline.png")
         # SHOP RELATED
+        self.rarity = Rarity.COMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -315,6 +335,7 @@ class Flex(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Flex.png")
         # SHOP RELATED
+        self.rarity = Rarity.COMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -336,6 +357,7 @@ class Havoc(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Havoc.png")
         # SHOP RELATED
+        self.rarity = Rarity.COMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -366,6 +388,7 @@ class HeavyBlade(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/HeavyBlade.png")
         # SHOP RELATED
+        self.rarity = Rarity.COMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -390,6 +413,7 @@ class IronWave(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/IronWave.png")
         # SHOP RELATED
+        self.rarity = Rarity.COMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -411,6 +435,7 @@ class PommelStrike(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/PommelStrike.png")
         # SHOP RELATED
+        self.rarity = Rarity.COMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -432,6 +457,7 @@ class ShrugItOff(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/ShrugItOff.png")
         # SHOP RELATED
+        self.rarity = Rarity.COMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -453,6 +479,7 @@ class SwordBoomerang(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/SwordBoomerang.png")
         # SHOP RELATED
+        self.rarity = Rarity.COMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -474,6 +501,7 @@ class Thunderclap(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Thunderclap.png")
         # SHOP RELATED
+        self.rarity = Rarity.COMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -496,6 +524,7 @@ class TrueGrit(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/TrueGrit.png")
         # SHOP RELATED
+        self.rarity = Rarity.COMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -526,6 +555,7 @@ class TwinStrike(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/TwinStrike.png")
         # SHOP RELATED
+        self.rarity = Rarity.COMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -554,6 +584,7 @@ class WildStrike(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/WildStrike.png")
         # SHOP RELATED
+        self.rarity = Rarity.COMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -576,6 +607,7 @@ class BattleTrance(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/BattleTrance.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -599,6 +631,7 @@ class BloodForBlood(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/BloodForBlood.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -619,11 +652,12 @@ class Bloodletting(CardBase):
         # GAME RELATED
         self.type = CardType.ATTACK
         self.target = Targeting.ENEMY
-        self.cost = 4
+        self.cost = 0
         self.text = "There is no text here!"
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Bloodletting.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -653,6 +687,7 @@ class Carnage(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Carnage.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -673,6 +708,7 @@ class Combust(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Combust.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -693,6 +729,7 @@ class DarkEmbrace(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/DarkEmbrace.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -714,6 +751,7 @@ class Disarm(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Disarm.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -734,6 +772,7 @@ class Dropkick(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Dropkick.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -741,7 +780,7 @@ class Dropkick(CardBase):
         player.deal_damage(5, target)
         if o.Effect.VULNERABLE in target.dict_of_ongoing and target.dict_of_ongoing[o.Effect.VULNERABLE].duration > 0:
             player.gain_mana(1)
-            player.draw(1)
+            player.draw_card(1)
 
 
 # ==================================================================================================================== #
@@ -764,6 +803,7 @@ class Entrench(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Entrench.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -784,6 +824,7 @@ class Evolve(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Evolve.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -804,6 +845,7 @@ class FeelNoPain(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/FeelNoPain.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -824,6 +866,7 @@ class FireBreathing(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/FireBreathing.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -844,6 +887,7 @@ class FlameBarrier(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/FlameBarrier.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -866,6 +910,7 @@ class GhostlyArmor(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/GhostlyArmor.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -887,6 +932,7 @@ class Hemokinesis(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Hemokinesis.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -909,12 +955,12 @@ class InfernalBlade(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/InfernalBlade.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
     def action(self, player, list_of_enemies, target):
-        # XXXXXXXXXXXXXXXXXXXXXXXXXXX   UNFINISHED XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-        card = player.add_card_to_hand(random.choice([Strike(), Bash(), Hemokinesis()]))
+        card = player.add_card_to_hand(random.choice(ATTACK_CARDS)())
         card.cost = 0  # Forever
 
 
@@ -931,6 +977,7 @@ class Inflame(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Inflame.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -952,6 +999,7 @@ class Intimidate(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Intimidate.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -973,6 +1021,7 @@ class Metallicize(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Metallicize.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -993,6 +1042,7 @@ class PowerThrough(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/PowerThrough.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -1017,6 +1067,7 @@ class Pummel(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Pummel.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -1038,6 +1089,7 @@ class Rage(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Rage.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -1060,6 +1112,7 @@ class Rampage(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Rampage.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -1069,7 +1122,8 @@ class Rampage(CardBase):
 
     def update(self, screen, player, index, hand_rect):
         super().update(screen, player, index, hand_rect)
-        print(self.damage_value)
+        if player.highlight == self:
+            print(self.damage_value)
 
 
 # ==================================================================================================================== #
@@ -1087,6 +1141,7 @@ class RecklessCharge(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/RecklessCharge.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -1108,6 +1163,7 @@ class Rupture(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Rupture.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -1135,6 +1191,7 @@ class SecondWind(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/SecondWind.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -1163,6 +1220,7 @@ class SeeingRed(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/SeeingRed.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -1183,6 +1241,7 @@ class Sentinel(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Sentinel.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -1203,6 +1262,7 @@ class SeverSoul(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/SeverSoul.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -1232,6 +1292,7 @@ class Shockwave(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Shockwave.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -1254,6 +1315,7 @@ class SpotWeakness(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/SpotWeakness.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -1275,6 +1337,7 @@ class Uppercut(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Uppercut.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -1297,6 +1360,7 @@ class Whirlwind(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Whirlwind.png")
         # SHOP RELATED
+        self.rarity = Rarity.UNCOMMON
         self.price_range = (15, 20)
         self.weight = 3
 
@@ -1306,9 +1370,263 @@ class Whirlwind(CardBase):
 
         for i in range(x):
             for enemy in list_of_enemies:
-                player.deal_damage(5, target)
+                player.deal_damage(5, enemy)
+
 
 # ====================================================== RARES ======================================================= #
+# ==================================================================================================================== #
+
+class Barricade(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.POWER
+        self.target = Targeting.ANY
+        self.cost = 3
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Barricade.png")
+        # SHOP RELATED
+        self.rarity = Rarity.RARE
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_barricade(player)
+
+
+# ==================================================================================================================== #
+
+class Berserk(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.POWER
+        self.target = Targeting.ANY
+        self.cost = 0
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Berserk.png")
+        # SHOP RELATED
+        self.rarity = Rarity.RARE
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_vulnerable(2, player)
+        player.add_berserk(1, player)
+
+
+# ==================================================================================================================== #
+
+class Bludgeon(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ENEMY
+        self.cost = 3
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Bludgeon.png")
+        # SHOP RELATED
+        self.rarity = Rarity.RARE
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.deal_damage(32, target)
+
+
+# ==================================================================================================================== #
+
+class Brutality(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.POWER
+        self.target = Targeting.ANY
+        self.cost = 0
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Brutality.png")
+        # SHOP RELATED
+        self.rarity = Rarity.RARE
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_brutality(1, player)
+
+
+# ==================================================================================================================== #
+
+class Corruption(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.POWER
+        self.target = Targeting.ANY
+        self.cost = 3
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Corruption.png")
+        # SHOP RELATED
+        self.rarity = Rarity.RARE
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_corruption(player)
+
+
+# ==================================================================================================================== #
+
+class DemonForm(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.POWER
+        self.target = Targeting.ANY
+        self.cost = 3
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/DemonForm.png")
+        # SHOP RELATED
+        self.rarity = Rarity.RARE
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_demon_form(2, player)
+
+
+# ==================================================================================================================== #
+
+class DoubleTap(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.SKILL
+        self.target = Targeting.ANY
+        self.cost = 1
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/DoubleTap.png")
+        # SHOP RELATED
+        self.rarity = Rarity.RARE
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_double_tap(1, player)
+
+
+# ==================================================================================================================== #
+
+class Exhume(CardBase):
+    # PUT A CARD FROM YOUR EXHAUST PILE INTO YOUR HAND (Exhaust Browsing Needed)
+    pass
+
+
+# ==================================================================================================================== #
+
+class Feed(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ENEMY
+        self.cost = 1
+        self.text = "There is no text here!"
+        self.exhaust = True
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Feed.png")
+        # SHOP RELATED
+        self.rarity = Rarity.RARE
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.deal_damage(10, target)
+        if target.cur_health <= 0:
+            player.max_health += 3
+            player.cur_health += 3
+
+
+# ==================================================================================================================== #
+
+class FiendFire(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ENEMY
+        self.cost = 2
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/FiendFire.png")
+        # SHOP RELATED
+        self.rarity = Rarity.RARE
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        to_exhaust = []
+        for card in player.hand:
+            if card is not self:
+                to_exhaust.append(card)
+
+        for card in to_exhaust:
+            player.exhaust_card(card)
+            player.deal_damage(7, target)
+
+
+# ==================================================================================================================== #
+
+class Immolate(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ANY
+        self.cost = 2
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Immolate.png")
+        # SHOP RELATED
+        self.rarity = Rarity.RARE
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        for enemy in list_of_enemies:
+            player.deal_damage(21, enemy)
+        player.add_card_to_discard(Burn())
+
+
+# ==================================================================================================================== #
+
+class Impervious(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.SKILL
+        self.target = Targeting.ANY
+        self.cost = 2
+        self.text = "There is no text here!"
+        self.exhaust = True
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Impervious.png")
+        # SHOP RELATED
+        self.rarity = Rarity.RARE
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.add_block(30, player)
+
+
 # ==================================================================================================================== #
 
 class Juggernaut(CardBase):
@@ -1322,11 +1640,85 @@ class Juggernaut(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Juggernaut.png")
         # SHOP RELATED
-        self.price_range = (99, 99)
-        self.weight = 0
+        self.rarity = Rarity.RARE
+        self.price_range = (15, 20)
+        self.weight = 3
 
     def action(self, player, list_of_enemies, target):
         player.add_juggernaut(5, player)
+
+
+# ==================================================================================================================== #
+
+class LimitBreak(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.SKILL
+        self.target = Targeting.ANY
+        self.cost = 1
+        self.text = "There is no text here!"
+        self.exhaust = True
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/LimitBreak.png")
+        # SHOP RELATED
+        self.rarity = Rarity.RARE
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        if o.Effect.STRENGTH in player.dict_of_ongoing and player.dict_of_ongoing[o.Effect.STRENGTH].intensity > 0:
+            player.add_strength(player.dict_of_ongoing[o.Effect.STRENGTH].intensity, player)
+
+
+# ==================================================================================================================== #
+
+class Offering(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.SKILL
+        self.target = Targeting.ANY
+        self.cost = 0
+        self.text = "There is no text here!"
+        self.exhaust = True
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Offering.png")
+        # SHOP RELATED
+        self.rarity = Rarity.RARE
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        player.deal_damage(6, player, is_attack=False, hit_block=False)
+        player.gain_mana(2)
+        player.draw_card(3)
+
+
+# ==================================================================================================================== #
+
+class Reaper(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.ATTACK
+        self.target = Targeting.ANY
+        self.cost = 2
+        self.text = "There is no text here!"
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Reaper.png")
+        # SHOP RELATED
+        self.rarity = Rarity.RARE
+        self.price_range = (15, 20)
+        self.weight = 3
+
+    def action(self, player, list_of_enemies, target):
+        to_heal = 0
+        for enemy in list_of_enemies:
+            to_heal = player.deal_damage(4, enemy)
+            print(to_heal)
+
+        player.heal(to_heal, player)
 
 
 # ====================================================== STATUS ====================================================== #
@@ -1343,6 +1735,7 @@ class Wound(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Wound.png")
         # SHOP RELATED
+        self.rarity = Rarity.STATUS
         self.price_range = (99, 99)
         self.weight = 0
 
@@ -1361,6 +1754,25 @@ class Dazed(CardBase):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Cards/Dazed.png")
         # SHOP RELATED
+        self.rarity = Rarity.STATUS
+        self.price_range = (99, 99)
+        self.weight = 0
+
+
+# ==================================================================================================================== #
+
+class Burn(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.STATUS
+        self.cost = 99
+        self.text = "There is no text here!"
+        self.target = Targeting.UNPLAYABLE
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Burn.png")
+        # SHOP RELATED
+        self.rarity = Rarity.STATUS
         self.price_range = (99, 99)
         self.weight = 0
 
@@ -1532,3 +1944,91 @@ class Fireball(CardBase):
 
 
 # ==========================================================================
+
+ALL_CARDS = [Anger,
+             # NO ARMAMENTS
+             Barricade,
+             Bash,
+             BattleTrance,
+             Berserk,
+             BloodForBlood,
+             Bloodletting,
+             Bludgeon,
+             BodySlam,
+             Brutality,
+             # NO BURNING PACT
+             Carnage,
+             Clash,
+             Cleave,
+             Clothesline,
+             Combust,
+             Corruption,
+             DarkEmbrace,
+             Defend,
+             DemonForm,
+             Disarm,
+             DoubleTap,
+             Dropkick,
+             # NO DUAL WIELD
+             Entrench,
+             Evolve,
+             # NO EXHUME
+             Feed,
+             FeelNoPain,
+             FiendFire,
+             FireBreathing,
+             FlameBarrier,
+             Flex,
+             GhostlyArmor,
+             Havoc,
+             # NO HEADBUTT
+             HeavyBlade,
+             Hemokinesis,
+             Immolate,
+             Impervious,
+             InfernalBlade,
+             Inflame,
+             Intimidate,
+             IronWave,
+             Juggernaut,
+             LimitBreak,
+             Metallicize,
+             Offering,
+             PommelStrike,
+             PowerThrough,
+             Pummel,
+             Rage,
+             Rampage,
+             Reaper,
+             RecklessCharge,
+             Rupture,
+             # NO SEARING BLOW
+             SecondWind,
+             SeeingRed,
+             Sentinel,
+             SeverSoul,
+             Shockwave,
+             ShrugItOff,
+             SpotWeakness,
+             Strike,
+             SwordBoomerang,
+             Thunderclap,
+             TrueGrit,
+             TwinStrike,
+             Uppercut,
+             # NO WAR CRY
+             Whirlwind,
+             WildStrike,
+             ]
+
+STARTER_CARDS = [card for card in ALL_CARDS if card().rarity == Rarity.STARTER]
+
+COMMON_CARDS = [card for card in ALL_CARDS if card().rarity == Rarity.COMMON]
+
+UNCOMMON_CARDS = [card for card in ALL_CARDS if card().rarity == Rarity.UNCOMMON]
+
+RARE_CARDS = [card for card in ALL_CARDS if card().rarity == Rarity.RARE]
+
+STATUS_CARDS = [card for card in ALL_CARDS if card().rarity == Rarity.STATUS]
+
+ATTACK_CARDS = [card for card in ALL_CARDS if card().type == CardType.ATTACK]

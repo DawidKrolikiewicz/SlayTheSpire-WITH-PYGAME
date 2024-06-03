@@ -262,6 +262,7 @@ class CombatEncounter(InGame):
             # ROUND START
             player.start_turn()
             for enemy in self.list_of_enemies:
+                enemy.start_turn()
                 enemy.declare_action(player, self.list_of_enemies)
             print(f">>--------------------------------------------------------------------------<<")
             player.info()
@@ -293,6 +294,7 @@ class CombatEncounter(InGame):
 
             for enemy in self.list_of_enemies:
                 enemy.play_action(player, self.list_of_enemies)
+                enemy.end_turn()
             print(f">>--------------------------------------------------------------------------<<")
             self.state = 1
 
