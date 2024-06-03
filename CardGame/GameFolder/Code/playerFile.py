@@ -222,6 +222,9 @@ class Player(characterFile.Character):
         super().end_turn()
         self.drag = None
         while self.hand:
+            if self.hand[0].name == "Burn":
+                self.deal_damage(2, self, is_attack=False)
+
             if not self.hand[0].ethereal:
                 self.discard_card(self.hand[0])
             else:
