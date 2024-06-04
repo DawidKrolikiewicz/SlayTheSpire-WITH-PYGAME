@@ -24,7 +24,7 @@ STARTING_DECK = [cardsFile.Strike, cardsFile.Strike, cardsFile.Strike, cardsFile
                  cardsFile.Defend, cardsFile.Defend, cardsFile.Defend, cardsFile.Defend,
                  cardsFile.InfernalBlade]
 
-PLAYER = playerFile.Player(PLAYER_NAME, STARTING_HEALTH, (card() for card in STARTING_DECK))
+PLAYER = playerFile.Player(PLAYER_NAME, STARTING_HEALTH, [card() for card in STARTING_DECK])
 
 # ======================================================================================================================
 

@@ -34,6 +34,8 @@ class Effect(enum.Enum):
     CORRUPTION = 23
     DEMON_FORM = 24
     DOUBLE_TAP = 25
+    # ENEMY 2
+    ENTANGLED = 26
 
 
 # ======================= Ongoing Icons (superclass) =======================
@@ -575,3 +577,19 @@ class DoubleTap(Ongoing):
         self.value = self.counter
         super().update(character, screen)
 
+
+class Entangled(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.duration = value
+        self.value = self.duration
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/EntangledIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        pass
+
+    def update(self, character, screen):
+        self.value = self.duration
+        super().update(character, screen)

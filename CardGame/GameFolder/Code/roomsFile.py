@@ -303,7 +303,11 @@ class CombatEncounter(InGame):
         fights = ([enemyFile.Cultist()],
                   [enemyFile.JawWorm()],
                   [enemyFile.Frog(), enemyFile.Frog(), enemyFile.Worm()],
-                  [enemyFile.Worm(), enemyFile.Icecream(), enemyFile.Worm()]
+                  [enemyFile.Worm(), enemyFile.Icecream(), enemyFile.Worm()],
+                  [enemyFile.FungiBeast(), enemyFile.FungiBeast(), enemyFile.GreenLouse()],
+                  [enemyFile.RedLouse(), enemyFile.RedLouse(), enemyFile.GreenLouse()],
+                  [enemyFile.RedSlaver()],
+                  [enemyFile.BlueSlaver()]
                   )
         self.list_of_enemies += random.choice(fights)
 

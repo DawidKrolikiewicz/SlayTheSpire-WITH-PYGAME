@@ -284,3 +284,9 @@ class Character(pygame.sprite.Sprite):
 
         target.dict_of_ongoing[o.Effect.DOUBLE_TAP].counter += value
 
+    def add_entangled(self, value, target):
+        if o.Effect.ENTANGLED not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.ENTANGLED] = o.Entangled()
+
+        target.dict_of_ongoing[o.Effect.ENTANGLED].duration += value
+

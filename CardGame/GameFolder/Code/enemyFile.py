@@ -36,7 +36,8 @@ class Enemy(characterFile.Character):
     def deal_damage(self, damage, target, is_attack=True, hit_block=True):
         super().deal_damage(damage, target, is_attack, hit_block)
         if target.__class__.__name__ == "Player" and damage > 0:
-            if o.Effect.FLAME_BARRIER in target.dict_of_ongoing and target.dict_of_ongoing[o.Effect.FLAME_BARRIER].intensity > 0:
+            if o.Effect.FLAME_BARRIER in target.dict_of_ongoing and target.dict_of_ongoing[
+                o.Effect.FLAME_BARRIER].intensity > 0:
                 target.deal_damage(target.dict_of_ongoing[o.Effect.FLAME_BARRIER].intensity, self)
 
     def declare_action(self, player, list_of_enemies):
@@ -166,8 +167,8 @@ class Cultist(Enemy):
     def gain_3_ritual(self, player, list_of_enemies):
         self.add_ritual(3, self)
 
-    def attack_6(self, player, list_of_enemies):
-        self.deal_damage(6, player)
+    def attack_3(self, player, list_of_enemies):
+        self.deal_damage(3, player)
 
 
 class JawWorm(Enemy):
@@ -203,3 +204,127 @@ class JawWorm(Enemy):
     def gain_3_strength_block_6(self, player, list_of_enemies):
         self.add_strength(3, self)
         self.add_block(6, self)
+
+
+class FungiBeast(Enemy):
+    def __init__(self, name="Fungi Beast", health=random.randint(22, 28)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Fungi Beast.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+
+        self.list_of_actions = [self.attack_6, self.gain_3_strength]
+        self.state = 0
+
+    def declare_action(self, player, list_of_enemies):
+        self.next_action = random.choice(self.list_of_actions)
+
+    def attack_6(self, player, list_of_enemies):
+        self.deal_damage(6, player)
+
+    def gain_3_strength(self, player, list_of_enemies):
+        self.add_strength(3, self)
+
+
+class RedLouse(Enemy):
+    def __init__(self, name="Red Louse", health=random.randint(10, 15), d=random.randint(5, 7)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.d = d
+        self.add_curlup(random.randint(3, 7), self)
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Red Louse.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+
+        self.list_of_actions = [self.attack_d, self.gain_3_strength]
+        self.state = 0
+
+    def declare_action(self, player, list_of_enemies):
+        self.next_action = random.choice(self.list_of_actions)
+
+    def attack_d(self, player, list_of_enemies):
+        self.deal_damage(self.d, player)
+
+    def gain_3_strength(self, player, list_of_enemies):
+        self.add_strength(3, self)
+
+
+class GreenLouse(Enemy):
+    def __init__(self, name="Green Louse", health=random.randint(11, 17), d=random.randint(5, 7)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.d = d
+        self.add_curlup(random.randint(3, 7), self)
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Green Louse.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+
+        self.list_of_actions = [self.attack_d, self.apply_3_weak]
+        self.state = 0
+
+    def declare_action(self, player, list_of_enemies):
+        self.next_action = random.choice(self.list_of_actions)
+
+    def attack_d(self, player, list_of_enemies):
+        self.deal_damage(self.d, player)
+
+    def apply_3_weak(self, player, list_of_enemies):
+        self.add_weak(3, player)
+
+
+class BlueSlaver(Enemy):
+    def __init__(self, name="Blue Slaver", health=random.randint(46, 50)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Blue Slaver.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+
+        self.list_of_actions = [self.attack_12, self.attack_7_apply_2_weak]
+        self.state = 0
+
+    def declare_action(self, player, list_of_enemies):
+        self.next_action = random.choice(self.list_of_actions)
+
+    def attack_12(self, player, list_of_enemies):
+        self.deal_damage(12, player)
+
+    def attack_7_apply_2_weak(self, player, list_of_enemies):
+        self.deal_damage(7, player)
+        self.add_weak(2, player)
+
+
+class RedSlaver(Enemy):
+    def __init__(self, name="Red Slaver", health=random.randint(46, 50), d=random.randint(5, 7)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Red Slaver.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+
+        self.list_of_actions = [self.attack_13, self.attack_8_apply_2_vulnerable, self.apply_1_entangled]
+        self.state = 0
+
+    def declare_action(self, player, list_of_enemies):
+        self.next_action = random.choice(self.list_of_actions)
+
+    def attack_13(self, player, list_of_enemies):
+        self.deal_damage(13, player)
+
+    def attack_8_apply_2_vulnerable(self, player, list_of_enemies):
+        self.deal_damage(8, player)
+        self.add_vulnerable(2, player)
+
+    def apply_1_entangled(self, player, list_of_enemies):
+        self.add_entangled(1, player)
