@@ -162,7 +162,7 @@ class Cultist(Enemy):
             self.next_action = self.gain_3_ritual
             self.state = 1
         else:
-            self.next_action = self.attack_6
+            self.next_action = self.attack_3
 
     def gain_3_ritual(self, player, list_of_enemies):
         self.add_ritual(3, self)
@@ -183,16 +183,41 @@ class JawWorm(Enemy):
 
         self.list_of_actions = [self.attack_11, self.attack_7_block_5, self.gain_3_strength_block_6]
         self.state = 0
+        self.last_action = None
+        self.thrash_count = 0
 
     def declare_action(self, player, list_of_enemies):
         if self.state == 0:
             self.next_action = self.attack_11
             self.state = 1
+            self.last_action = self.attack_11
+            self.thrash_count = 0
         else:
-            # IDK HOW TO DO IT :(
-            # WEIGHTED + REPEATABLE PREVENTION
-            self.next_action = random.choice(self.list_of_actions)
-            pass
+            actions_weights = {
+                self.attack_11: 25,
+                self.attack_7_block_5: 30,
+                self.gain_3_strength_block_6: 45
+            }
+
+            if self.last_action == self.gain_3_strength_block_6:
+                actions_weights[self.gain_3_strength_block_6] = 0
+            if self.last_action == self.attack_11:
+                actions_weights[self.attack_11] = 0
+            if self.thrash_count >= 2:
+                actions_weights[self.attack_7_block_5] = 0
+
+            total_weight = sum(actions_weights.values())
+            if total_weight == 0:
+                self.next_action = self.attack_11
+            else:
+                self.next_action = random.choices(list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
+
+            if self.next_action == self.attack_7_block_5:
+                self.thrash_count += 1
+            else:
+                self.thrash_count = 0
+
+            self.last_action = self.next_action
 
     def attack_11(self, player, list_of_enemies):
         self.deal_damage(11, player)
@@ -217,10 +242,33 @@ class FungiBeast(Enemy):
         self.rect_sprite.bottom = 340
 
         self.list_of_actions = [self.attack_6, self.gain_3_strength]
-        self.state = 0
+        self.last_action = None
+        self.bite_count = 0
 
     def declare_action(self, player, list_of_enemies):
-        self.next_action = random.choice(self.list_of_actions)
+        actions_weights = {
+            self.attack_6: 60,
+            self.gain_3_strength: 40
+        }
+
+        if self.last_action == self.gain_3_strength:
+            actions_weights[self.gain_3_strength] = 0
+        if self.bite_count >= 2:
+            actions_weights[self.attack_6] = 0
+
+        total_weight = sum(actions_weights.values())
+        if total_weight == 0:
+            self.next_action = self.gain_3_strength if self.bite_count >= 2 else self.attack_6
+        else:
+            self.next_action = random.choices(
+                list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
+
+        if self.next_action == self.attack_6:
+            self.bite_count += 1
+        else:
+            self.bite_count = 0
+
+        self.last_action = self.next_action
 
     def attack_6(self, player, list_of_enemies):
         self.deal_damage(6, player)
@@ -242,10 +290,30 @@ class RedLouse(Enemy):
         self.rect_sprite.bottom = 340
 
         self.list_of_actions = [self.attack_d, self.gain_3_strength]
-        self.state = 0
+        self.last_actions = []
 
     def declare_action(self, player, list_of_enemies):
-        self.next_action = random.choice(self.list_of_actions)
+        actions_weights = {
+            self.attack_d: 75,
+            self.gain_3_strength: 25
+        }
+
+        if len(self.last_actions) >= 2 and self.last_actions[-1] == self.last_actions[-2]:
+            if self.last_actions[-1] == self.attack_d:
+                actions_weights[self.attack_d] = 0
+            else:
+                actions_weights[self.gain_3_strength] = 0
+
+        total_weight = sum(actions_weights.values())
+        if total_weight == 0:
+            self.next_action = self.attack_d if self.last_actions[-1] == self.gain_3_strength else self.gain_3_strength
+        else:
+            self.next_action = random.choices(
+                list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
+
+        self.last_actions.append(self.next_action)
+        if len(self.last_actions) > 2:
+            self.last_actions.pop(0)
 
     def attack_d(self, player, list_of_enemies):
         self.deal_damage(self.d, player)
@@ -267,10 +335,30 @@ class GreenLouse(Enemy):
         self.rect_sprite.bottom = 340
 
         self.list_of_actions = [self.attack_d, self.apply_3_weak]
-        self.state = 0
+        self.last_actions = []
 
     def declare_action(self, player, list_of_enemies):
-        self.next_action = random.choice(self.list_of_actions)
+        actions_weights = {
+            self.attack_d: 75,
+            self.apply_3_weak: 25
+        }
+
+        if len(self.last_actions) >= 2 and self.last_actions[-1] == self.last_actions[-2]:
+            if self.last_actions[-1] == self.attack_d:
+                actions_weights[self.attack_d] = 0
+            else:
+                actions_weights[self.apply_3_weak] = 0
+
+        total_weight = sum(actions_weights.values())
+        if total_weight == 0:
+            self.next_action = self.attack_d if self.last_actions[-1] == self.apply_3_weak else self.apply_3_weak
+        else:
+            self.next_action = random.choices(
+                list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
+
+        self.last_actions.append(self.next_action)
+        if len(self.last_actions) > 2:
+            self.last_actions.pop(0)
 
     def attack_d(self, player, list_of_enemies):
         self.deal_damage(self.d, player)
@@ -288,12 +376,33 @@ class BlueSlaver(Enemy):
         self.image_sprite = pygame.image.load("../Sprites/Characters/Blue Slaver.png")
         self.rect_sprite = self.image_sprite.get_rect()
         self.rect_sprite.bottom = 340
+        self.last_actions = []
 
         self.list_of_actions = [self.attack_12, self.attack_7_apply_2_weak]
         self.state = 0
 
     def declare_action(self, player, list_of_enemies):
-        self.next_action = random.choice(self.list_of_actions)
+        actions_weights = {
+            self.attack_12: 60,
+            self.attack_7_apply_2_weak: 40
+        }
+
+        if len(self.last_actions) >= 2 and self.last_actions[-1] == self.last_actions[-2]:
+            if self.last_actions[-1] == self.attack_12:
+                actions_weights[self.attack_12] = 0
+            else:
+                actions_weights[self.attack_7_apply_2_weak] = 0
+
+        total_weight = sum(actions_weights.values())
+        if total_weight == 0:
+            self.next_action = self.attack_12 if self.last_actions[-1] == self.attack_7_apply_2_weak else self.attack_7_apply_2_weak
+        else:
+            self.next_action = random.choices(
+                list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
+
+        self.last_actions.append(self.next_action)
+        if len(self.last_actions) > 2:
+            self.last_actions.pop(0)
 
     def attack_12(self, player, list_of_enemies):
         self.deal_damage(12, player)
@@ -315,9 +424,49 @@ class RedSlaver(Enemy):
 
         self.list_of_actions = [self.attack_13, self.attack_8_apply_2_vulnerable, self.apply_1_entangled]
         self.state = 0
+        self.last_actions = []
+        self.entangle_used = False
+        self.scrape_count = 0
 
     def declare_action(self, player, list_of_enemies):
-        self.next_action = random.choice(self.list_of_actions)
+        if self.state == 0:
+            self.next_action = self.attack_13
+            self.state = 1
+        else:
+            if not self.entangle_used:
+                if random.random() < 0.25:
+                    self.next_action = self.apply_1_entangled
+                    self.entangle_used = True
+                    self.scrape_count = 0
+                else:
+                    if self.scrape_count < 2:
+                        self.next_action = self.attack_8_apply_2_vulnerable
+                        self.scrape_count += 1
+                    else:
+                        self.next_action = self.attack_13
+                        self.scrape_count = 0
+            else:
+                actions_weights = {
+                    self.attack_13: 45,
+                    self.attack_8_apply_2_vulnerable: 55
+                }
+
+                if len(self.last_actions) >= 2 and self.last_actions[-1] == self.last_actions[-2]:
+                    if self.last_actions[-1] == self.attack_13:
+                        actions_weights[self.attack_13] = 0
+                    else:
+                        actions_weights[self.attack_8_apply_2_vulnerable] = 0
+
+                total_weight = sum(actions_weights.values())
+                if total_weight == 0:
+                    self.next_action = self.attack_13 if self.last_actions[-1] == self.attack_8_apply_2_vulnerable else self.attack_8_apply_2_vulnerable
+                else:
+                    self.next_action = random.choices(
+                        list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
+
+        self.last_actions.append(self.next_action)
+        if len(self.last_actions) > 2:
+            self.last_actions.pop(0)
 
     def attack_13(self, player, list_of_enemies):
         self.deal_damage(13, player)

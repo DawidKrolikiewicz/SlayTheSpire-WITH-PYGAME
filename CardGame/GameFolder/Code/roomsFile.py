@@ -300,6 +300,7 @@ class CombatEncounter(InGame):
 
     def _get_random_combat(self):
         # Get random combat encounter from the list
+
         fights = ([enemyFile.Cultist()],
                   [enemyFile.JawWorm()],
                   [enemyFile.Frog(), enemyFile.Frog(), enemyFile.Worm()],
@@ -307,8 +308,7 @@ class CombatEncounter(InGame):
                   [enemyFile.FungiBeast(), enemyFile.FungiBeast(), enemyFile.GreenLouse()],
                   [enemyFile.RedLouse(), enemyFile.RedLouse(), enemyFile.GreenLouse()],
                   [enemyFile.RedSlaver()],
-                  [enemyFile.BlueSlaver()]
-                  )
+                  [enemyFile.BlueSlaver()])
         self.list_of_enemies += random.choice(fights)
 
     def _position_enemies(self):
