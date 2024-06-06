@@ -210,7 +210,8 @@ class JawWorm(Enemy):
             if total_weight == 0:
                 self.next_action = self.attack_11
             else:
-                self.next_action = random.choices(list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
+                self.next_action = \
+                random.choices(list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
 
             if self.next_action == self.attack_7_block_5:
                 self.thrash_count += 1
@@ -395,7 +396,8 @@ class BlueSlaver(Enemy):
 
         total_weight = sum(actions_weights.values())
         if total_weight == 0:
-            self.next_action = self.attack_12 if self.last_actions[-1] == self.attack_7_apply_2_weak else self.attack_7_apply_2_weak
+            self.next_action = self.attack_12 if self.last_actions[
+                                                     -1] == self.attack_7_apply_2_weak else self.attack_7_apply_2_weak
         else:
             self.next_action = random.choices(
                 list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
@@ -459,7 +461,8 @@ class RedSlaver(Enemy):
 
                 total_weight = sum(actions_weights.values())
                 if total_weight == 0:
-                    self.next_action = self.attack_13 if self.last_actions[-1] == self.attack_8_apply_2_vulnerable else self.attack_8_apply_2_vulnerable
+                    self.next_action = self.attack_13 if self.last_actions[
+                                                             -1] == self.attack_8_apply_2_vulnerable else self.attack_8_apply_2_vulnerable
                 else:
                     self.next_action = random.choices(
                         list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
@@ -477,3 +480,126 @@ class RedSlaver(Enemy):
 
     def apply_1_entangled(self, player, list_of_enemies):
         self.add_entangled(1, player)
+
+
+class AcidSlimeL(Enemy):
+    def __init__(self, name="Acid Slime", health=random.randint(65, 69)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Acid Slime (L).png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+
+        self.list_of_actions = [self.attack_11_shuffle_2_slimed, self.apply_3_weak, self.attack_16]
+        self.state = 0
+        self.last_actions = []
+        self.split_triggered = False
+
+    def declare_action(self, player, list_of_enemies):
+        if self.cur_health <= self.max_health / 2 and not self.split_triggered:
+            self.next_action = self.split
+            return
+
+        actions_weights = {
+            self.attack_11_shuffle_2_slimed: 30,
+            self.apply_3_weak: 40,
+            self.attack_16: 30
+            }
+
+        if len(self.last_actions) >= 1 and self.last_actions[-1] in [self.attack_16, self.apply_3_weak]:
+            actions_weights[self.last_actions[-1]] = 0
+
+        if len(self.last_actions) >= 2 and self.last_actions[-1] == self.last_actions[-2]:
+            for action in self.list_of_actions:
+                if action != self.last_actions[-1]:
+                    actions_weights[action] = actions_weights.get(action, 0)
+
+        total_weight = sum(actions_weights.values())
+        if total_weight == 0:
+            self.next_action = random.choice(
+                [action for action in self.list_of_actions if action != self.last_actions[-1]])
+        else:
+            self.next_action = random.choices(
+                list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
+
+        self.last_actions.append(self.next_action)
+        if len(self.last_actions) > 3:
+            self.last_actions.pop(0)
+
+    def attack_11_shuffle_2_slimed(self, player, list_of_enemies):
+        self.deal_damage(11, player)
+        # placeholder dopoki slimed nie dodam
+        player.add_card_to_discard(cardsFile.Wound())
+        player.add_card_to_discard(cardsFile.Wound())
+
+    def attack_16(self, player, list_of_enemies):
+        self.deal_damage(16, player)
+
+    def apply_3_weak(self, player, list_of_enemies):
+        self.add_weak(3, player)
+
+    def split(self, player, list_of_enemies):
+        self.split_triggered = True
+
+        new_slime_1 = AcidSlimeM(health=self.cur_health)
+        new_slime_2 = AcidSlimeM(health=self.cur_health)
+
+        list_of_enemies.append(new_slime_1)
+        list_of_enemies.append(new_slime_2)
+        list_of_enemies.remove(self)
+
+
+class AcidSlimeM(Enemy):
+    def __init__(self, name="Acid Slime", health=random.randint(28, 32)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Acid Slime (M).png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+
+        self.list_of_actions = [self.attack_7_shuffle_1_slimed, self.apply_2_weak, self.attack_10]
+        self.state = 0
+        self.last_actions = []
+        self.split_triggered = False
+
+    def declare_action(self, player, list_of_enemies):
+        actions_weights = {
+            self.attack_7_shuffle_1_slimed: 30,
+            self.apply_2_weak: 40,
+            self.attack_10: 30
+        }
+
+        if len(self.last_actions) >= 1 and self.last_actions[-1] in [self.attack_10, self.apply_2_weak]:
+            actions_weights[self.last_actions[-1]] = 0
+
+        if len(self.last_actions) >= 2 and self.last_actions[-1] == self.last_actions[-2]:
+            for action in self.list_of_actions:
+                if action != self.last_actions[-1]:
+                    actions_weights[action] = actions_weights.get(action, 0)
+
+        total_weight = sum(actions_weights.values())
+        if total_weight == 0:
+            self.next_action = random.choice(
+                [action for action in self.list_of_actions if action != self.last_actions[-1]])
+        else:
+            self.next_action = random.choices(
+                list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
+
+        self.last_actions.append(self.next_action)
+        if len(self.last_actions) > 3:
+            self.last_actions.pop(0)
+
+    def attack_7_shuffle_1_slimed(self, player, list_of_enemies):
+        self.deal_damage(7, player)
+        # placeholder dopoki slimed nie dodam
+        player.add_card_to_discard(cardsFile.Wound())
+
+    def attack_10(self, player, list_of_enemies):
+        self.deal_damage(10, player)
+
+    def apply_2_weak(self, player, list_of_enemies):
+        self.add_weak(2, player)
