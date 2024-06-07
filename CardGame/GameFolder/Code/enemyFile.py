@@ -3,7 +3,7 @@ import pygame
 import characterFile
 import ongoingFile as o
 import cardsFile
-
+import animationsFile
 
 # ========================================= Enemy (superclass) =========================================
 
@@ -61,7 +61,7 @@ class Frog(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Frog.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 370
 
         self.list_of_actions = [self.attack_7, self.attack_2_block_4, self.gain_str_1_and_block_1]
 
@@ -88,7 +88,7 @@ class Worm(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Worm.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 370
 
         self.list_of_actions = [self.attack_2_x2, self.heal_enemies_3, self.give_2_vulnerable]
 
@@ -115,7 +115,7 @@ class Icecream(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Icecream.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 370
         self.rage = False
 
         self.list_of_actions = [self.shuffle_2_depression, self.attack_3_and_block_1]
@@ -153,7 +153,7 @@ class Cultist(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Cultist.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 370
         self.state = 0
 
     def declare_action(self, player, list_of_enemies):
@@ -178,7 +178,7 @@ class JawWorm(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Jaw Worm.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 370
 
         self.list_of_actions = [self.attack_11, self.attack_7_block_5, self.gain_3_strength_block_6]
         self.state = 0

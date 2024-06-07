@@ -2,7 +2,7 @@ import pygame
 import random
 import enemyFile
 import cardsFile
-from fontsFile import text_font
+from fontsFile import text_font, text_font_big
 import inspect
 
 WHITE = (255, 255, 255)
@@ -105,12 +105,14 @@ class Room:
 class Menu(Room):
     def __init__(self, last_room):
         super().__init__()
+        self.bg_image = pygame.image.load("../Sprites/Backgrounds/MenuBG.png")
         self.bg_color = WHITE
-        self.button_colors = BLUE
-        self.menu_button_1_rect = pygame.Rect((0, 0, 100, 100))
-        self.menu_button_2_rect = pygame.Rect((0, 120, 100, 100))
-        self.menu_button_3_rect = pygame.Rect((0, 240, 100, 100))
-        self.menu_button_4_rect = pygame.Rect((0, 360, 100, 100))
+        self.button_colors = (140, 197, 245)
+        self.menu_button_1_rect = pygame.Rect((50, 360, 300, 80))
+        self.menu_button_2_rect = pygame.Rect((50, 460, 300, 80))
+        self.menu_button_3_rect = pygame.Rect((50, 560, 300, 80))
+        self.menu_button_4_rect = pygame.Rect((50, 660, 300, 80))
+
         self.last_room = last_room
         pygame.display.set_caption("MENU")
 
@@ -142,20 +144,20 @@ class Menu(Room):
                 player.current_room = RestRoom(player)
 
     def update(self, screen, player):
+        screen.blit(self.bg_image, (0, 0))
+
         pygame.draw.rect(screen, self.button_colors, self.menu_button_1_rect)
         pygame.draw.rect(screen, self.button_colors, self.menu_button_2_rect)
         pygame.draw.rect(screen, self.button_colors, self.menu_button_3_rect)
         pygame.draw.rect(screen, self.button_colors, self.menu_button_4_rect)
 
         if player.floor == 0 or player.cur_health <= 0:
-            button_1_text = text_font.render("START NEW RUN (player.floor == 0 OR player.cur_health <= 0)", True,
-                                             (0, 0, 0))
+            button_1_text = text_font_big.render("BEGIN", True, (0, 0, 0))
         else:
-            button_1_text = text_font.render("CONT FROM LAST ROOM (player.floor != 0 OR player.cur_health < 0)", True,
-                                             (0, 0, 0))
+            button_1_text = text_font_big.render(f"CONTINUE - FLOOR {player.floor}", True, (0, 0, 0))
 
         button_1_text_rect = button_1_text.get_rect()
-        button_1_text_rect.topleft = self.menu_button_1_rect.topright
+        button_1_text_rect.center = self.menu_button_1_rect.center
 
         screen.blit(button_1_text, button_1_text_rect)
 
@@ -166,8 +168,10 @@ class InGame(Room):
     # Should be superclass only - never instantiated!
     def __init__(self):
         super().__init__()
-        self.menu_button_rect = pygame.Rect((1266, 0, 100, 100))
-        self.menu_button_color = WHITE
+        self.menu_button_image = pygame.image.load("../Sprites/Misc/MenuIcon.png")
+        self.menu_button_rect = self.menu_button_image.get_rect()
+        self.menu_button_rect.topright = (1366, 0)
+
         pygame.display.set_caption("IN GAME")
 
     def event_listener(self, ev, player):
@@ -179,7 +183,7 @@ class InGame(Room):
                 print(last_room.state)
 
     def update(self, screen, player):
-        pygame.draw.rect(screen, self.menu_button_color, self.menu_button_rect)
+        screen.blit(self.menu_button_image, self.menu_button_rect.topleft)
 
 
 # ======================================================================================================================
@@ -196,6 +200,7 @@ class CombatEncounter(InGame):
         self.bg_enemy_rect = pygame.Rect((500, 0, 866, 528))
         self.bg_hand_color = PURPLE
         self.bg_hand_rect = pygame.Rect((125, 528, 1116, 240))
+        self.bg_image = pygame.image.load("../Sprites/Backgrounds/FightBG.png")
 
         self.end_turn_color = BLACK
         self.end_turn_rect = pygame.Rect((1266, 668, 100, 100))
@@ -229,9 +234,10 @@ class CombatEncounter(InGame):
 
     def update(self, screen, player):
         # Draw backgrounds Rects
-        pygame.draw.rect(screen, self.bg_play_color, self.bg_play_rect)
-        pygame.draw.rect(screen, self.bg_enemy_color, self.bg_enemy_rect)
-        pygame.draw.rect(screen, self.bg_hand_color, self.bg_hand_rect)
+        #pygame.draw.rect(screen, self.bg_play_color, self.bg_play_rect)
+        #pygame.draw.rect(screen, self.bg_enemy_color, self.bg_enemy_rect)
+        #pygame.draw.rect(screen, self.bg_hand_color, self.bg_hand_rect)
+        screen.blit(self.bg_image, (0, -250))
 
         # Draw Go-To-Menu Rect
         super().update(screen, player)
@@ -252,6 +258,9 @@ class CombatEncounter(InGame):
         for index, card in enumerate(player.hand):
             card.update(screen, player, index, self.bg_hand_rect)
         self._handle_highlight(player, screen)
+
+        for anim in player.test:
+            anim.update(player, screen)
 
         if self.state == 0:
             # COMBAT START

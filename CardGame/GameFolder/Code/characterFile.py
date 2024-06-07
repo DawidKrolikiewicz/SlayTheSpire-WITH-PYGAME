@@ -17,7 +17,7 @@ class Character(pygame.sprite.Sprite):
         # DISPLAY RELATED
         self.image_sprite = pygame.image.load("../Sprites/Characters/Don'tMakeInstancesOfBaseEnemyPLS.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 370
 
         self.image_name = text_font.render(self.name, True, (0, 0, 0))
         self.rect_name = self.image_name.get_rect()
