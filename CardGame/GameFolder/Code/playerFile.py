@@ -197,6 +197,8 @@ class Player(characterFile.Character):
     def start_combat(self):
         self.deck += self.run_deck
         self.shuffle_deck()
+        for card in self.deck:
+            card.reset_card_position()
 
     def end_combat(self):
         self.deck.clear()

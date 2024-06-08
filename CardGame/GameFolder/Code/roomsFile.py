@@ -4,6 +4,7 @@ import enemyFile
 import cardsFile
 from fontsFile import text_font, text_font_big
 import inspect
+import enum
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -24,6 +25,19 @@ SLIDER_Y = 50
 # > InGame (superclass)
 # - CombatEncounter
 # - Shop
+
+
+class RewardsLevel(enum.Enum):
+    NO_REWARDS = 1
+    EASY_FIGHT = 2
+    NORMAL_FIGHT = 3
+    ELITE_FIGHT = 4
+
+
+class CombatDifficulty(enum.Enum):
+    EASY = 1
+    NORMAL = 2
+    ELITE = 3
 
 
 def multi_text_render(text, screen):
@@ -126,6 +140,11 @@ class Menu(Room):
                     print("Start New Run!!!")
                     player.floor = 1
                     player.cur_health = player.max_health
+                    STARTING_DECK = [cardsFile.Strike, cardsFile.Strike, cardsFile.Strike, cardsFile.Strike,
+                                     cardsFile.Strike,
+                                     cardsFile.Defend, cardsFile.Defend, cardsFile.Defend, cardsFile.Defend,
+                                     cardsFile.Bash]
+                    player.run_deck = [card() for card in STARTING_DECK]
                     player.current_room = CombatEncounter()
 
                 else:
@@ -189,10 +208,18 @@ class InGame(Room):
 # ======================================================================================================================
 
 class CombatEncounter(InGame):
-    def __init__(self, custom_list_of_enemies=None):
+    def __init__(self, combat_difficulty=CombatDifficulty.EASY, custom_list_of_enemies=None, custom_combat_difficulty=None):
         super().__init__()
-        if custom_list_of_enemies is None:
-            custom_list_of_enemies = []
+
+        self.list_of_enemies = []
+        self.combat_difficulty = combat_difficulty
+
+        if custom_list_of_enemies is not None and custom_combat_difficulty is not None:
+            self.list_of_enemies = custom_list_of_enemies
+            self.combat_difficulty = custom_combat_difficulty
+        else:
+            self._get_random_combat(self.combat_difficulty)
+
         pygame.display.set_caption("COMBAT ENCOUNTER")
         self.bg_play_color = BLUE
         self.bg_play_rect = pygame.Rect((0, 0, 1366, 528))
@@ -206,12 +233,6 @@ class CombatEncounter(InGame):
         self.end_turn_color = BLACK
         self.end_turn_rect = pygame.Rect((1266, 668, 100, 100))
         self.end_turn_image = pygame.image.load("../Sprites/Misc/EndTurnButton.png")
-
-        if not custom_list_of_enemies:
-            self.list_of_enemies = []
-            self._get_random_combat()
-        else:
-            self.list_of_enemies = custom_list_of_enemies
 
         self._position_enemies()
         self.number_of_enemies = len(self.list_of_enemies)
@@ -303,7 +324,7 @@ class CombatEncounter(InGame):
                 print(f">> (((  WIN!  )))")
                 player.end_combat()
                 player.floor += 1
-                player.current_room = Rewards(self.number_of_enemies, player)
+                player.current_room = Rewards(RewardsLevel.NORMAL_FIGHT, player)
 
         if self.state == 3:
             # END TURN
@@ -316,13 +337,28 @@ class CombatEncounter(InGame):
             print(f">>--------------------------------------------------------------------------<<")
             self.state = 1
 
-    def _get_random_combat(self):
+    def _get_random_combat(self, combat_difficulty):
         # Get random combat encounter from the list
-        fights = ([enemyFile.Cultist()],
-                  [enemyFile.JawWorm()],
-                  [enemyFile.Frog(), enemyFile.Frog(), enemyFile.Worm()],
-                  [enemyFile.Worm(), enemyFile.Icecream(), enemyFile.Worm()]
-                  )
+        fights = ()
+        if combat_difficulty == CombatDifficulty.EASY:
+            fights = ([enemyFile.Cultist()],
+                      [enemyFile.JawWorm()],
+                      [enemyFile.Frog(), enemyFile.Frog(), enemyFile.Worm()],
+                      [enemyFile.Worm(), enemyFile.Icecream(), enemyFile.Worm()]
+                      )
+        elif combat_difficulty == CombatDifficulty.NORMAL:
+            fights = ([enemyFile.Cultist()],
+                      [enemyFile.JawWorm()],
+                      [enemyFile.Frog(), enemyFile.Frog(), enemyFile.Worm()],
+                      [enemyFile.Worm(), enemyFile.Icecream(), enemyFile.Worm()]
+                      )
+        elif combat_difficulty == CombatDifficulty.ELITE:
+            fights = ([enemyFile.Cultist()],
+                      [enemyFile.JawWorm()],
+                      [enemyFile.Frog(), enemyFile.Frog(), enemyFile.Worm()],
+                      [enemyFile.Worm(), enemyFile.Icecream(), enemyFile.Worm()]
+                      )
+
         self.list_of_enemies += random.choice(fights)
 
     def _position_enemies(self):
@@ -362,57 +398,7 @@ class Shop(InGame):
         super().__init__()
         self.bg_color = GREEN
         pygame.display.set_caption("SHOP")
-        self.available_cards = [cardsFile.Anger,
-                                cardsFile.BattleTrance,
-                                cardsFile.BloodForBlood,
-                                cardsFile.Bloodletting,
-                                cardsFile.BodySlam,
-                                cardsFile.Carnage,
-                                cardsFile.Clash,
-                                cardsFile.Cleave,
-                                cardsFile.Clothesline,
-                                cardsFile.Combust,
-                                cardsFile.DarkEmbrace,
-                                cardsFile.Disarm,
-                                cardsFile.Dropkick,
-                                cardsFile.Entrench,
-                                cardsFile.Evolve,
-                                cardsFile.FeelNoPain,
-                                cardsFile.FireBreathing,
-                                cardsFile.FlameBarrier,
-                                cardsFile.Flex,
-                                cardsFile.GhostlyArmor,
-                                cardsFile.Havoc,
-                                cardsFile.HeavyBlade,
-                                cardsFile.Hemokinesis,
-                                cardsFile.InfernalBlade,
-                                cardsFile.Inflame,
-                                cardsFile.Intimidate,
-                                cardsFile.IronWave,
-                                cardsFile.Juggernaut,
-                                cardsFile.Metallicize,
-                                cardsFile.PommelStrike,
-                                cardsFile.PowerThrough,
-                                cardsFile.Pummel,
-                                cardsFile.Rage,
-                                cardsFile.Rampage,
-                                cardsFile.RecklessCharge,
-                                cardsFile.Rupture,
-                                cardsFile.SecondWind,
-                                cardsFile.SeeingRed,
-                                cardsFile.Sentinel,
-                                cardsFile.SeverSoul,
-                                cardsFile.Shockwave,
-                                cardsFile.ShrugItOff,
-                                cardsFile.SpotWeakness,
-                                cardsFile.SwordBoomerang,
-                                cardsFile.Thunderclap,
-                                cardsFile.TrueGrit,
-                                cardsFile.TwinStrike,
-                                cardsFile.Uppercut,
-                                cardsFile.Whirlwind,
-                                cardsFile.WildStrike
-                                ]
+        self.available_cards = cardsFile.ALL_CARDS
 
         self.list_of_cards = []
         self.card_prices = []
@@ -433,13 +419,30 @@ class Shop(InGame):
         self.slider = Slider(220, 700, 926, 20, len(player.run_deck), 4)
 
     def create_shop_items(self):
-        cards_weights = [available_card().weight for available_card in self.available_cards]
+        cards_weights = []
+        for card in self.available_cards:
+            if card().rarity == cardsFile.Rarity.COMMON:
+                cards_weights.append(45)
+            elif card().rarity == cardsFile.Rarity.UNCOMMON:
+                cards_weights.append(35)
+            elif card().rarity == cardsFile.Rarity.RARE:
+                cards_weights.append(20)
+            else:
+                cards_weights.append(0)
+
         self.list_of_cards = [random.choices(self.available_cards, cards_weights)[0]() for _ in range(4)]
         self._set_prices()
 
     def _set_prices(self):
-        for i, card in enumerate(self.list_of_cards):
-            self.card_prices.append(random.randint(card.price_range[0], card.price_range[1]))
+        for card in self.list_of_cards:
+            if card.rarity == cardsFile.Rarity.COMMON:
+                self.card_prices.append(random.randint(15, 25))
+            elif card.rarity == cardsFile.Rarity.UNCOMMON:
+                self.card_prices.append(random.randint(18, 30))
+            elif card.rarity == cardsFile.Rarity.RARE:
+                self.card_prices.append(random.randint(25, 40))
+            else:
+                self.card_prices.append(0)
 
     def _buy_card(self, card_index, player):
         if self.card_prices[card_index] <= player.coins:
@@ -461,7 +464,7 @@ class Shop(InGame):
                 if self.leave_rect.collidepoint(pos):
                     print(f"LEAVING SHOP")
                     player.floor += 1
-                    player.current_room = Rewards(0, player)
+                    player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
                 elif self.remove_card_rect.collidepoint(pos) and not self.card_sold:
                     if player.coins >= self.remove_price:
                         self.state = 1
@@ -545,7 +548,7 @@ class Ritual(RandomEncounter):
             elif self.state in (2, 3):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
-                    player.current_room = Rewards(0, player)
+                    player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
 
     def update(self, screen, player):
         if self.state == 0:
@@ -611,7 +614,7 @@ class Beggar(RandomEncounter):
             elif self.state in (1, 2, 3):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
-                    player.current_room = Rewards(0, player)
+                    player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
 
     def update(self, screen, player):
         if self.state == 0:
@@ -673,7 +676,7 @@ class Bridge(RandomEncounter):
             elif self.state in (1, 2, 3):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
-                    player.current_room = Rewards(0, player)
+                    player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
 
     def update(self, screen, player):
         if self.state == 0:
@@ -728,7 +731,7 @@ class RestRoom(InGame):
                 self.heal = 0
             if self.leave_rect.collidepoint(pos):
                 player.floor += 1
-                player.current_room = Rewards(0, player)
+                player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
 
     def update(self, screen, player):
         if self.heal:
@@ -742,7 +745,7 @@ class RestRoom(InGame):
 # ======================================================================================================================
 
 class Rewards(InGame):
-    def __init__(self, enemies_numb, player):
+    def __init__(self, rewards_level, player):
         super().__init__()
         self.rewards_cards = []
         self.gold = 0
@@ -773,65 +776,49 @@ class Rewards(InGame):
         self.cards_bg_color = RED
         self.cards_bg_rect = pygame.Rect((0, 220, 783, 480))
 
-        self.available_cards = [cardsFile.Anger,
-                                cardsFile.BattleTrance,
-                                cardsFile.BloodForBlood,
-                                cardsFile.Bloodletting,
-                                cardsFile.BodySlam,
-                                cardsFile.Carnage,
-                                cardsFile.Clash,
-                                cardsFile.Cleave,
-                                cardsFile.Clothesline,
-                                cardsFile.Combust,
-                                cardsFile.DarkEmbrace,
-                                cardsFile.Disarm,
-                                cardsFile.Dropkick,
-                                cardsFile.Entrench,
-                                cardsFile.Evolve,
-                                cardsFile.FeelNoPain,
-                                cardsFile.FireBreathing,
-                                cardsFile.FlameBarrier,
-                                cardsFile.Flex,
-                                cardsFile.GhostlyArmor,
-                                cardsFile.Havoc,
-                                cardsFile.HeavyBlade,
-                                cardsFile.Hemokinesis,
-                                cardsFile.InfernalBlade,
-                                cardsFile.Inflame,
-                                cardsFile.Intimidate,
-                                cardsFile.IronWave,
-                                cardsFile.Juggernaut,
-                                cardsFile.Metallicize,
-                                cardsFile.PommelStrike,
-                                cardsFile.PowerThrough,
-                                cardsFile.Pummel,
-                                cardsFile.Rage,
-                                cardsFile.Rampage,
-                                cardsFile.RecklessCharge,
-                                cardsFile.Rupture,
-                                cardsFile.SecondWind,
-                                cardsFile.SeeingRed,
-                                cardsFile.Sentinel,
-                                cardsFile.SeverSoul,
-                                cardsFile.Shockwave,
-                                cardsFile.ShrugItOff,
-                                cardsFile.SpotWeakness,
-                                cardsFile.SwordBoomerang,
-                                cardsFile.Thunderclap,
-                                cardsFile.TrueGrit,
-                                cardsFile.TwinStrike,
-                                cardsFile.Uppercut,
-                                cardsFile.Whirlwind,
-                                cardsFile.WildStrike
-                                ]
+        self.available_cards = cardsFile.ALL_CARDS
 
-        self.set_rewards(enemies_numb)
+        self.set_rewards(rewards_level)
 
-    def set_rewards(self, enemies_numb):
-        if enemies_numb > 0:
-            cards_weights = [available_card().weight for available_card in self.available_cards]
-            self.rewards_cards = [random.choices(self.available_cards, cards_weights)[0]() for _ in range(2)]
-            self.gold = (enemies_numb * random.randint(20, 25))
+    def set_rewards(self, rewards_level):
+        cards_weights = []
+        if rewards_level == RewardsLevel.NO_REWARDS:
+            return
+
+        elif rewards_level == RewardsLevel.EASY_FIGHT:
+            for card in self.available_cards:
+                if card().rarity == cardsFile.Rarity.COMMON:
+                    cards_weights.append(60)
+                elif card().rarity == cardsFile.Rarity.UNCOMMON:
+                    cards_weights.append(40)
+                else:
+                    cards_weights.append(0)
+
+            self.gold = (random.randint(20, 25))
+
+        elif rewards_level == RewardsLevel.NORMAL_FIGHT:
+            for card in self.available_cards:
+                if card().rarity == cardsFile.Rarity.COMMON:
+                    cards_weights.append(45)
+                elif card().rarity == cardsFile.Rarity.UNCOMMON:
+                    cards_weights.append(40)
+                elif card().rarity == cardsFile.Rarity.RARE:
+                    cards_weights.append(15)
+                else:
+                    cards_weights.append(0)
+
+            self.gold = (random.randint(20, 25))
+
+        elif rewards_level == RewardsLevel.ELITE_FIGHT:
+            for card in self.available_cards:
+                if card().rarity == cardsFile.Rarity.RARE:
+                    cards_weights.append(100)
+                else:
+                    cards_weights.append(0)
+
+            self.gold = (random.randint(40, 60))
+
+        self.rewards_cards = [random.choices(self.available_cards, cards_weights)[0]() for _ in range(2)]
 
     def set_rooms(self, player):
         room_types = [CombatEncounter, self.choose_random_encounter, Shop, RestRoom]
