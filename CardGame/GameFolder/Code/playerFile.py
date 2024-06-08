@@ -38,7 +38,7 @@ class Player(characterFile.Character):
         # VISUAL RELATED
         self.image_sprite = pygame.image.load("../Sprites/Characters/Player.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 370
+        self.rect_sprite.bottom = 350
         self.rect_sprite.centerx = 250
 
         self.image_mana = characterFile.text_font.render(f"{self.mana} / 3", True, (0, 0, 0))
