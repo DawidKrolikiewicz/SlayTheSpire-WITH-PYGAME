@@ -211,7 +211,7 @@ class JawWorm(Enemy):
                 self.next_action = self.attack_11
             else:
                 self.next_action = \
-                random.choices(list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
+                    random.choices(list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
 
             if self.next_action == self.attack_7_block_5:
                 self.thrash_count += 1
@@ -241,6 +241,8 @@ class FungiBeast(Enemy):
         self.image_sprite = pygame.image.load("../Sprites/Characters/Fungi Beast.png")
         self.rect_sprite = self.image_sprite.get_rect()
         self.rect_sprite.bottom = 340
+
+        self.add_spore_cloud(2, self)
 
         self.list_of_actions = [self.attack_6, self.gain_3_strength]
         self.last_action = None
@@ -424,7 +426,7 @@ class RedSlaver(Enemy):
         self.rect_sprite = self.image_sprite.get_rect()
         self.rect_sprite.bottom = 340
 
-        self.list_of_actions = [self.attack_13, self.attack_8_apply_2_vulnerable, self.apply_1_entangled]
+        self.list_of_actions = [self.attack_13, self.attack_8_apply_2_vulnerable, self.apply_2_entangled]
         self.state = 0
         self.last_actions = []
         self.entangle_used = False
@@ -437,7 +439,7 @@ class RedSlaver(Enemy):
         else:
             if not self.entangle_used:
                 if random.random() < 0.25:
-                    self.next_action = self.apply_1_entangled
+                    self.next_action = self.apply_2_entangled
                     self.entangle_used = True
                     self.scrape_count = 0
                 else:
@@ -478,8 +480,8 @@ class RedSlaver(Enemy):
         self.deal_damage(8, player)
         self.add_vulnerable(2, player)
 
-    def apply_1_entangled(self, player, list_of_enemies):
-        self.add_entangled(1, player)
+    def apply_2_entangled(self, player, list_of_enemies):
+        self.add_entangled(2, player)
 
 
 class AcidSlimeL(Enemy):
@@ -493,20 +495,19 @@ class AcidSlimeL(Enemy):
         self.rect_sprite.bottom = 340
 
         self.list_of_actions = [self.attack_11_shuffle_2_slimed, self.apply_3_weak, self.attack_16]
-        self.state = 0
         self.last_actions = []
         self.split_triggered = False
 
     def declare_action(self, player, list_of_enemies):
-        if self.cur_health <= self.max_health / 2 and not self.split_triggered:
-            self.next_action = self.split
-            return
+        #if self.cur_health <= self.max_health / 2 and not self.split_triggered:
+        #self.next_action = self.split
+        #return
 
         actions_weights = {
             self.attack_11_shuffle_2_slimed: 30,
             self.apply_3_weak: 40,
             self.attack_16: 30
-            }
+        }
 
         if len(self.last_actions) >= 1 and self.last_actions[-1] in [self.attack_16, self.apply_3_weak]:
             actions_weights[self.last_actions[-1]] = 0
@@ -530,9 +531,8 @@ class AcidSlimeL(Enemy):
 
     def attack_11_shuffle_2_slimed(self, player, list_of_enemies):
         self.deal_damage(11, player)
-        # placeholder dopoki slimed nie dodam
-        player.add_card_to_discard(cardsFile.Wound())
-        player.add_card_to_discard(cardsFile.Wound())
+        player.add_card_to_discard(cardsFile.Slimed())
+        player.add_card_to_discard(cardsFile.Slimed())
 
     def attack_16(self, player, list_of_enemies):
         self.deal_damage(16, player)
@@ -546,9 +546,9 @@ class AcidSlimeL(Enemy):
         new_slime_1 = AcidSlimeM(health=self.cur_health)
         new_slime_2 = AcidSlimeM(health=self.cur_health)
 
+        list_of_enemies.remove(self)
         list_of_enemies.append(new_slime_1)
         list_of_enemies.append(new_slime_2)
-        list_of_enemies.remove(self)
 
 
 class AcidSlimeM(Enemy):
@@ -562,9 +562,7 @@ class AcidSlimeM(Enemy):
         self.rect_sprite.bottom = 340
 
         self.list_of_actions = [self.attack_7_shuffle_1_slimed, self.apply_2_weak, self.attack_10]
-        self.state = 0
         self.last_actions = []
-        self.split_triggered = False
 
     def declare_action(self, player, list_of_enemies):
         actions_weights = {
@@ -595,11 +593,149 @@ class AcidSlimeM(Enemy):
 
     def attack_7_shuffle_1_slimed(self, player, list_of_enemies):
         self.deal_damage(7, player)
-        # placeholder dopoki slimed nie dodam
-        player.add_card_to_discard(cardsFile.Wound())
+        player.add_card_to_discard(cardsFile.Slimed())
 
     def attack_10(self, player, list_of_enemies):
         self.deal_damage(10, player)
 
     def apply_2_weak(self, player, list_of_enemies):
         self.add_weak(2, player)
+
+
+class AcidSlimeS(Enemy):
+    def __init__(self, name="Acid Slime", health=random.randint(8, 12)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Acid Slime (S).png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+
+        self.list_of_actions = [self.apply_2_weak, self.attack_3]
+        self.turn_counter = 0
+
+    def declare_action(self, player, list_of_enemies):
+        if self.turn_counter == 0:
+            self.next_action = random.choice(self.list_of_actions)
+        else:
+            self.next_action = self.list_of_actions[self.turn_counter % 2]
+
+        self.turn_counter += 1
+
+    def attack_3(self, player, list_of_enemies):
+        self.deal_damage(3, player)
+
+    def apply_2_weak(self, player, list_of_enemies):
+        self.add_weak(2, player)
+
+
+class FatGremlin(Enemy):
+    def __init__(self, name="Fat Gremlin", health=random.randint(13, 17)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Fat Gremlin.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+
+    def declare_action(self, player, list_of_enemies):
+        self.next_action = self.attack_4_add_1_weak
+
+    def attack_4_add_1_weak(self, player, list_of_enemies):
+        self.deal_damage(4, player)
+        self.add_weak(1, player)
+
+
+class MadGremlin(Enemy):
+    def __init__(self, name="Mad Gremlin", health=random.randint(20, 24)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Mad Gremlin.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+
+        self.add_angry(1, self)
+
+    def declare_action(self, player, list_of_enemies):
+        self.next_action = self.attack_4
+
+    def attack_4(self, player, list_of_enemies):
+        self.deal_damage(4, player)
+
+
+class SneakyGremlin(Enemy):
+    def __init__(self, name="Sneaky Gremlin", health=random.randint(10, 14)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Sneaky Gremlin.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+
+    def declare_action(self, player, list_of_enemies):
+        self.next_action = self.attack_9
+
+    def attack_9(self, player, list_of_enemies):
+        self.deal_damage(9, player)
+
+
+class GremlinWizard(Enemy):
+    def __init__(self, name="Gremlin Wizard", health=random.randint(23, 25)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Gremlin Wizard.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+        self.charge_up_count = 0
+        self.charge_up_required = 2
+
+        self.list_of_actions = [self.attack_25, self.charge_up]
+
+    def declare_action(self, player, list_of_enemies):
+        if self.charge_up_count < self.charge_up_required:
+            self.next_action = self.charge_up
+        else:
+            self.next_action = self.attack_25
+            self.charge_up_count = 0
+            self.charge_up_required = 3
+
+    def attack_25(self, player, list_of_enemies):
+        self.deal_damage(25, player)
+
+    def charge_up(self, player, list_of_enemies):
+        self.charge_up_count += 1
+
+
+class ShieldGremlin(Enemy):
+    def __init__(self, name="Shield Gremlin", health=random.randint(12, 15)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Shield Gremlin.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+        self.target = self
+
+        self.list_of_actions = [self.add_armor_7, self.attack_6]
+
+    def declare_action(self, player, list_of_enemies):
+        if list_of_enemies:
+            self.next_action = self.add_armor_7
+            self.target = random.choice([enemy for enemy in list_of_enemies if enemy is not self])
+        else:
+            self.target = self
+            self.next_action = random.choice(self.list_of_actions)
+
+    def add_armor_7(self, player, list_of_enemies):
+        self.add_block(7, self.target)
+
+    def attack_6(self, player, list_of_enemies):
+        self.deal_damage(6, player)

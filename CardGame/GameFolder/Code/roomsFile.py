@@ -4,6 +4,7 @@ import enemyFile
 import cardsFile
 from fontsFile import text_font
 import inspect
+import ongoingFile as o
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -274,6 +275,8 @@ class CombatEncounter(InGame):
             # PLAYER ACTIONS TURN
             for enemy in self.list_of_enemies:
                 if enemy.cur_health <= 0:
+                    if o.Effect.SPORE_CLOUD in enemy.dict_of_ongoing:
+                        enemy.add_vulnerable(2, player)
                     self.list_of_enemies.remove(enemy)
                     print(f"Enemy {enemy.name} is DEAD!")
 
@@ -304,14 +307,18 @@ class CombatEncounter(InGame):
         #[enemyFile.JawWorm()],
         #[enemyFile.Frog(), enemyFile.Frog(), enemyFile.Worm()],
         #[enemyFile.Worm(), enemyFile.Icecream(), enemyFile.Worm()],
-        #[enemyFile.FungiBeast(), enemyFile.FungiBeast(), enemyFile.GreenLouse()],
-        #[enemyFile.RedLouse(), enemyFile.RedLouse(), enemyFile.GreenLouse()],
-        #[enemyFile.RedSlaver()],
         #[enemyFile.BlueSlaver()],
+        #[enemyFile.RedLouse(), enemyFile.RedLouse(), enemyFile.GreenLouse()],
+        #[enemyFile.AcidSlimeL()],
+        #[enemyFile.AcidSlimeM(), enemyFile.BlueSlaver()],
+        gremlin_list = random.choices([enemyFile.FatGremlin, enemyFile.MadGremlin, enemyFile.ShieldGremlin, enemyFile.GremlinWizard, enemyFile.SneakyGremlin], k=4)
 
         fights = (
-                  [enemyFile.AcidSlimeL()],
-                  [enemyFile.AcidSlimeM(), enemyFile.BlueSlaver()])
+            [enemyFile.RedSlaver()],
+            [gremlin() for gremlin in gremlin_list],
+            [enemyFile.FungiBeast(), enemyFile.FungiBeast(), enemyFile.GreenLouse()],
+            [enemyFile.AcidSlimeM(), enemyFile.AcidSlimeS()]
+            )
         self.list_of_enemies += random.choice(fights)
 
     def _position_enemies(self):

@@ -83,6 +83,10 @@ class Player(characterFile.Character):
                 card.cost = 0
                 card.exhaust = True
 
+            if o.Effect.ENTANGLED in self.dict_of_ongoing and card.type == cardsFile.CardType.ATTACK:
+                if self.dict_of_ongoing[o.Effect.ENTANGLED].value > 0:
+                    return
+
             if card.cost <= self.mana or use_mana is False:
                 if use_mana is True:
                     self.mana -= card.cost

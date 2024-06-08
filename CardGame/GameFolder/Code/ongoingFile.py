@@ -36,6 +36,8 @@ class Effect(enum.Enum):
     DOUBLE_TAP = 25
     # ENEMY 2
     ENTANGLED = 26
+    ANGRY = 27
+    SPORE_CLOUD = 28
 
 
 # ======================= Ongoing Icons (superclass) =======================
@@ -205,7 +207,7 @@ class CurlUp(Ongoing):
 
     def action(self, character):
         character.add_block(self.intensity, character)
-        character.dict_of_ongoing[Effect.CURLUP] = 0
+        character.dict_of_ongoing[Effect.CURLUP].intensity = 0
 
 
 # /////////////////////////// CARDS EFFECTS ///////////////////////////
@@ -592,4 +594,41 @@ class Entangled(Ongoing):
 
     def update(self, character, screen):
         self.value = self.duration
+        super().update(character, screen)
+
+
+class Angry(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = value
+        self.value = self.intensity
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/RageIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        pass
+
+    def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)
+
+    def action(self, character):
+        character.add_strength(self.intensity, character)
+
+
+class SporeCloud(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = value
+        self.value = self.intensity
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/SporeCloudIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        pass
+
+    def update(self, character, screen):
+        self.value = self.intensity
         super().update(character, screen)
