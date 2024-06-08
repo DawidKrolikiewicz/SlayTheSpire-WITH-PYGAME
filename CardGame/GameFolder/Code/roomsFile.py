@@ -585,7 +585,7 @@ class Ritual(RandomEncounter):
                               "One of them rises up his jagged dagger, whispering a prayer to his goddess. What do you do?\n",
                               screen)
         elif self.state == 1:
-            player.current_room = CombatEncounter([enemyFile.Cultist(), enemyFile.Cultist()])
+            player.current_room = CombatEncounter(CombatDifficulty.EASY, [enemyFile.Cultist(), enemyFile.Cultist()], custom_combat_difficulty=CombatDifficulty.EASY)
         elif self.state == 2:
             multi_text_render("You join in the prayers, mumbling something under your breath.\n"
                               "The screams of killed man slowly fade away, leaving you with nothing but silence.\n"
@@ -842,18 +842,18 @@ class Rewards(InGame):
     def set_rooms(self, player):
         room_types = [CombatEncounter, self.choose_random_encounter, Shop, RestRoom]
         if player.floor < 6:
-            self.choice_1_room = random.choices(room_types, [0.65, 0.25, 0.1, 0])[0]
+            self.choice_1_room = random.choices(room_types, [0.65, 0.20, 0.15, 0])[0]
             self.choice_1_room = self.check_arguments(player, self.choice_1_room)
 
-            self.choice_2_room = random.choices(room_types, [0.65, 0.25, 0.1, 0])[0]
+            self.choice_2_room = random.choices(room_types, [0.65, 0.20, 0.15, 0])[0]
             self.choice_2_room = self.check_arguments(player, self.choice_2_room)
         elif player.floor == 15:
             self.choice_1_room, self.choice_2_room = RestRoom(player), RestRoom(player)
         else:
-            self.choice_1_room = random.choices(room_types, [0.6, 0.25, 0.1, 0.05])[0]
+            self.choice_1_room = random.choices(room_types, [0.55, 0.15, 0.2, 0.1])[0]
             self.choice_1_room = self.check_arguments(player, self.choice_1_room)
 
-            self.choice_2_room = random.choices(room_types, [0.6, 0.25, 0.1, 0.05])[0]
+            self.choice_2_room = random.choices(room_types, [0.55, 0.15, 0.2, 0.1])[0]
             self.choice_2_room = self.check_arguments(player, self.choice_2_room)
 
     def check_arguments(self, player, room):

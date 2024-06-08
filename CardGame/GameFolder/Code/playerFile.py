@@ -211,9 +211,10 @@ class Player(characterFile.Character):
         self.discard.clear()
         self.dict_of_ongoing.clear()
         self.anim_list.clear()
+        if self.cur_health > 0:
+            self.heal(6, self)
 
     def start_turn(self):
-        self.draw_card(5)
         self.mana = 3
         if o.Effect.BARRICADE not in self.dict_of_ongoing:
             self.block = 0
@@ -226,6 +227,7 @@ class Player(characterFile.Character):
             self.draw_card(self.dict_of_ongoing[o.Effect.BRUTALITY].intensity)
 
         super().start_turn()
+        self.draw_card(5)
 
     def end_turn(self):
         super().end_turn()

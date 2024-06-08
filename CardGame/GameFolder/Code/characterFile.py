@@ -288,7 +288,7 @@ class Character(pygame.sprite.Sprite):
     def add_barricade(self, target):
         if o.Effect.BARRICADE not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.BARRICADE] = o.Barricade()
-            animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
+            animationsFile.BuffAnim(self, target, " ")  # TRIGGER FOR ANIMATION
 
     def add_berserk(self, value, target):
         if o.Effect.BERSERK not in target.dict_of_ongoing:
