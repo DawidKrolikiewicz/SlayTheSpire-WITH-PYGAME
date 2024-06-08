@@ -67,5 +67,21 @@ class HealAnim(Anim):
         self.rect.center = self.text_rect.center
 
 
+class BuffAnim(Anim):
+    def __init__(self, character, target, value):
+        super().__init__(character, target, value)
+        self.image = pygame.image.load("../Sprites/Misc/Buff.png")
+        self.rect = self.image.get_rect()
+        self.rect.center = self.text_rect.center
+
+
+class DebuffAnim(Anim):
+    def __init__(self, character, target, value):
+        super().__init__(character, target, value)
+        self.image = pygame.image.load("../Sprites/Misc/Debuff.png")
+        self.rect = self.image.get_rect()
+        self.rect.center = self.text_rect.center
+
+
 
 

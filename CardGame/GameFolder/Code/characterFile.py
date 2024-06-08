@@ -151,144 +151,173 @@ class Character(pygame.sprite.Sprite):
             target.dict_of_ongoing[o.Effect.STRENGTH] = o.Strength()
 
         target.dict_of_ongoing[o.Effect.STRENGTH].intensity += value
+        if value > 0:
+            animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
+        else:
+            animationsFile.DebuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_dexterity(self, value, target):
         if o.Effect.DEXTERITY not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.DEXTERITY] = o.Dexterity()
 
         target.dict_of_ongoing[o.Effect.DEXTERITY].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_frail(self, value, target):
         if o.Effect.FRAIL not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.FRAIL] = o.Frail()
 
         target.dict_of_ongoing[o.Effect.FRAIL].duration += value
+        animationsFile.DebuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_vulnerable(self, value, target):
         if o.Effect.VULNERABLE not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.VULNERABLE] = o.Vulnerable()
 
         target.dict_of_ongoing[o.Effect.VULNERABLE].duration += value
+        animationsFile.DebuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_weak(self, value, target):
         if o.Effect.WEAK not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.WEAK] = o.Weak()
 
         target.dict_of_ongoing[o.Effect.WEAK].duration += value
+        animationsFile.DebuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_ritual(self, value, target):
         if o.Effect.RITUAL not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.RITUAL] = o.Ritual()
 
         target.dict_of_ongoing[o.Effect.RITUAL].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_curlup(self, value, target):
         if o.Effect.CURLUP not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.CURLUP] = o.CurlUp()
 
         target.dict_of_ongoing[o.Effect.CURLUP].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_juggernaut(self, value, target):
         if o.Effect.JUGGERNAUT not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.JUGGERNAUT] = o.Juggernaut()
 
         target.dict_of_ongoing[o.Effect.JUGGERNAUT].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_strength_down(self, value, target):
         if o.Effect.STRENGTH_DOWN not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.STRENGTH_DOWN] = o.StrengthDown()
 
         target.dict_of_ongoing[o.Effect.STRENGTH_DOWN].intensity += value
+        animationsFile.DebuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_no_draw(self, value, target):
         if o.Effect.NO_DRAW not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.NO_DRAW] = o.NoDraw()
 
         target.dict_of_ongoing[o.Effect.NO_DRAW].duration += value
+        animationsFile.DebuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_combust(self, value, target):
         if o.Effect.COMBUST not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.COMBUST] = o.Combust()
 
         target.dict_of_ongoing[o.Effect.COMBUST].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_dark_embrace(self, value, target):
         if o.Effect.DARK_EMBRACE not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.DARK_EMBRACE] = o.DarkEmbrace()
 
         target.dict_of_ongoing[o.Effect.DARK_EMBRACE].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_evolve(self, value, target):
         if o.Effect.EVOLVE not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.EVOLVE] = o.Evolve()
 
         target.dict_of_ongoing[o.Effect.EVOLVE].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_feel_no_pain(self, value, target):
         if o.Effect.FEEL_NO_PAIN not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.FEEL_NO_PAIN] = o.FeelNoPain()
 
         target.dict_of_ongoing[o.Effect.FEEL_NO_PAIN].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_fire_breathing(self, value, target):
         if o.Effect.FIRE_BREATHING not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.FIRE_BREATHING] = o.FireBreathing()
 
         target.dict_of_ongoing[o.Effect.FIRE_BREATHING].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_flame_barrier(self, value, target):
         if o.Effect.FLAME_BARRIER not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.FLAME_BARRIER] = o.FlameBarrier()
 
         target.dict_of_ongoing[o.Effect.FLAME_BARRIER].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_metallicize(self, value, target):
         if o.Effect.METALLICIZE not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.METALLICIZE] = o.Metallicize()
 
         target.dict_of_ongoing[o.Effect.METALLICIZE].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_rage(self, value, target):
         if o.Effect.RAGE not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.RAGE] = o.Rage()
 
         target.dict_of_ongoing[o.Effect.RAGE].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_rupture(self, value, target):
         if o.Effect.RUPTURE not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.RUPTURE] = o.Rupture()
 
         target.dict_of_ongoing[o.Effect.RUPTURE].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_barricade(self, target):
         if o.Effect.BARRICADE not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.BARRICADE] = o.Barricade()
+            animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_berserk(self, value, target):
         if o.Effect.BERSERK not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.BERSERK] = o.Berserk()
 
         target.dict_of_ongoing[o.Effect.BERSERK].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_brutality(self, value, target):
         if o.Effect.BRUTALITY not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.BRUTALITY] = o.Brutality()
 
         target.dict_of_ongoing[o.Effect.BRUTALITY].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_corruption(self, target):
         if o.Effect.CORRUPTION not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.CORRUPTION] = o.Corruption()
+
+        animationsFile.BuffAnim(self, target, " ")  # TRIGGER FOR ANIMATION
 
     def add_demon_form(self, value, target):
         if o.Effect.DEMON_FORM not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.DEMON_FORM] = o.DemonForm()
 
         target.dict_of_ongoing[o.Effect.DEMON_FORM].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_double_tap(self, value, target):
         if o.Effect.DOUBLE_TAP not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.DOUBLE_TAP] = o.DoubleTap()
 
         target.dict_of_ongoing[o.Effect.DOUBLE_TAP].counter += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 

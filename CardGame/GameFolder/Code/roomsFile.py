@@ -201,9 +201,11 @@ class CombatEncounter(InGame):
         self.bg_hand_color = PURPLE
         self.bg_hand_rect = pygame.Rect((125, 528, 1116, 240))
         self.bg_image = pygame.image.load("../Sprites/Backgrounds/FightBG.png")
+        self.bg_hand_image = pygame.image.load("../Sprites/Backgrounds/WoodBG.png")
 
         self.end_turn_color = BLACK
         self.end_turn_rect = pygame.Rect((1266, 668, 100, 100))
+        self.end_turn_image = pygame.image.load("../Sprites/Misc/EndTurnButton.png")
 
         if not custom_list_of_enemies:
             self.list_of_enemies = []
@@ -237,13 +239,15 @@ class CombatEncounter(InGame):
         #pygame.draw.rect(screen, self.bg_play_color, self.bg_play_rect)
         #pygame.draw.rect(screen, self.bg_enemy_color, self.bg_enemy_rect)
         #pygame.draw.rect(screen, self.bg_hand_color, self.bg_hand_rect)
+        screen.blit(self.bg_hand_image, (0, 30))
         screen.blit(self.bg_image, (0, -250))
 
         # Draw Go-To-Menu Rect
         super().update(screen, player)
 
         # Draw End-of-turn Rect
-        pygame.draw.rect(screen, self.end_turn_color, self.end_turn_rect)
+        #pygame.draw.rect(screen, self.end_turn_color, self.end_turn_rect)
+        screen.blit(self.end_turn_image, self.end_turn_rect.topleft)
 
         # Update player
         player.update(screen)

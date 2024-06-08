@@ -203,6 +203,7 @@ class Player(characterFile.Character):
         self.hand.clear()
         self.discard.clear()
         self.dict_of_ongoing.clear()
+        self.anim_list.clear()
 
     def start_turn(self):
         self.draw_card(5)
