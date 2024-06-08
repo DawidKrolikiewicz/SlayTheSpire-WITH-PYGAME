@@ -3,7 +3,7 @@ import pygame
 import characterFile
 import ongoingFile as o
 import cardsFile
-import animationsFile
+
 
 # ========================================= Enemy (superclass) =========================================
 
@@ -37,8 +37,8 @@ class Enemy(characterFile.Character):
         super().deal_damage(damage, target, is_attack, hit_block)
 
         if target.__class__.__name__ == "Player" and damage > 0:
-            if o.Effect.FLAME_BARRIER in target.dict_of_ongoing and target.dict_of_ongoing[
-                o.Effect.FLAME_BARRIER].intensity > 0:
+            if (o.Effect.FLAME_BARRIER in target.dict_of_ongoing
+                    and target.dict_of_ongoing[o.Effect.FLAME_BARRIER].intensity > 0):
                 target.deal_damage(target.dict_of_ongoing[o.Effect.FLAME_BARRIER].intensity, self)
 
     def declare_action(self, player, list_of_enemies):
@@ -241,7 +241,7 @@ class FungiBeast(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Fungi Beast.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
 
         self.add_spore_cloud(2, self)
 
@@ -291,7 +291,7 @@ class RedLouse(Enemy):
         self.add_curlup(random.randint(3, 7), self)
         self.image_sprite = pygame.image.load("../Sprites/Characters/Red Louse.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
 
         self.list_of_actions = [self.attack_d, self.gain_3_strength]
         self.last_actions = []
@@ -336,7 +336,7 @@ class GreenLouse(Enemy):
         self.add_curlup(random.randint(3, 7), self)
         self.image_sprite = pygame.image.load("../Sprites/Characters/Green Louse.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
 
         self.list_of_actions = [self.attack_d, self.apply_3_weak]
         self.last_actions = []
@@ -379,7 +379,7 @@ class BlueSlaver(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Blue Slaver.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
         self.last_actions = []
 
         self.list_of_actions = [self.attack_12, self.attack_7_apply_2_weak]
@@ -425,7 +425,7 @@ class RedSlaver(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Red Slaver.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
 
         self.list_of_actions = [self.attack_13, self.attack_8_apply_2_vulnerable, self.apply_2_entangled]
         self.state = 0
@@ -493,7 +493,7 @@ class AcidSlimeL(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Acid Slime (L).png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
 
         self.list_of_actions = [self.attack_11_shuffle_2_slimed, self.apply_3_weak, self.attack_16]
         self.last_actions = []
@@ -560,7 +560,7 @@ class AcidSlimeM(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Acid Slime (M).png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
 
         self.list_of_actions = [self.attack_7_shuffle_1_slimed, self.apply_2_weak, self.attack_10]
         self.last_actions = []
@@ -611,7 +611,7 @@ class AcidSlimeS(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Acid Slime (S).png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
 
         self.list_of_actions = [self.apply_2_weak, self.attack_3]
         self.turn_counter = 0
@@ -639,7 +639,7 @@ class SpikeSlimeL(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Spike Slime (L).png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
 
         self.list_of_actions = [self.attack_16_shuffle_2_slimed, self.apply_3_frail]
         self.last_actions = []
@@ -701,7 +701,7 @@ class SpikeSlimeM(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Spike Slime (M).png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
 
         self.list_of_actions = [self.attack_8_shuffle_1_slimed, self.apply_2_frail]
         self.last_actions = []
@@ -747,7 +747,7 @@ class SpikeSlimeS(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Spike Slime (S).png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
 
     def declare_action(self, player, list_of_enemies):
         self.next_action = self.attack_5
@@ -764,7 +764,7 @@ class FatGremlin(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Fat Gremlin.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
 
     def declare_action(self, player, list_of_enemies):
         self.next_action = self.attack_4_add_1_weak
@@ -782,7 +782,7 @@ class MadGremlin(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Mad Gremlin.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
 
         self.add_angry(1, self)
 
@@ -801,7 +801,7 @@ class SneakyGremlin(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Sneaky Gremlin.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
 
     def declare_action(self, player, list_of_enemies):
         self.next_action = self.attack_9
@@ -818,7 +818,7 @@ class GremlinWizard(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Gremlin Wizard.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
         self.charge_up_count = 0
         self.charge_up_required = 2
 
@@ -847,7 +847,7 @@ class ShieldGremlin(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Shield Gremlin.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
         self.target = self
 
         self.list_of_actions = [self.add_armor_7, self.attack_6]
@@ -880,7 +880,7 @@ class Looter(Enemy):
         self.cur_health = self.max_health
         self.image_sprite = pygame.image.load("../Sprites/Characters/Looter.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
 
         self.add_thievery(15, self)
         self.stolen_gold = 0
