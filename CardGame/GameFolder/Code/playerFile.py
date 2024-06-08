@@ -93,6 +93,10 @@ class Player(characterFile.Character):
                 if use_mana is True:
                     self.mana -= card.cost
 
+                for enemy in list_of_enemies:
+                    if o.Effect.ENRAGE in enemy.dict_of_ongoing and card.type == cardsFile.CardType.SKILL:
+                        enemy.add_strength(enemy.dict_of_ongoing[o.Effect.ENRAGE].value, enemy)
+
                 if card.type == cardsFile.CardType.POWER:
                     self.remove_card(card)
                 elif not card.exhaust:

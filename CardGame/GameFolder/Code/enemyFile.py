@@ -501,8 +501,8 @@ class AcidSlimeL(Enemy):
 
     def declare_action(self, player, list_of_enemies):
         #if self.cur_health <= self.max_health / 2 and not self.split_triggered:
-            #self.next_action = self.split
-            #return
+        #self.next_action = self.split
+        #return
 
         actions_weights = {
             self.attack_11_shuffle_2_slimed: 30,
@@ -647,8 +647,8 @@ class SpikeSlimeL(Enemy):
 
     def declare_action(self, player, list_of_enemies):
         #if self.cur_health <= self.max_health / 2 and not self.split_triggered:
-            #self.next_action = self.split
-            #return
+        #self.next_action = self.split
+        #return
 
         actions_weights = {
             self.attack_16_shuffle_2_slimed: 30,
@@ -668,7 +668,7 @@ class SpikeSlimeL(Enemy):
                 [action for action in self.list_of_actions if action != self.last_actions[-1]])
         else:
             self.next_action = \
-            random.choices(list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
+                random.choices(list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
 
         self.last_actions.append(self.next_action)
         if len(self.last_actions) > 3:
@@ -725,7 +725,7 @@ class SpikeSlimeM(Enemy):
                 [action for action in self.list_of_actions if action != self.last_actions[-1]])
         else:
             self.next_action = \
-            random.choices(list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
+                random.choices(list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
 
         self.last_actions.append(self.next_action)
         if len(self.last_actions) > 3:
@@ -921,3 +921,132 @@ class Looter(Enemy):
 
     def escape(self, player, list_of_enemies):
         list_of_enemies.remove(self)
+
+
+class GremlinNob(Enemy):
+    def __init__(self, name="Gremlin Nob", health=random.randint(82, 86)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Gremlin Nob.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 350
+
+        self.list_of_actions = [self.attack_14, self.attack_6_apply_3_vulnerable, self.gain_2_enrage]
+        self.state = 0
+        self.last_actions = []
+
+    def declare_action(self, player, list_of_enemies):
+        if self.state == 0:
+            self.next_action = self.gain_2_enrage
+            self.state = 1
+        else:
+
+            actions_weights = {
+                self.attack_14: 67,
+                self.attack_6_apply_3_vulnerable: 33
+            }
+
+            if len(self.last_actions) >= 2 and self.last_actions[-1] == self.last_actions[-2] and self.last_actions[
+                -1] == self.attack_14:
+                actions_weights[self.attack_14] = 0
+
+            total_weight = sum(actions_weights.values())
+            if total_weight == 0:
+                self.next_action = self.attack_14 if self.last_actions[
+                                                         -1] == self.attack_6_apply_3_vulnerable else self.attack_6_apply_3_vulnerable
+            else:
+                self.next_action = random.choices(
+                    list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
+
+            self.last_actions.append(self.next_action)
+            if len(self.last_actions) > 2:
+                self.last_actions.pop(0)
+
+    def attack_14(self, player, list_of_enemies):
+        self.deal_damage(14, player)
+
+    def attack_6_apply_3_vulnerable(self, player, list_of_enemies):
+        self.deal_damage(6, player)
+        self.add_vulnerable(3, player)
+
+    def gain_2_enrage(self, player, list_of_enemies):
+        self.add_enrage(2, self)
+
+
+class Lagavulin(Enemy):
+    def __init__(self, name="Legavulin", health=random.randint(109, 111)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Lagavulin Asleep.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 350
+
+        self.add_metallicize(8, self)
+
+        self.list_of_actions = [self.attack_18, self.lose_1_dex_1_str]
+        self.state = 0
+        self.sleep_count = 0
+        self.attack_count = 0
+
+    def declare_action(self, player, list_of_enemies):
+        if self.sleep_count >= 3 or self.cur_health < self.max_health:
+            self.state = 1
+            self.image_sprite = pygame.image.load("../Sprites/Characters/Lagavulin Awake.png")
+            self.add_metallicize(-8, self)
+
+        if self.state == 0:
+            self.next_action = self.sleep
+            self.sleep_count += 1
+        else:
+            if self.attack_count < 2:
+                self.next_action = self.attack_18
+                self.attack_count += 1
+            else:
+                self.next_action = self.lose_1_dex_1_str
+                self.attack_count = 0
+
+    def attack_18(self, player, list_of_enemies):
+        self.deal_damage(18, player)
+
+    def lose_1_dex_1_str(self, player, list_of_enemies):
+        self.add_strength(-1, player)
+        self.add_dexterity(-1, player)
+
+    def sleep(self, player, list_of_enemies):
+        pass
+
+
+class Sentry(Enemy):
+    def __init__(self, name="Sentry", health=random.randint(38, 42), position=1):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Sentry.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 350
+        self.position = position
+
+        self.list_of_actions = [self.attack_9, self.shuffle_2_dazed]
+        self.move_index = 0
+
+        if self.position == 2:
+            self.list_of_actions = [self.shuffle_2_dazed, self.attack_9]
+        else:
+            self.list_of_actions = [self.attack_9, self.shuffle_2_dazed]
+
+    def declare_action(self, player, list_of_enemies):
+        self.next_action = self.list_of_actions[self.move_index % len(self.list_of_actions)]
+        self.move_index += 1
+
+    def attack_9(self, player, list_of_enemies):
+        self.deal_damage(9, player)
+
+    def shuffle_2_dazed(self, player, list_of_enemies):
+        player.add_card_to_discard(cardsFile.Dazed())
+        player.add_card_to_discard(cardsFile.Dazed())
+

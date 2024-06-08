@@ -209,7 +209,8 @@ class InGame(Room):
 # ======================================================================================================================
 
 class CombatEncounter(InGame):
-    def __init__(self, combat_difficulty=CombatDifficulty.EASY, custom_list_of_enemies=None, custom_combat_difficulty=None):
+    def __init__(self, combat_difficulty=CombatDifficulty.EASY, custom_list_of_enemies=None,
+                 custom_combat_difficulty=None):
         super().__init__()
 
         self.list_of_enemies = []
@@ -293,7 +294,6 @@ class CombatEncounter(InGame):
             for anim in enemy.anim_list:
                 anim.update(enemy, screen)
 
-
         if self.state == 0:
             # COMBAT START
             player.start_combat()
@@ -338,6 +338,8 @@ class CombatEncounter(InGame):
             player.end_turn()
 
             for enemy in self.list_of_enemies:
+                if o.Effect.METALLICIZE in enemy.dict_of_ongoing:
+                    enemy.add_block(enemy.dict_of_ongoing[o.Effect.METALLICIZE].intensity, enemy)
                 enemy.play_action(player, self.list_of_enemies)
                 enemy.end_turn()
             print(f">>--------------------------------------------------------------------------<<")
@@ -346,37 +348,43 @@ class CombatEncounter(InGame):
     def _get_random_combat(self, combat_difficulty):
         # Get random combat encounter from the list
         fights = ()
-        gremlin_list = random.choices([enemyFile.FatGremlin, enemyFile.MadGremlin, enemyFile.ShieldGremlin, enemyFile.GremlinWizard, enemyFile.SneakyGremlin], k=4)
-   
+        gremlin_list = random.choices(
+            [enemyFile.FatGremlin, enemyFile.MadGremlin, enemyFile.ShieldGremlin, enemyFile.GremlinWizard,
+             enemyFile.SneakyGremlin], k=4)
+
         if combat_difficulty == CombatDifficulty.EASY:
             fights = ([enemyFile.Cultist()],
                       [enemyFile.JawWorm()],
                       [enemyFile.Frog(), enemyFile.Frog(), enemyFile.Worm()],
                       [enemyFile.Worm(), enemyFile.Icecream(), enemyFile.Worm()],
-                      [enemyFile.BlueSlaver()],
-                      [enemyFile.RedLouse(), enemyFile.RedLouse(), enemyFile.GreenLouse()],
-                      [enemyFile.AcidSlimeL()],
-                      [enemyFile.AcidSlimeM(), enemyFile.BlueSlaver()],
-                      [enemyFile.RedSlaver()],
-                      [gremlin() for gremlin in gremlin_list],
-                      [enemyFile.FungiBeast(), enemyFile.FungiBeast(), enemyFile.GreenLouse()],
+                      [enemyFile.RedLouse(), enemyFile.GreenLouse()],
                       [enemyFile.AcidSlimeM(), enemyFile.SpikeSlimeS()],
-                      [enemyFile.SpikeSlimeM(), enemyFile.AcidSlimeS()],
-                      [enemyFile.SpikeSlimeL()],
-                      [enemyFile.SpikeSlimeS(), enemyFile.SpikeSlimeS(), enemyFile.AcidSlimeS()],
-                      [enemyFile.Looter(), enemyFile.GreenLouse()]
+                      [enemyFile.SpikeSlimeM(), enemyFile.AcidSlimeS()]
                       )
+
         elif combat_difficulty == CombatDifficulty.NORMAL:
-            fights = ([enemyFile.Cultist()],
-                      [enemyFile.JawWorm()],
-                      [enemyFile.Frog(), enemyFile.Frog(), enemyFile.Worm()],
-                      [enemyFile.Worm(), enemyFile.Icecream(), enemyFile.Worm()]
+            fights = ([gremlin() for gremlin in gremlin_list],
+                      [enemyFile.SpikeSlimeL()],
+                      [enemyFile.AcidSlimeL()],
+                      [enemyFile.SpikeSlimeS(), enemyFile.SpikeSlimeS(), enemyFile.SpikeSlimeS(), enemyFile.AcidSlimeS(), enemyFile.AcidSlimeS()],
+                      [enemyFile.BlueSlaver()],
+                      [enemyFile.RedSlaver()],
+                      [enemyFile.RedLouse(), enemyFile.GreenLouse(), enemyFile.RedLouse()],
+                      [enemyFile.GreenLouse(), enemyFile.RedLouse(), enemyFile.GreenLouse()],
+                      [enemyFile.FungiBeast(),enemyFile.FungiBeast()],
+                      [enemyFile.AcidSlimeM, enemyFile.Looter()],
+                      [enemyFile.AcidSlimeM, enemyFile.RedSlaver()],
+                      [enemyFile.SpikeSlimeM, enemyFile.Cultist()],
+                      [enemyFile.SpikeSlimeM, enemyFile.BlueSlaver()],
+                      [enemyFile.FungiBeast(), enemyFile.SpikeSlimeM()],
+                      [enemyFile.JawWorm(), enemyFile.RedLouse(), enemyFile.GreenLouse()],
+                      [enemyFile.JawWorm(), enemyFile.AcidSlimeM()],
+                      [enemyFile.Looter]
                       )
         elif combat_difficulty == CombatDifficulty.ELITE:
-            fights = ([enemyFile.Cultist()],
-                      [enemyFile.JawWorm()],
-                      [enemyFile.Frog(), enemyFile.Frog(), enemyFile.Worm()],
-                      [enemyFile.Worm(), enemyFile.Icecream(), enemyFile.Worm()]
+            fights = ([enemyFile.GremlinNob()],
+                      [enemyFile.Lagavulin()],
+                      [enemyFile.Sentry(position=1),enemyFile.Sentry(position=2),enemyFile.Sentry(position=3)]
                       )
 
         self.list_of_enemies += random.choice(fights)
@@ -586,7 +594,8 @@ class Ritual(RandomEncounter):
                               "One of them rises up his jagged dagger, whispering a prayer to his goddess. What do you do?\n",
                               screen)
         elif self.state == 1:
-            player.current_room = CombatEncounter([enemyFile.Cultist(), enemyFile.Cultist()])
+            player.current_room = CombatEncounter(custom_list_of_enemies=[enemyFile.Cultist(), enemyFile.Cultist()],
+                                                  custom_combat_difficulty=CombatDifficulty.NORMAL)
         elif self.state == 2:
             multi_text_render("You join in the prayers, mumbling something under your breath.\n"
                               "The screams of killed man slowly fade away, leaving you with nothing but silence.\n"
