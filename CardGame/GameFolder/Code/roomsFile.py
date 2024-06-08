@@ -359,7 +359,7 @@ class CombatEncounter(InGame):
                       [enemyFile.RedSlaver()],
                       [gremlin() for gremlin in gremlin_list],
                       [enemyFile.FungiBeast(), enemyFile.FungiBeast(), enemyFile.GreenLouse()],
-                      [enemyFile.AcidSlimeM(), enemyFile.SpikeSlimeS()]
+                      [enemyFile.AcidSlimeM(), enemyFile.SpikeSlimeS()],
                       [enemyFile.SpikeSlimeM(), enemyFile.AcidSlimeS()],
                       [enemyFile.SpikeSlimeL()],
                       [enemyFile.SpikeSlimeS(), enemyFile.SpikeSlimeS(), enemyFile.AcidSlimeS()],
