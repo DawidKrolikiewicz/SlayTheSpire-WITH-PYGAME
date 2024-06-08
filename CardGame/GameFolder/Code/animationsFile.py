@@ -5,8 +5,8 @@ from fontsFile import text_font_super_big
 
 
 class Anim:
-    def __init__(self, player, target, value):
-        player.test.append(self)
+    def __init__(self, character, target, value):
+        character.anim_list.append(self)
         self.target = target
 
         self.vertical = -10
@@ -21,14 +21,13 @@ class Anim:
         self.image.set_alpha(255)
         self.rect = self.image.get_rect()
         self.rect.center = self.text_rect.center
-        print(self.image)
 
-    def update(self, player, screen):
+    def update(self, character, screen):
         if self.image.get_alpha() > 0:
             self.update_position()
             self.draw(screen)
         else:
-            player.test.remove(self)
+            character.anim_list.remove(self)
 
     def update_position(self):
         if self.vertical < 10:
@@ -45,17 +44,25 @@ class Anim:
 
 
 class DamageDealtAnim(Anim):
-    def __init__(self, player, target, value):
-        super().__init__(player, target, value)
+    def __init__(self, character, target, value):
+        super().__init__(character, target, value)
         self.image = pygame.image.load("../Sprites/Misc/Star.png")
         self.rect = self.image.get_rect()
         self.rect.center = self.text_rect.center
 
 
 class BlockAddedAnim(Anim):
-    def __init__(self, player, target, value):
-        super().__init__(player, target, value)
+    def __init__(self, character, target, value):
+        super().__init__(character, target, value)
         self.image = pygame.image.load("../Sprites/Misc/Shield.png")
+        self.rect = self.image.get_rect()
+        self.rect.center = self.text_rect.center
+
+
+class HealAnim(Anim):
+    def __init__(self, character, target, value):
+        super().__init__(character, target, value)
+        self.image = pygame.image.load("../Sprites/Misc/Heal.png")
         self.rect = self.image.get_rect()
         self.rect.center = self.text_rect.center
 

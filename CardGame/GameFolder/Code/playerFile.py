@@ -35,8 +35,6 @@ class Player(characterFile.Character):
         self.highlight = None
         self.drag = None
 
-        self.test = []
-
         # VISUAL RELATED
         self.image_sprite = pygame.image.load("../Sprites/Characters/Player.png")
         self.rect_sprite = self.image_sprite.get_rect()
@@ -144,7 +142,6 @@ class Player(characterFile.Character):
 
     def deal_damage(self, damage, target, is_attack=True, hit_block=True):
         super().deal_damage(damage, target)
-        animationsFile.DamageDealtAnim(self, target, damage)  # TRIGGER FOR ANIMATION
         if target == self and damage > 0:
             # Post event
             pygame.event.post(pygame.event.Event(ON_PLAYER_LOSE_HP_FROM_CARD))
@@ -153,7 +150,6 @@ class Player(characterFile.Character):
 
     def add_block(self, value, target, affected_by_ongoing=True):
         super().add_block(value, target)
-        animationsFile.BlockAddedAnim(self, target, value)  # TRIGGER FOR ANIMATION
         if target == self:
             # Post event
             pygame.event.post(pygame.event.Event(ON_PLAYER_GAIN_BLOCK))

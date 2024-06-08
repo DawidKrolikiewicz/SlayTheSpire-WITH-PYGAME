@@ -259,8 +259,13 @@ class CombatEncounter(InGame):
             card.update(screen, player, index, self.bg_hand_rect)
         self._handle_highlight(player, screen)
 
-        for anim in player.test:
+        # Update animated 'particles' for actions taken
+        for anim in player.anim_list:
             anim.update(player, screen)
+
+        for enemy in self.list_of_enemies:
+            for anim in enemy.anim_list:
+                anim.update(enemy, screen)
 
         if self.state == 0:
             # COMBAT START

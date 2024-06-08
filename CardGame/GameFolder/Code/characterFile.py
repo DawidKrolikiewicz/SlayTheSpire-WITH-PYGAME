@@ -2,6 +2,7 @@ import pygame.sprite
 import cardsFile
 import ongoingFile as o
 from fontsFile import text_font
+import animationsFile
 
 
 class Character(pygame.sprite.Sprite):
@@ -30,6 +31,8 @@ class Character(pygame.sprite.Sprite):
 
         self.rect_ongoing = (0, 0, 0, 0)
         self.counter = 0
+
+        self.anim_list = []
 
     def event_listener(self, ev, player, list_of_enemies):
         for key in self.dict_of_ongoing:
@@ -102,6 +105,8 @@ class Character(pygame.sprite.Sprite):
 
         damage = int(damage)
 
+        animationsFile.DamageDealtAnim(self, target, damage)  # TRIGGER FOR ANIMATION
+
         if hit_block:
             og_block = target.block
             target.block -= damage
@@ -132,11 +137,14 @@ class Character(pygame.sprite.Sprite):
                 value = int(value * 0.75)
 
         target.block += value
+        animationsFile.BlockAddedAnim(target, target, value)  # TRIGGER FOR ANIMATION
 
     def heal(self, value, target):
         target.cur_health += value
         if target.cur_health > target.max_health:
             target.cur_health = target.max_health
+
+        animationsFile.HealAnim(target, target, value)  # TRIGGER FOR ANIMATION
 
     def add_strength(self, value, target):
         if o.Effect.STRENGTH not in target.dict_of_ongoing:
