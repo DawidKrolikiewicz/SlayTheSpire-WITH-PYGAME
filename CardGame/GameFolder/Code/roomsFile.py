@@ -277,6 +277,8 @@ class CombatEncounter(InGame):
                 if enemy.cur_health <= 0:
                     if o.Effect.SPORE_CLOUD in enemy.dict_of_ongoing:
                         enemy.add_vulnerable(2, player)
+                    if o.Effect.THIEVERY in enemy.dict_of_ongoing:
+                        player.coins += enemy.stolen_gold
                     self.list_of_enemies.remove(enemy)
                     print(f"Enemy {enemy.name} is DEAD!")
 
@@ -311,14 +313,20 @@ class CombatEncounter(InGame):
         #[enemyFile.RedLouse(), enemyFile.RedLouse(), enemyFile.GreenLouse()],
         #[enemyFile.AcidSlimeL()],
         #[enemyFile.AcidSlimeM(), enemyFile.BlueSlaver()],
+        #[enemyFile.RedSlaver()],
+        #[gremlin() for gremlin in gremlin_list],
+        #[enemyFile.FungiBeast(), enemyFile.FungiBeast(), enemyFile.GreenLouse()],
+        #[enemyFile.AcidSlimeM(), enemyFile.SpikeSlimeS()]
+        #[enemyFile.SpikeSlimeM(), enemyFile.AcidSlimeS()],
+        #[enemyFile.SpikeSlimeL()],
+        #[enemyFile.SpikeSlimeS(), enemyFile.SpikeSlimeS(), enemyFile.AcidSlimeS()]
+        #[enemyFile.Looter(), enemyFile.GreenLouse()]
+
         gremlin_list = random.choices([enemyFile.FatGremlin, enemyFile.MadGremlin, enemyFile.ShieldGremlin, enemyFile.GremlinWizard, enemyFile.SneakyGremlin], k=4)
 
-        fights = (
-            [enemyFile.RedSlaver()],
-            [gremlin() for gremlin in gremlin_list],
-            [enemyFile.FungiBeast(), enemyFile.FungiBeast(), enemyFile.GreenLouse()],
-            [enemyFile.AcidSlimeM(), enemyFile.AcidSlimeS()]
-            )
+        fights = ([gremlin() for gremlin in gremlin_list],
+                  [enemyFile.Looter(), enemyFile.GreenLouse()])
+
         self.list_of_enemies += random.choice(fights)
 
     def _position_enemies(self):

@@ -305,3 +305,8 @@ class Character(pygame.sprite.Sprite):
 
         target.dict_of_ongoing[o.Effect.SPORE_CLOUD].intensity += value
 
+    def add_thievery(self, value, target):
+        if o.Effect.THIEVERY not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.THIEVERY] = o.Thievery()
+
+        target.dict_of_ongoing[o.Effect.THIEVERY].intensity += value

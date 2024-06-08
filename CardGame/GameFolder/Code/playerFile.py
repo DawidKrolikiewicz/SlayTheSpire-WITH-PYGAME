@@ -60,6 +60,7 @@ class Player(characterFile.Character):
     def info(self):
         super().info()
         print(f"    Mana: {self.mana}")
+        print(f"    Coins: {self.coins} ")
         print(f"    Deck: ", end="")
         for card in self.deck:
             print(f"{card.name}[{card.cost}]", end=" / ")

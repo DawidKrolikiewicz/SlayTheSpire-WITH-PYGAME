@@ -38,6 +38,7 @@ class Effect(enum.Enum):
     ENTANGLED = 26
     ANGRY = 27
     SPORE_CLOUD = 28
+    THIEVERY = 29
 
 
 # ======================= Ongoing Icons (superclass) =======================
@@ -625,6 +626,23 @@ class SporeCloud(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/SporeCloudIcon.png")
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        pass
+
+    def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)
+
+
+class Thievery(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = value
+        self.value = self.intensity
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/ThieveryIcon.png")
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass

@@ -35,6 +35,7 @@ class Enemy(characterFile.Character):
 
     def deal_damage(self, damage, target, is_attack=True, hit_block=True):
         super().deal_damage(damage, target, is_attack, hit_block)
+
         if target.__class__.__name__ == "Player" and damage > 0:
             if o.Effect.FLAME_BARRIER in target.dict_of_ongoing and target.dict_of_ongoing[
                 o.Effect.FLAME_BARRIER].intensity > 0:
@@ -630,6 +631,131 @@ class AcidSlimeS(Enemy):
         self.add_weak(2, player)
 
 
+class SpikeSlimeL(Enemy):
+    def __init__(self, name="Spike Slime", health=random.randint(64, 70)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Spike Slime (L).png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+
+        self.list_of_actions = [self.attack_16_shuffle_2_slimed, self.apply_3_frail]
+        self.last_actions = []
+        self.split_triggered = False
+
+    def declare_action(self, player, list_of_enemies):
+        #if self.cur_health <= self.max_health / 2 and not self.split_triggered:
+        #self.next_action = self.split
+        #return
+
+        actions_weights = {
+            self.attack_16_shuffle_2_slimed: 30,
+            self.apply_3_frail: 70
+        }
+
+        if len(self.last_actions) >= 2 and self.last_actions[-1] == self.last_actions[-2]:
+            if self.last_actions[-1] == self.attack_16_shuffle_2_slimed:
+                actions_weights[self.attack_16_shuffle_2_slimed] = 0
+            else:
+                actions_weights[self.apply_3_frail] = 0
+
+        total_weight = sum(actions_weights.values())
+
+        if total_weight == 0:
+            self.next_action = random.choice(
+                [action for action in self.list_of_actions if action != self.last_actions[-1]])
+        else:
+            self.next_action = \
+            random.choices(list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
+
+        self.last_actions.append(self.next_action)
+        if len(self.last_actions) > 3:
+            self.last_actions.pop(0)
+
+    def attack_16_shuffle_2_slimed(self, player, list_of_enemies):
+        self.deal_damage(16, player)
+        player.add_card_to_discard(cardsFile.Slimed())
+        player.add_card_to_discard(cardsFile.Slimed())
+
+    def apply_3_frail(self, player, list_of_enemies):
+        self.add_frail(3, player)
+
+    def split(self, player, list_of_enemies):
+        self.split_triggered = True
+
+        new_slime_1 = SpikeSlimeM(health=self.cur_health)
+        new_slime_2 = SpikeSlimeM(health=self.cur_health)
+
+        list_of_enemies.remove(self)
+        list_of_enemies.append(new_slime_1)
+        list_of_enemies.append(new_slime_2)
+
+
+class SpikeSlimeM(Enemy):
+    def __init__(self, name="Spike Slime", health=random.randint(28, 32)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Spike Slime (M).png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+
+        self.list_of_actions = [self.attack_8_shuffle_1_slimed, self.apply_2_frail]
+        self.last_actions = []
+
+    def declare_action(self, player, list_of_enemies):
+        actions_weights = {
+            self.attack_8_shuffle_1_slimed: 30,
+            self.apply_2_frail: 70
+        }
+
+        if len(self.last_actions) >= 2 and self.last_actions[-1] == self.last_actions[-2]:
+            if self.last_actions[-1] == self.attack_8_shuffle_1_slimed:
+                actions_weights[self.attack_8_shuffle_1_slimed] = 0
+            else:
+                actions_weights[self.apply_2_frail] = 0
+
+        total_weight = sum(actions_weights.values())
+
+        if total_weight == 0:
+            self.next_action = random.choice(
+                [action for action in self.list_of_actions if action != self.last_actions[-1]])
+        else:
+            self.next_action = \
+            random.choices(list(actions_weights.keys()), weights=list(actions_weights.values()), k=1)[0]
+
+        self.last_actions.append(self.next_action)
+        if len(self.last_actions) > 3:
+            self.last_actions.pop(0)
+
+    def attack_8_shuffle_1_slimed(self, player, list_of_enemies):
+        self.deal_damage(8, player)
+        player.add_card_to_discard(cardsFile.Slimed())
+
+    def apply_2_frail(self, player, list_of_enemies):
+        self.add_frail(2, player)
+
+
+class SpikeSlimeS(Enemy):
+    def __init__(self, name="Spike Slime", health=random.randint(10, 14)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Spike Slime (S).png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+
+    def declare_action(self, player, list_of_enemies):
+        self.next_action = self.attack_5
+
+    def attack_5(self, player, list_of_enemies):
+        self.deal_damage(5, player)
+
+
 class FatGremlin(Enemy):
     def __init__(self, name="Fat Gremlin", health=random.randint(13, 17)):
         super().__init__(name, health)
@@ -727,15 +853,71 @@ class ShieldGremlin(Enemy):
         self.list_of_actions = [self.add_armor_7, self.attack_6]
 
     def declare_action(self, player, list_of_enemies):
-        if list_of_enemies:
+        if len(list_of_enemies) > 1:
             self.next_action = self.add_armor_7
+        else:
+            self.next_action = random.choice(self.list_of_actions)
+
+    def choose_target(self, list_of_enemies):
+        if len(list_of_enemies) > 1:
             self.target = random.choice([enemy for enemy in list_of_enemies if enemy is not self])
         else:
             self.target = self
-            self.next_action = random.choice(self.list_of_actions)
 
     def add_armor_7(self, player, list_of_enemies):
+        self.choose_target(list_of_enemies)
         self.add_block(7, self.target)
 
     def attack_6(self, player, list_of_enemies):
         self.deal_damage(6, player)
+
+
+class Looter(Enemy):
+    def __init__(self, name="Looter", health=random.randint(44, 48)):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Looter.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 340
+
+        self.add_thievery(15, self)
+        self.stolen_gold = 0
+
+        self.turn_counter = 0
+        self.has_lunged = False
+
+    def deal_damage(self, damage, target, is_attack=True, hit_block=True):
+        super().deal_damage(damage, target, is_attack, hit_block)
+        if o.Effect.THIEVERY in self.dict_of_ongoing:
+            target.coins -= self.dict_of_ongoing[o.Effect.THIEVERY].intensity
+            self.stolen_gold += self.dict_of_ongoing[o.Effect.THIEVERY].intensity
+
+    def declare_action(self, player, list_of_enemies):
+        self.turn_counter += 1
+
+        if self.turn_counter == 1 or self.turn_counter == 2:
+            self.next_action = self.attack_10
+        elif self.turn_counter == 3:
+            self.next_action = random.choice([self.attack_12, self.gain_6_armor])
+            if self.next_action == self.attack_12:
+                self.has_lunged = True
+        else:
+            if self.has_lunged:
+                self.next_action = self.gain_6_armor
+                self.has_lunged = False
+            else:
+                self.next_action = self.escape
+
+    def attack_10(self, player, list_of_enemies):
+        self.deal_damage(10, player)
+
+    def attack_12(self, player, list_of_enemies):
+        self.deal_damage(12, player)
+
+    def gain_6_armor(self, player, list_of_enemies):
+        self.add_block(6, self)
+
+    def escape(self, player, list_of_enemies):
+        list_of_enemies.remove(self)
