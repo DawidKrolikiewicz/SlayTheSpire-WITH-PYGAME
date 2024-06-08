@@ -4,6 +4,7 @@ import characterFile
 import roomsFile
 import cardsFile
 import ongoingFile as o
+import animationsFile
 
 ON_CARD_EXHAUSTED = pygame.USEREVENT + 1
 ON_STATUS_CARD_DRAWN = pygame.USEREVENT + 2
@@ -37,7 +38,7 @@ class Player(characterFile.Character):
         # VISUAL RELATED
         self.image_sprite = pygame.image.load("../Sprites/Characters/Player.png")
         self.rect_sprite = self.image_sprite.get_rect()
-        self.rect_sprite.bottom = 340
+        self.rect_sprite.bottom = 350
         self.rect_sprite.centerx = 250
 
         self.image_mana = characterFile.text_font.render(f"{self.mana} / 3", True, (0, 0, 0))
@@ -201,12 +202,15 @@ class Player(characterFile.Character):
     def start_combat(self):
         self.deck += self.run_deck
         self.shuffle_deck()
+        for card in self.deck:
+            card.reset_card_position()
 
     def end_combat(self):
         self.deck.clear()
         self.hand.clear()
         self.discard.clear()
         self.dict_of_ongoing.clear()
+        self.anim_list.clear()
 
     def start_turn(self):
         self.draw_card(5)
