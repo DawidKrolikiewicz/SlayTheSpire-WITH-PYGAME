@@ -61,6 +61,7 @@ class Player(characterFile.Character):
     def info(self):
         super().info()
         print(f"    Mana: {self.mana}")
+        print(f"    Coins: {self.coins} ")
         print(f"    Deck: ", end="")
         for card in self.deck:
             print(f"{card.name}[{card.cost}]", end=" / ")
@@ -83,6 +84,10 @@ class Player(characterFile.Character):
             if o.Effect.CORRUPTION in self.dict_of_ongoing and card.type == cardsFile.CardType.SKILL:
                 card.cost = 0
                 card.exhaust = True
+
+            if o.Effect.ENTANGLED in self.dict_of_ongoing and card.type == cardsFile.CardType.ATTACK:
+                if self.dict_of_ongoing[o.Effect.ENTANGLED].value > 0:
+                    return
 
             if card.cost <= self.mana or use_mana is False:
                 if use_mana is True:

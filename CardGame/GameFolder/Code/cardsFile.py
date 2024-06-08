@@ -1635,6 +1635,25 @@ class Burn(CardBase):
         # SHOP RELATED
         self.rarity = Rarity.STATUS
 
+class Slimed(CardBase):
+    def __init__(self):
+        super().__init__()
+        # GAME RELATED
+        self.type = CardType.STATUS
+        self.cost = 1
+        self.text = "There is no text here!"
+        self.target = Targeting.ANY
+        self.exhaust = True
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Cards/Slimed.png")
+        # SHOP RELATED
+        self.rarity = Rarity.STATUS
+        self.price_range = (99, 99)
+        self.weight = 0
+
+    def action(self, player, list_of_enemies, target):
+        pass
+
 
 # ============================================ MEME TESTING CARDS AREA :) ============================================ #
 # ==================================================================================================================== #

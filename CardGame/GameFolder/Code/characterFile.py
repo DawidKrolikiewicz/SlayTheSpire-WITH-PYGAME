@@ -120,6 +120,9 @@ class Character(pygame.sprite.Sprite):
         if o.Effect.CURLUP in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.CURLUP].action(target)
 
+        if o.Effect.ANGRY in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.ANGRY].action(target)
+
         target.cur_health -= damage
         if target.__class__.__name__ == "Player":
             if cardsFile.BloodForBlood.cost > 0:
@@ -321,3 +324,26 @@ class Character(pygame.sprite.Sprite):
         target.dict_of_ongoing[o.Effect.DOUBLE_TAP].counter += value
         animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
+    def add_entangled(self, value, target):
+        if o.Effect.ENTANGLED not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.ENTANGLED] = o.Entangled()
+
+        target.dict_of_ongoing[o.Effect.ENTANGLED].duration += value
+
+    def add_angry(self, value, target):
+        if o.Effect.ANGRY not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.ANGRY] = o.Angry()
+
+        target.dict_of_ongoing[o.Effect.ANGRY].intensity += value
+
+    def add_spore_cloud(self, value, target):
+        if o.Effect.SPORE_CLOUD not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.SPORE_CLOUD] = o.SporeCloud()
+
+        target.dict_of_ongoing[o.Effect.SPORE_CLOUD].intensity += value
+
+    def add_thievery(self, value, target):
+        if o.Effect.THIEVERY not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.THIEVERY] = o.Thievery()
+
+        target.dict_of_ongoing[o.Effect.THIEVERY].intensity += value
