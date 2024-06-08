@@ -501,8 +501,8 @@ class AcidSlimeL(Enemy):
 
     def declare_action(self, player, list_of_enemies):
         #if self.cur_health <= self.max_health / 2 and not self.split_triggered:
-        #self.next_action = self.split
-        #return
+            #self.next_action = self.split
+            #return
 
         actions_weights = {
             self.attack_11_shuffle_2_slimed: 30,
@@ -647,8 +647,8 @@ class SpikeSlimeL(Enemy):
 
     def declare_action(self, player, list_of_enemies):
         #if self.cur_health <= self.max_health / 2 and not self.split_triggered:
-        #self.next_action = self.split
-        #return
+            #self.next_action = self.split
+            #return
 
         actions_weights = {
             self.attack_16_shuffle_2_slimed: 30,

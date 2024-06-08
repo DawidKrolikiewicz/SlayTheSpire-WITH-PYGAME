@@ -254,6 +254,8 @@ class CombatEncounter(InGame):
             card.update(screen, player, index, self.bg_hand_rect)
         self._handle_highlight(player, screen)
 
+        #self._position_enemies()
+
         if self.state == 0:
             # COMBAT START
             player.start_combat()
@@ -325,7 +327,7 @@ class CombatEncounter(InGame):
         gremlin_list = random.choices([enemyFile.FatGremlin, enemyFile.MadGremlin, enemyFile.ShieldGremlin, enemyFile.GremlinWizard, enemyFile.SneakyGremlin], k=4)
 
         fights = ([gremlin() for gremlin in gremlin_list],
-                  [enemyFile.Looter(), enemyFile.GreenLouse()])
+                  [enemyFile.SpikeSlimeL()])
 
         self.list_of_enemies += random.choice(fights)
 
