@@ -352,3 +352,9 @@ class Character(pygame.sprite.Sprite):
             target.dict_of_ongoing[o.Effect.THIEVERY] = o.Thievery()
 
         target.dict_of_ongoing[o.Effect.THIEVERY].intensity += value
+
+    def add_enrage(self, value, target):
+        if o.Effect.ENRAGE not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.ENRAGE] = o.Enrage()
+
+        target.dict_of_ongoing[o.Effect.ENRAGE].intensity += value
