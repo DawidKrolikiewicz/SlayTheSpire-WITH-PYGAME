@@ -348,22 +348,22 @@ class CombatEncounter(InGame):
         gremlin_list = random.choices([enemyFile.FatGremlin, enemyFile.MadGremlin, enemyFile.ShieldGremlin, enemyFile.GremlinWizard, enemyFile.SneakyGremlin], k=4)
     
         if combat_difficulty == CombatDifficulty.EASY:
-            fights = ([enemyFile.Cultist()],
-                      [enemyFile.JawWorm()],
-                      [enemyFile.Frog(), enemyFile.Frog(), enemyFile.Worm()],
+            fights = (#[enemyFile.Cultist()],
+                      #[enemyFile.JawWorm()],
+                      #[enemyFile.Frog(), enemyFile.Frog(), enemyFile.Worm()],
                       [enemyFile.Worm(), enemyFile.Icecream(), enemyFile.Worm()],
-                      [enemyFile.BlueSlaver()],
-                      [enemyFile.RedLouse(), enemyFile.RedLouse(), enemyFile.GreenLouse()],
-                      [enemyFile.AcidSlimeL()],
-                      [enemyFile.AcidSlimeM(), enemyFile.BlueSlaver()],
-                      [enemyFile.RedSlaver()],
-                      [gremlin() for gremlin in gremlin_list],
-                      [enemyFile.FungiBeast(), enemyFile.FungiBeast(), enemyFile.GreenLouse()],
-                      [enemyFile.AcidSlimeM(), enemyFile.SpikeSlimeS()],
-                      [enemyFile.SpikeSlimeM(), enemyFile.AcidSlimeS()],
-                      [enemyFile.SpikeSlimeL()],
-                      [enemyFile.SpikeSlimeS(), enemyFile.SpikeSlimeS(), enemyFile.AcidSlimeS()],
-                      [enemyFile.Looter(), enemyFile.GreenLouse()]
+                      #[enemyFile.BlueSlaver()],
+                      #[enemyFile.RedLouse(), enemyFile.RedLouse(), enemyFile.GreenLouse()],
+                      #[enemyFile.AcidSlimeL()],
+                      #[enemyFile.AcidSlimeM(), enemyFile.BlueSlaver()],
+                      #[enemyFile.RedSlaver()],
+                      #[gremlin() for gremlin in gremlin_list],
+                      #[enemyFile.FungiBeast(), enemyFile.FungiBeast(), enemyFile.GreenLouse()],
+                      #[enemyFile.AcidSlimeM(), enemyFile.SpikeSlimeS()],
+                      #[enemyFile.SpikeSlimeM(), enemyFile.AcidSlimeS()],
+                      #[enemyFile.SpikeSlimeL()],
+                      #[enemyFile.SpikeSlimeS(), enemyFile.SpikeSlimeS(), enemyFile.AcidSlimeS()],
+                      #[enemyFile.Looter(), enemyFile.GreenLouse()]
                       )
         elif combat_difficulty == CombatDifficulty.NORMAL:
             fights = ([enemyFile.Cultist()],
