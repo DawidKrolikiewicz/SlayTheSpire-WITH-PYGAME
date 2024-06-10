@@ -5,6 +5,7 @@ import roomsFile
 import cardsFile
 import ongoingFile as o
 import animationsFile
+import fontsFile
 
 ON_CARD_EXHAUSTED = pygame.USEREVENT + 1
 ON_STATUS_CARD_DRAWN = pygame.USEREVENT + 2
@@ -52,10 +53,18 @@ class Player(characterFile.Character):
         super().update(screen)
 
         # DRAWING PLAYER MANA
-        self.image_mana = characterFile.text_font.render(f"{self.mana} / 3", True, (0, 0, 0))
+        self.image_mana = fontsFile.text_font_big.render(f"{self.mana} / 3", True, (255, 255, 255))
         self.rect_mana = self.image_mana.get_rect()
+        outline_mana = pygame.rect.Rect(0, 0, self.rect_mana.width + 4, self.rect_mana.height + 4)
         self.rect_mana.midbottom = self.rect_sprite.midtop - pygame.Vector2(0, 4)
-        pygame.draw.rect(screen, (255, 0, 0), self.rect_mana)
+        outline_mana.center = self.rect_mana.center
+
+        pygame.draw.rect(screen, (255, 0, 0), outline_mana)
+        fill = self.mana / 3
+        if fill > 1:
+            fill = 1
+        self.rect_mana.width = self.rect_mana.width * fill
+        pygame.draw.rect(screen, (48, 33, 209), self.rect_mana)
         screen.blit(self.image_mana, self.rect_mana.topleft)
 
     def info(self):
@@ -215,9 +224,10 @@ class Player(characterFile.Character):
         self.discard.clear()
         self.dict_of_ongoing.clear()
         self.anim_list.clear()
+        if self.cur_health > 0:
+            self.heal(6, self)
 
     def start_turn(self):
-        self.draw_card(5)
         self.mana = 3
         if o.Effect.BARRICADE not in self.dict_of_ongoing:
             self.block = 0
@@ -230,6 +240,7 @@ class Player(characterFile.Character):
             self.draw_card(self.dict_of_ongoing[o.Effect.BRUTALITY].intensity)
 
         super().start_turn()
+        self.draw_card(5)
 
     def end_turn(self):
         super().end_turn()

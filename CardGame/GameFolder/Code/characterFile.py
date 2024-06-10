@@ -40,7 +40,7 @@ class Character(pygame.sprite.Sprite):
 
     def update(self, screen):
         # DRAWING CHARACTER SPRITE
-        pygame.draw.rect(screen, (255, 0, 0), self.rect_sprite)
+        #pygame.draw.rect(screen, (255, 0, 0), self.rect_sprite)
         screen.blit(self.image_sprite, self.rect_sprite.topleft)
 
         # DRAWING CHARACTER NAME
@@ -52,9 +52,14 @@ class Character(pygame.sprite.Sprite):
         self.image_hp = text_font.render(f"[{self.block}] {self.cur_health} / {self.max_health} HP", True,
                                          (0, 0, 0))
         self.rect_hp = self.image_hp.get_rect()
+        outline_hp = pygame.rect.Rect(0, 0, self.rect_hp.width + 2, self.rect_hp.height + 2)
         self.rect_hp.top = self.rect_name.bottom + 4
         self.rect_hp.centerx = self.rect_sprite.centerx
-        pygame.draw.rect(screen, (0, 100, 255), self.rect_hp)
+        outline_hp.center = self.rect_hp.center
+
+        pygame.draw.rect(screen, (255, 0, 0), outline_hp)
+        self.rect_hp.width = self.rect_hp.width * (self.cur_health / self.max_health)
+        pygame.draw.rect(screen, (83, 173, 19), self.rect_hp)
         screen.blit(self.image_hp, self.rect_hp.topleft)
 
         # ONGOING EFFECTS
@@ -288,7 +293,7 @@ class Character(pygame.sprite.Sprite):
     def add_barricade(self, target):
         if o.Effect.BARRICADE not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.BARRICADE] = o.Barricade()
-            animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
+            animationsFile.BuffAnim(self, target, " ")  # TRIGGER FOR ANIMATION
 
     def add_berserk(self, value, target):
         if o.Effect.BERSERK not in target.dict_of_ongoing:

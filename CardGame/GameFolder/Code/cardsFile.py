@@ -1152,7 +1152,7 @@ class Sentinel(CardBase):
         self.rarity = Rarity.UNCOMMON
 
     def action(self, player, list_of_enemies, target):
-        player.add_block(5)
+        player.add_block(5, player)
 
 
 # ==================================================================================================================== #

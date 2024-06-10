@@ -3,6 +3,7 @@ import pygame
 import characterFile
 import ongoingFile as o
 import cardsFile
+import declarationFile
 
 
 # ========================================= Enemy (superclass) =========================================
@@ -16,22 +17,41 @@ class Enemy(characterFile.Character):
         self.list_of_actions = []
         self.next_action = None
 
-        self.image_next_action = characterFile.text_font.render(f"{self.next_action}", True, (0, 0, 0))
-        self.rect_next_action = self.image_next_action.get_rect()
-        self.rect_next_action.centerx = self.rect_sprite.centerx
-        self.rect_next_action.top = self.rect_sprite.top - 4
+        #self.image_next_action = characterFile.text_font.render(f"{self.next_action}", True, (0, 0, 0))
+        #self.rect_next_action = self.image_next_action.get_rect()
+        #self.rect_next_action.centerx = self.rect_sprite.centerx
+        #self.rect_next_action.top = self.rect_sprite.top - 4
+
+        self.list_incoming = []
 
     def update(self, screen):
         super().update(screen)
 
         if self.next_action is not None:
-            self.image_next_action = characterFile.text_font.render(f"{self.next_action.__name__}", True, (0, 0, 0))
-            self.rect_next_action = self.image_next_action.get_rect()
-            self.rect_next_action.centerx = self.rect_sprite.centerx
-            self.rect_next_action.bottom = self.rect_sprite.top - 4
+            #self.image_next_action = characterFile.text_font.render(f"{self.next_action.__name__}", True, (0, 0, 0))
+            #self.rect_next_action = self.image_next_action.get_rect()
+            #self.rect_next_action.centerx = self.rect_sprite.centerx
+            #self.rect_next_action.bottom = self.rect_sprite.top - 4
 
-            pygame.draw.rect(screen, (255, 0, 0), self.rect_next_action)
-            screen.blit(self.image_next_action, self.rect_next_action.topleft)
+            #pygame.draw.rect(screen, (255, 0, 0), self.rect_next_action)
+            #screen.blit(self.image_next_action, self.rect_next_action.topleft)
+
+            outline = pygame.rect.Rect(0, 0, 30*len(self.list_incoming) + 8, 38)
+            rect_for_actions = pygame.rect.Rect(0, 0, 30*len(self.list_incoming), 30)
+            outline.bottom = self.rect_sprite.top - 2
+            outline.centerx = self.rect_sprite.centerx
+            rect_for_actions.center = outline.center
+            pygame.draw.rect(screen, (148, 6, 30), outline)
+            pygame.draw.rect(screen, (196, 194, 195), rect_for_actions)
+            offset = 0
+
+            for action_type in self.list_incoming:
+                action_type.rect.topleft = rect_for_actions.topleft
+                action_type.rect.left += offset
+                offset += 30
+                screen.blit(action_type.image, action_type.rect.topleft)
+                if action_type.value is not None:
+                    screen.blit(action_type.value_image, action_type.rect.topleft)
 
     def deal_damage(self, damage, target, is_attack=True, hit_block=True):
         super().deal_damage(damage, target, is_attack, hit_block)
@@ -51,6 +71,7 @@ class Enemy(characterFile.Character):
     def play_action(self, player, list_of_enemies):
         if self.next_action is not None:
             self.next_action(player, list_of_enemies)
+            self.list_incoming.clear()
 
 
 # ========================================== Specific Characters ==========================================
@@ -66,6 +87,17 @@ class Frog(Enemy):
         self.rect_sprite.bottom = 350
 
         self.list_of_actions = [self.attack_7, self.attack_2_block_4, self.gain_str_1_and_block_1]
+
+    def declare_action(self, player, list_of_enemies):
+        super().declare_action(player, list_of_enemies)
+        if self.next_action == self.attack_7:
+            self.list_incoming.append(declarationFile.Attack(7))
+        elif self.next_action == self.attack_2_block_4:
+            self.list_incoming.append(declarationFile.Attack(2))
+            self.list_incoming.append(declarationFile.Block(4))
+        elif self.next_action == self.gain_str_1_and_block_1:
+            self.list_incoming.append(declarationFile.Block(1))
+            self.list_incoming.append(declarationFile.Buff(1))
 
     def attack_7(self, player, list_of_enemies):
         print(f">> {self.name} attacks!")
@@ -93,6 +125,15 @@ class Worm(Enemy):
         self.rect_sprite.bottom = 350
 
         self.list_of_actions = [self.attack_2_x2, self.heal_enemies_3, self.give_2_vulnerable]
+
+    def declare_action(self, player, list_of_enemies):
+        super().declare_action(player, list_of_enemies)
+        if self.next_action == self.attack_2_x2:
+            self.list_incoming.append(declarationFile.MultiAttack(2, 2))
+        elif self.next_action == self.heal_enemies_3:
+            self.list_incoming.append(declarationFile.Buff(3))
+        elif self.next_action == self.give_2_vulnerable:
+            self.list_incoming.append(declarationFile.Debuff(2))
 
     def attack_2_x2(self, player, list_of_enemies):
         print(f">> {self.name} attacks twice!")
@@ -131,6 +172,17 @@ class Icecream(Enemy):
         else:
             self.next_action = self.list_of_actions[random.randint(0, len(self.list_of_actions) - 1)]
 
+        if self.next_action == self.shuffle_2_depression:
+            self.list_incoming.append(declarationFile.Debuff(2))
+        elif self.next_action == self.gain_1_dex_and_block_7:
+            self.list_incoming.append(declarationFile.Buff(1))
+            self.list_incoming.append(declarationFile.Block(7))
+        elif self.next_action == self.attack_3_and_block_1:
+            self.list_incoming.append(declarationFile.Attack(3))
+            self.list_incoming.append(declarationFile.Block(1))
+        elif self.next_action == self.deal_damage_equal_to_block:
+            self.list_incoming.append(declarationFile.Attack("Block"))
+
     def shuffle_2_depression(self, player, list_of_enemies):
         player.add_card_to_discard(cardsFile.Depression())
         player.add_card_to_discard(cardsFile.Depression())
@@ -161,9 +213,11 @@ class Cultist(Enemy):
     def declare_action(self, player, list_of_enemies):
         if self.state == 0:
             self.next_action = self.gain_3_ritual
+            self.list_incoming.append(declarationFile.Buff(3))
             self.state = 1
         else:
             self.next_action = self.attack_3
+            self.list_incoming.append(declarationFile.Attack(3))
 
     def gain_3_ritual(self, player, list_of_enemies):
         self.add_ritual(3, self)
@@ -221,6 +275,15 @@ class JawWorm(Enemy):
 
             self.last_action = self.next_action
 
+            if self.next_action == self.attack_11:
+                self.list_incoming.append(declarationFile.Attack(11))
+            elif self.next_action == self.attack_7_block_5:
+                self.list_incoming.append(declarationFile.Attack(7))
+                self.list_incoming.append(declarationFile.Attack(5))
+            elif self.next_action == self.gain_3_strength_block_6:
+                self.list_incoming.append(declarationFile.Block(6))
+                self.list_incoming.append(declarationFile.Buff(3))
+
     def attack_11(self, player, list_of_enemies):
         self.deal_damage(11, player)
 
@@ -274,6 +337,11 @@ class FungiBeast(Enemy):
 
         self.last_action = self.next_action
 
+        if self.next_action == self.attack_6:
+            self.list_incoming.append(declarationFile.Attack(6))
+        elif self.next_action == self.gain_3_strength:
+            self.list_incoming.append(declarationFile.Buff(3))
+
     def attack_6(self, player, list_of_enemies):
         self.deal_damage(6, player)
 
@@ -318,6 +386,11 @@ class RedLouse(Enemy):
         self.last_actions.append(self.next_action)
         if len(self.last_actions) > 2:
             self.last_actions.pop(0)
+
+        if self.next_action == self.attack_d:
+            self.list_incoming.append(declarationFile.Attack(self.d))
+        elif self.next_action == self.gain_3_strength:
+            self.list_incoming.append(declarationFile.Buff(3))
 
     def attack_d(self, player, list_of_enemies):
         self.deal_damage(self.d, player)
@@ -364,6 +437,11 @@ class GreenLouse(Enemy):
         if len(self.last_actions) > 2:
             self.last_actions.pop(0)
 
+        if self.next_action == self.attack_d:
+            self.list_incoming.append(declarationFile.Attack(self.d))
+        elif self.next_action == self.apply_3_weak:
+            self.list_incoming.append(declarationFile.Debuff(3))
+
     def attack_d(self, player, list_of_enemies):
         self.deal_damage(self.d, player)
 
@@ -408,6 +486,12 @@ class BlueSlaver(Enemy):
         self.last_actions.append(self.next_action)
         if len(self.last_actions) > 2:
             self.last_actions.pop(0)
+
+        if self.next_action == self.attack_12:
+            self.list_incoming.append(declarationFile.Attack(12))
+        elif self.next_action == self.attack_7_apply_2_weak:
+            self.list_incoming.append(declarationFile.Attack(7))
+            self.list_incoming.append(declarationFile.Debuff(2))
 
     def attack_12(self, player, list_of_enemies):
         self.deal_damage(12, player)
@@ -474,6 +558,14 @@ class RedSlaver(Enemy):
         if len(self.last_actions) > 2:
             self.last_actions.pop(0)
 
+        if self.next_action == self.attack_13:
+            self.list_incoming.append(declarationFile.Attack(13))
+        elif self.next_action == self.attack_8_apply_2_vulnerable:
+            self.list_incoming.append(declarationFile.Attack(8))
+            self.list_incoming.append(declarationFile.Debuff(2))
+        elif self.next_action == self.apply_2_entangled:
+            self.list_incoming.append(declarationFile.SuperDebuff(2))
+
     def attack_13(self, player, list_of_enemies):
         self.deal_damage(13, player)
 
@@ -529,6 +621,16 @@ class AcidSlimeL(Enemy):
         self.last_actions.append(self.next_action)
         if len(self.last_actions) > 3:
             self.last_actions.pop(0)
+
+        if self.next_action == self.attack_11_shuffle_2_slimed:
+            self.list_incoming.append(declarationFile.Attack(13))
+            self.list_incoming.append(declarationFile.Debuff(2))
+        elif self.next_action == self.attack_16:
+            self.list_incoming.append(declarationFile.Attack(16))
+        elif self.next_action == self.apply_3_weak:
+            self.list_incoming.append(declarationFile.Debuff(3))
+        elif self.next_action == self.split:
+            self.list_incoming.append(declarationFile.Unknown())
 
     def attack_11_shuffle_2_slimed(self, player, list_of_enemies):
         self.deal_damage(11, player)
@@ -592,6 +694,14 @@ class AcidSlimeM(Enemy):
         if len(self.last_actions) > 3:
             self.last_actions.pop(0)
 
+        if self.next_action == self.attack_7_shuffle_1_slimed:
+            self.list_incoming.append(declarationFile.Attack(7))
+            self.list_incoming.append(declarationFile.Debuff(1))
+        elif self.next_action == self.attack_10:
+            self.list_incoming.append(declarationFile.Attack(10))
+        elif self.next_action == self.apply_2_weak:
+            self.list_incoming.append(declarationFile.Debuff(2))
+
     def attack_7_shuffle_1_slimed(self, player, list_of_enemies):
         self.deal_damage(7, player)
         player.add_card_to_discard(cardsFile.Slimed())
@@ -623,6 +733,12 @@ class AcidSlimeS(Enemy):
             self.next_action = self.list_of_actions[self.turn_counter % 2]
 
         self.turn_counter += 1
+
+        if self.next_action == self.attack_3:
+            self.list_incoming.append(declarationFile.Attack(3))
+            self.list_incoming.append(declarationFile.Debuff(1))
+        elif self.next_action == self.apply_2_weak:
+            self.list_incoming.append(declarationFile.Debuff(2))
 
     def attack_3(self, player, list_of_enemies):
         self.deal_damage(3, player)
@@ -673,6 +789,14 @@ class SpikeSlimeL(Enemy):
         self.last_actions.append(self.next_action)
         if len(self.last_actions) > 3:
             self.last_actions.pop(0)
+
+        if self.next_action == self.attack_16_shuffle_2_slimed:
+            self.list_incoming.append(declarationFile.Attack(16))
+            self.list_incoming.append(declarationFile.Debuff(2))
+        elif self.next_action == self.apply_3_frail:
+            self.list_incoming.append(declarationFile.Debuff(3))
+        elif self.next_action == self.split:
+            self.list_incoming.append(declarationFile.Unknown())
 
     def attack_16_shuffle_2_slimed(self, player, list_of_enemies):
         self.deal_damage(16, player)
@@ -731,6 +855,12 @@ class SpikeSlimeM(Enemy):
         if len(self.last_actions) > 3:
             self.last_actions.pop(0)
 
+        if self.next_action == self.attack_8_shuffle_1_slimed:
+            self.list_incoming.append(declarationFile.Attack(8))
+            self.list_incoming.append(declarationFile.Debuff(1))
+        elif self.next_action == self.apply_2_frail:
+            self.list_incoming.append(declarationFile.Debuff(2))
+
     def attack_8_shuffle_1_slimed(self, player, list_of_enemies):
         self.deal_damage(8, player)
         player.add_card_to_discard(cardsFile.Slimed())
@@ -751,6 +881,7 @@ class SpikeSlimeS(Enemy):
 
     def declare_action(self, player, list_of_enemies):
         self.next_action = self.attack_5
+        self.list_incoming.append(declarationFile.Attack(5))
 
     def attack_5(self, player, list_of_enemies):
         self.deal_damage(5, player)
@@ -767,11 +898,13 @@ class FatGremlin(Enemy):
         self.rect_sprite.bottom = 350
 
     def declare_action(self, player, list_of_enemies):
-        self.next_action = self.attack_4_add_1_weak
+        self.next_action = self.attack_4_add_2_weak
+        self.list_incoming.append(declarationFile.Attack(4))
+        self.list_incoming.append(declarationFile.Debuff(2))
 
-    def attack_4_add_1_weak(self, player, list_of_enemies):
+    def attack_4_add_2_weak(self, player, list_of_enemies):
         self.deal_damage(4, player)
-        self.add_weak(1, player)
+        self.add_weak(2, player)
 
 
 class MadGremlin(Enemy):
@@ -788,6 +921,7 @@ class MadGremlin(Enemy):
 
     def declare_action(self, player, list_of_enemies):
         self.next_action = self.attack_4
+        self.list_incoming.append(declarationFile.Attack(4))
 
     def attack_4(self, player, list_of_enemies):
         self.deal_damage(4, player)
@@ -805,6 +939,7 @@ class SneakyGremlin(Enemy):
 
     def declare_action(self, player, list_of_enemies):
         self.next_action = self.attack_9
+        self.list_incoming.append(declarationFile.Attack(9))
 
     def attack_9(self, player, list_of_enemies):
         self.deal_damage(9, player)
@@ -827,10 +962,12 @@ class GremlinWizard(Enemy):
     def declare_action(self, player, list_of_enemies):
         if self.charge_up_count < self.charge_up_required:
             self.next_action = self.charge_up
+            self.list_incoming.append(declarationFile.Unknown())
         else:
             self.next_action = self.attack_25
             self.charge_up_count = 0
             self.charge_up_required = 3
+            self.list_incoming.append(declarationFile.Attack(25))
 
     def attack_25(self, player, list_of_enemies):
         self.deal_damage(25, player)
@@ -857,6 +994,11 @@ class ShieldGremlin(Enemy):
             self.next_action = self.add_armor_7
         else:
             self.next_action = random.choice(self.list_of_actions)
+
+        if self.next_action == self.add_armor_7:
+            self.list_incoming.append(declarationFile.Block(7))
+        elif self.next_action == self.attack_6:
+            self.list_incoming.append(declarationFile.Attack(6))
 
     def choose_target(self, list_of_enemies):
         if len(list_of_enemies) > 1:
@@ -909,6 +1051,15 @@ class Looter(Enemy):
                 self.has_lunged = False
             else:
                 self.next_action = self.escape
+
+        if self.next_action == self.attack_10:
+            self.list_incoming.append(declarationFile.Attack(10))
+        elif self.next_action == self.attack_12:
+            self.list_incoming.append(declarationFile.Attack(12))
+        elif self.next_action == self.gain_6_armor:
+            self.list_incoming.append(declarationFile.Block(6))
+        elif self.next_action == self.escape:
+            self.list_incoming.append(declarationFile.Escape())
 
     def attack_10(self, player, list_of_enemies):
         self.deal_damage(10, player)
