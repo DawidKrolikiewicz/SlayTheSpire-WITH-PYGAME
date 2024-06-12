@@ -485,7 +485,7 @@ class Shop(InGame):
 
     def event_listener(self, ev, player):
         self.slider.event_listener(ev)
-
+        super().event_listener(ev, player)
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if self.state == 0:
@@ -526,7 +526,7 @@ class Shop(InGame):
             for index, card in enumerate(self.list_of_cards):
                 card.update(screen, player, index, self.bg_cards_rect)
                 button_caption(f"{card.name}: [{self.card_prices[index]}]", card.rect, screen)
-            super().update(screen, player)
+
         else:
             offset = int(self.slider.get_offset())
             visible_cards = player.run_deck[offset:offset + 4]
@@ -537,6 +537,8 @@ class Shop(InGame):
                 button_caption(card.name, card.rect, screen)
 
             self.slider.update(screen)
+
+        super().update(screen, player)
 
 
 # ======================================================================================================================
