@@ -2,7 +2,7 @@ import pygame
 import random
 import enemyFile
 import cardsFile
-from fontsFile import text_font, text_font_big
+from fontsFile import text_font, text_font_big, text_font_bigger
 import inspect
 import enum
 import ongoingFile as o
@@ -44,9 +44,9 @@ class CombatDifficulty(enum.Enum):
 def multi_text_render(text, screen):
     rendered_fonts = []
     for i, line in enumerate(text.split('\n')):
-        txt_surf = text_font.render(line, True, (0, 0, 0))
+        txt_surf = text_font.render(line, True, (255, 255, 255))
         txt_rect = txt_surf.get_rect()
-        txt_rect.topleft = (350, 10 + i * 24)
+        txt_rect.topleft = (600, 240 + i * 24)
         rendered_fonts.append((txt_surf, txt_rect))
     for txt_surf, txt_rect in rendered_fonts:
         screen.blit(txt_surf, txt_rect)
@@ -56,10 +56,13 @@ def button_caption(text, rect, screen):
     rend_text = text_font.render(text, True,
                                  (0, 0, 0))
     rect_text = rend_text.get_rect()
+    outline = pygame.rect.Rect(0, 0, rect_text.width + 4, rect_text.height + 4)
     text_pos = pygame.Vector2(
         rect.centerx - rect_text.width / 2,
         rect.bottom + 5
     )
+    outline.center = text_pos + pygame.Vector2(rect_text.width / 2, rect_text.height / 2)
+    pygame.draw.rect(screen, (70, 130, 180), outline)
     screen.blit(rend_text, text_pos)
 
 
@@ -366,12 +369,13 @@ class CombatEncounter(InGame):
             fights = ([gremlin() for gremlin in gremlin_list],
                       [enemyFile.SpikeSlimeL()],
                       [enemyFile.AcidSlimeL()],
-                      [enemyFile.SpikeSlimeS(), enemyFile.SpikeSlimeS(), enemyFile.SpikeSlimeS(), enemyFile.AcidSlimeS(), enemyFile.AcidSlimeS()],
+                      [enemyFile.SpikeSlimeS(), enemyFile.SpikeSlimeS(), enemyFile.SpikeSlimeS(),
+                       enemyFile.AcidSlimeS(), enemyFile.AcidSlimeS()],
                       [enemyFile.BlueSlaver()],
                       [enemyFile.RedSlaver()],
                       [enemyFile.RedLouse(), enemyFile.GreenLouse(), enemyFile.RedLouse()],
                       [enemyFile.GreenLouse(), enemyFile.RedLouse(), enemyFile.GreenLouse()],
-                      [enemyFile.FungiBeast(),enemyFile.FungiBeast()],
+                      [enemyFile.FungiBeast(), enemyFile.FungiBeast()],
                       [enemyFile.AcidSlimeM, enemyFile.Looter()],
                       [enemyFile.AcidSlimeM, enemyFile.RedSlaver()],
                       [enemyFile.SpikeSlimeM, enemyFile.Cultist()],
@@ -384,7 +388,7 @@ class CombatEncounter(InGame):
         elif combat_difficulty == CombatDifficulty.ELITE:
             fights = ([enemyFile.GremlinNob()],
                       [enemyFile.Lagavulin()],
-                      [enemyFile.Sentry(position=1),enemyFile.Sentry(position=2),enemyFile.Sentry(position=3)]
+                      [enemyFile.Sentry(position=1), enemyFile.Sentry(position=2), enemyFile.Sentry(position=3)]
                       )
 
         self.list_of_enemies += random.choice(fights)
@@ -435,14 +439,17 @@ class Shop(InGame):
 
         self.create_shop_items()
 
-        self.remove_card_color = GOLD
+        self.bg_img = pygame.image.load("../Sprites/Backgrounds/planks.png")
+        self.bg_rect = self.bg_img.get_rect()
+
+        self.remove_card_img = pygame.image.load("../Sprites/Misc/RemoveButton.png")
         self.remove_card_rect = pygame.Rect((50, 0, 100, 100))
 
-        self.leave_color = BLACK
-        self.leave_rect = pygame.Rect((1266, 618, 100, 100))
+        self.leave_img = pygame.image.load("../Sprites/Misc/LeaveButton.png")
+        self.leave_rect = pygame.Rect((1220, 640, 100, 100))
 
-        self.bg_cards_color = PURPLE
-        self.bg_cards_rect = pygame.Rect((0, 220, 1366, 480))
+        self.bg_cards_img = pygame.image.load("../Sprites/Backgrounds/stone_bg.png")
+        self.bg_cards_rect = self.bg_cards_img.get_rect()
 
         self.slider = Slider(220, 700, 926, 20, len(player.run_deck), 4)
 
@@ -513,16 +520,16 @@ class Shop(InGame):
                         break
 
     def update(self, screen, player):
+        screen.blit(self.bg_img, self.bg_rect)
+        screen.blit(self.bg_cards_img, self.bg_cards_rect.topleft)
         if self.state == 0:
-            pygame.draw.rect(screen, self.bg_cards_color, self.bg_cards_rect)
-            pygame.draw.rect(screen, self.leave_color, self.leave_rect)
-            button_caption("Leave", self.leave_rect, screen)
+            screen.blit(self.leave_img, self.leave_rect.topleft)
 
             if not self.card_sold:
-                pygame.draw.rect(screen, self.remove_card_color, self.remove_card_rect)
+                screen.blit(self.remove_card_img, self.remove_card_rect.topleft)
                 button_caption(f"Remove Card: {self.remove_price}", self.remove_card_rect, screen)
 
-            self.bg_cards_rect.update(0, 220, 1366, 480)
+            self.bg_cards_rect.update(0, 220, 1366, 485)
             for index, card in enumerate(self.list_of_cards):
                 card.update(screen, player, index, self.bg_cards_rect)
                 button_caption(f"{card.name}: [{self.card_prices[index]}]", card.rect, screen)
@@ -547,12 +554,31 @@ class RandomEncounter(InGame):
     def __init__(self):
         super().__init__()
         self.name = self.__class__.__name__
-        self.choice_1_color = BLUE
-        self.choice_1_rect = pygame.Rect((205, 400, 250, 250))
-        self.choice_2_color = GREEN
-        self.choice_2_rect = pygame.Rect((515, 400, 250, 250))
-        self.exit_color = BLACK
-        self.exit_rect = pygame.Rect((1116, 0, 250, 250))
+
+        self.bg_img = pygame.image.load("../Sprites/Backgrounds/Event_BG.png")
+        self.bg_rect = self.bg_img.get_rect()
+
+        self.ev_img = pygame.image.load("../Sprites/Backgrounds/EventImage.png")
+        self.ev_rect = pygame.Rect((0, 30, 1266, 600))
+
+        self.ev_name = text_font_bigger.render(self.name, True, (218, 165, 32))
+        self.name_rect = self.ev_name.get_rect()
+        self.name_rect.topleft = (220, 143)
+
+        self.choice_1_color = pygame.image.load("../Sprites/Misc/ChoiceButton.png")
+        self.choice_1_rect = pygame.Rect((540, 400, 623, 46))
+        self.choice_2_color = pygame.image.load("../Sprites/Misc/ChoiceButton.png")
+        self.choice_2_rect = pygame.Rect((540, 470, 623, 46))
+
+        self.exit_img = pygame.image.load("../Sprites/Misc/LeaveButton.png")
+        self.exit_rect = pygame.Rect((1160, 580, 100, 100))
+
+    def update(self, screen, player):
+        screen.blit(self.bg_img, self.bg_rect)
+        screen.blit(self.ev_img, self.ev_rect)
+        screen.blit(self.ev_name, self.name_rect)
+
+        super().update(screen, player)
 
 
 # ======================================================================================================================
@@ -560,10 +586,27 @@ class RandomEncounter(InGame):
 class Ritual(RandomEncounter):
     def __init__(self):
         super().__init__()
-        self.choice_3_color = PURPLE
-        self.choice_3_rect = pygame.Rect((825, 400, 250, 250))
+
+        self.ev_photo = pygame.image.load("../Sprites/Misc/Ritual.png")
+        self.ev_photo_rect = pygame.Rect((120, 250, 400, 400))
+
+        self.choice_3_color = pygame.image.load("../Sprites/Misc/ChoiceButton.png")
+        self.choice_3_rect = pygame.Rect((540, 540, 623, 46))
+
+        self.choice_1_text = text_font_big.render("Attack them", True, (255, 255, 255))
+        self.choice_1_text_rect = self.choice_1_text.get_rect()
+        self.choice_1_text_rect.center = self.choice_1_rect.center
+
+        self.choice_2_text = text_font_big.render("Join the prayer, as they slaughter their pray", True, (255, 255, 255))
+        self.choice_2_text_rect = self.choice_2_text.get_rect()
+        self.choice_2_text_rect.center = self.choice_2_rect.center
+
+        self.choice_3_text = text_font_big.render("Leave before they notice you", True, (255, 255, 255))
+        self.choice_3_text_rect = self.choice_3_text.get_rect()
+        self.choice_3_text_rect.center = self.choice_3_rect.center
 
     def event_listener(self, ev, player):
+        super().event_listener(ev, player)
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if self.state == 0:
@@ -581,22 +624,27 @@ class Ritual(RandomEncounter):
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
 
     def update(self, screen, player):
+        super().update(screen, player)
+        screen.blit(self.ev_photo, self.ev_photo_rect)
         if self.state == 0:
-            pygame.draw.rect(screen, self.choice_1_color, self.choice_1_rect)
-            button_caption("Attack them", self.choice_1_rect, screen)
 
-            pygame.draw.rect(screen, self.choice_2_color, self.choice_2_rect)
-            button_caption("Join the prayer, as they slaughter their pray", self.choice_2_rect, screen)
+            screen.blit(self.choice_1_color, self.choice_1_rect)
+            screen.blit(self.choice_1_text, self.choice_1_text_rect)
 
-            pygame.draw.rect(screen, self.choice_3_color, self.choice_3_rect)
-            button_caption("Leave before they notice you", self.choice_3_rect, screen)
+            screen.blit(self.choice_2_color, self.choice_2_rect)
+            screen.blit(self.choice_2_text, self.choice_2_text_rect)
+
+            screen.blit(self.choice_3_color, self.choice_3_rect)
+            screen.blit(self.choice_3_text, self.choice_3_text_rect)
 
             multi_text_render("You have stumbled upon two masked man, trying to sacrifice poor, emaciated man.\n"
                               "They haven't noticed you yet.\n"
-                              "One of them rises up his jagged dagger, whispering a prayer to his goddess. What do you do?\n",
+                              "One of them rises up his jagged dagger, whispering a prayer to his goddess.\n"
+                              "What do you do?\n",
                               screen)
         elif self.state == 1:
-            player.current_room = CombatEncounter(CombatDifficulty.EASY, [enemyFile.Cultist(), enemyFile.Cultist()], custom_combat_difficulty=CombatDifficulty.EASY)
+            player.current_room = CombatEncounter(CombatDifficulty.EASY, [enemyFile.Cultist(), enemyFile.Cultist()],
+                                                  custom_combat_difficulty=CombatDifficulty.EASY)
 
         elif self.state == 2:
             multi_text_render("You join in the prayers, mumbling something under your breath.\n"
@@ -604,12 +652,11 @@ class Ritual(RandomEncounter):
                               "You look at the cultists, feasting on sacrifice's blood, their muscles growing visibly.\n"
                               "You can perform the same ritual now, but the feeling of uneasiness doesn't leave you.\n\n"
                               "You gain both Ritual and Wound cards", screen)
-            pygame.draw.rect(screen, self.exit_color, self.exit_rect)
+            screen.blit(self.exit_img, self.exit_rect)
         elif self.state == 3:
             multi_text_render("You leave, ignoring this poor man's cries for help.\n"
                               "His problems are not yours.\n", screen)
-            pygame.draw.rect(screen, self.exit_color, self.exit_rect)
-            button_caption("Leave", self.exit_rect, screen)
+            screen.blit(self.exit_img, self.exit_rect)
 
 
 # ======================================================================================================================
@@ -617,10 +664,28 @@ class Ritual(RandomEncounter):
 class Beggar(RandomEncounter):
     def __init__(self):
         super().__init__()
-        self.choice_3_color = PURPLE
-        self.choice_3_rect = pygame.Rect((825, 400, 250, 250))
+
+        self.ev_photo = pygame.image.load("../Sprites/Misc/Beggar.png")
+        self.ev_photo_rect = pygame.Rect((120, 250, 400, 400))
+
+        self.choice_3_color = pygame.image.load("../Sprites/Misc/ChoiceButton.png")
+        self.choice_3_rect = pygame.Rect((540, 540, 623, 46))
+
+        self.choice_1_text = text_font_big.render("Give him some gold (30)", True, (255, 255, 255))
+        self.choice_1_text_rect = self.choice_1_text.get_rect()
+        self.choice_1_text_rect.center = self.choice_1_rect.center
+
+        self.choice_2_text = text_font_big.render("Give him some food (Lose Flex card)", True,
+                                                  (255, 255, 255))
+        self.choice_2_text_rect = self.choice_2_text.get_rect()
+        self.choice_2_text_rect.center = self.choice_2_rect.center
+
+        self.choice_3_text = text_font_big.render("Ignore his plea", True, (255, 255, 255))
+        self.choice_3_text_rect = self.choice_3_text.get_rect()
+        self.choice_3_text_rect.center = self.choice_3_rect.center
 
     def event_listener(self, ev, player):
+        super().event_listener(ev, player)
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if self.state == 0:
@@ -630,13 +695,13 @@ class Beggar(RandomEncounter):
                         player.add_card_to_run_deck(cardsFile.Fireball())
                         self.state = 1
                 elif self.choice_2_rect.collidepoint(pos):
-                    buff_card = None
+                    flex_card = None
                     for card in player.run_deck:
-                        if isinstance(card, cardsFile.A100pNatural):
-                            buff_card = card
+                        if isinstance(card, cardsFile.Flex):
+                            flex_card = card
                             break
-                    if buff_card:
-                        player.remove_card_from_run_deck(buff_card)
+                    if flex_card:
+                        player.remove_card_from_run_deck(flex_card)
                         player.add_card_to_run_deck(cardsFile.Fireball())
                         self.state = 2
                 elif self.choice_3_rect.collidepoint(pos):
@@ -648,15 +713,18 @@ class Beggar(RandomEncounter):
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
 
     def update(self, screen, player):
+        super().update(screen, player)
+        screen.blit(self.ev_photo, self.ev_photo_rect)
         if self.state == 0:
-            pygame.draw.rect(screen, self.choice_1_color, self.choice_1_rect)
-            button_caption("Give him some gold (30)", self.choice_1_rect, screen)
 
-            pygame.draw.rect(screen, self.choice_2_color, self.choice_2_rect)
-            button_caption("Give him some food (Lose Buff card)", self.choice_2_rect, screen)
+            screen.blit(self.choice_1_color, self.choice_1_rect)
+            screen.blit(self.choice_1_text, self.choice_1_text_rect)
 
-            pygame.draw.rect(screen, self.choice_3_color, self.choice_3_rect)
-            button_caption("Ignore his plea", self.choice_3_rect, screen)
+            screen.blit(self.choice_2_color, self.choice_2_rect)
+            screen.blit(self.choice_2_text, self.choice_2_text_rect)
+
+            screen.blit(self.choice_3_color, self.choice_3_rect)
+            screen.blit(self.choice_3_text, self.choice_3_text_rect)
 
             multi_text_render("A lone beggar approaches you, begging for your help.\n"
                               "He looks hungry, yet there's some kind of spark in his eyes.\n"
@@ -667,14 +735,14 @@ class Beggar(RandomEncounter):
                               "New knowledge floods your mind, leaving you with new ability.\n"
                               "When you open your eyes, the beggar is gone.\n\n"
                               "You lose 30 gold, but gain Fireball card", screen)
-            pygame.draw.rect(screen, self.exit_color, self.exit_rect)
+            screen.blit(self.exit_img, self.exit_rect)
         elif self.state == 2:
             multi_text_render("Delighted beggar takes bread you gave him, biting on it eagerly.\n"
                               "He then looks you in the eyes, leans slightly and touches your left temple.\n"
                               "New knowledge floods your mind, leaving you with new ability.\n"
                               "When you open your eyes, the beggar is gone.\n\n"
-                              "You lose Buff card, but gain Fireball card", screen)
-            pygame.draw.rect(screen, self.exit_color, self.exit_rect)
+                              "You lose Flex card, but gain Fireball card", screen)
+            screen.blit(self.exit_img, self.exit_rect)
         elif self.state == 3:
             multi_text_render("Beggar looks you in the eyes for a while, slowly shaking.\n"
                               "Then, you see anger rising in his eyes.\n"
@@ -682,8 +750,7 @@ class Beggar(RandomEncounter):
                               "Then, a large fireball grows in his hand.\n"
                               "You try to run away, but some of the fire still catches up to you.\n\n"
                               "You lose 10 current health", screen)
-            pygame.draw.rect(screen, self.exit_color, self.exit_rect)
-            button_caption("Leave", self.exit_rect, screen)
+            screen.blit(self.exit_img, self.exit_rect)
 
 
 # ======================================================================================================================
@@ -693,7 +760,19 @@ class Bridge(RandomEncounter):
     def __init__(self):
         super().__init__()
 
+        self.ev_photo = pygame.image.load("../Sprites/Misc/Bridge.png")
+        self.ev_photo_rect = pygame.Rect((120, 250, 400, 400))
+
+        self.choice_1_text = text_font_big.render("Rush to the other side", True, (255, 255, 255))
+        self.choice_1_text_rect = self.choice_1_text.get_rect()
+        self.choice_1_text_rect.center = self.choice_1_rect.center
+
+        self.choice_2_text = text_font_big.render("Slowly and carefully cross the bridge", True, (255, 255, 255))
+        self.choice_2_text_rect = self.choice_2_text.get_rect()
+        self.choice_2_text_rect.center = self.choice_2_rect.center
+
     def event_listener(self, ev, player):
+        super().event_listener(ev, player)
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if self.state == 0:
@@ -710,12 +789,15 @@ class Bridge(RandomEncounter):
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
 
     def update(self, screen, player):
-        if self.state == 0:
-            pygame.draw.rect(screen, self.choice_1_color, self.choice_1_rect)
-            button_caption("Rush to the other side", self.choice_1_rect, screen)
+        super().update(screen, player)
+        screen.blit(self.ev_photo, self.ev_photo_rect)
 
-            pygame.draw.rect(screen, self.choice_2_color, self.choice_2_rect)
-            button_caption("Slowly and carefully cross the bridge", self.choice_2_rect, screen)
+        if self.state == 0:
+            screen.blit(self.choice_1_color, self.choice_1_rect)
+            screen.blit(self.choice_1_text, self.choice_1_text_rect)
+
+            screen.blit(self.choice_2_color, self.choice_2_rect)
+            screen.blit(self.choice_2_text, self.choice_2_text_rect)
 
             multi_text_render("A giant chasm blocks your path.\n"
                               "Luckily, there is a old-looking bridge, which can get you to the other side.\n"
@@ -727,17 +809,17 @@ class Bridge(RandomEncounter):
                               "Luckily, you manage to grab the edge of the chasm, though you get hurt in the process.\n"
                               "You get up, check your wounds, and resume your journey.\n\n"
                               "You lose 10 current health", screen)
-            pygame.draw.rect(screen, self.exit_color, self.exit_rect)
+            screen.blit(self.exit_img, self.exit_rect)
         elif self.state == 2:
             multi_text_render("You slowly get to the other side of a chasm.\n"
                               "Though stressful, the journey left you unscratched.", screen)
-            pygame.draw.rect(screen, self.exit_color, self.exit_rect)
+            screen.blit(self.exit_img, self.exit_rect)
         elif self.state == 3:
             multi_text_render("The journey through the bridge is long and tiring.\n"
                               "When you get on the other side, you're beyond exhausted.\n"
                               "Yet, the further road awaits...\n\n"
                               "You gained card: Wound", screen)
-            pygame.draw.rect(screen, self.exit_color, self.exit_rect)
+            screen.blit(self.exit_img, self.exit_rect)
             button_caption("Leave", self.exit_rect, screen)
 
 
@@ -755,6 +837,7 @@ class RestRoom(InGame):
         self.heal = int(0.3 * player.max_health)
 
     def event_listener(self, ev, player):
+        super().event_listener(ev, player)
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if self.rest_rect.collidepoint(pos) and self.heal:
@@ -770,7 +853,8 @@ class RestRoom(InGame):
             button_caption("Rest", self.rest_rect, screen)
 
         pygame.draw.rect(screen, self.leave_color, self.leave_rect)
-        button_caption("Leave", self.leave_rect, screen)
+
+        super().update(screen, player)
 
 
 # ======================================================================================================================
@@ -882,6 +966,7 @@ class Rewards(InGame):
         return random.choice(list_of_encounters)
 
     def event_listener(self, ev, player):
+        super().event_listener(ev, player)
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if not self.state:
@@ -928,3 +1013,4 @@ class Rewards(InGame):
             for index, card in enumerate(self.rewards_cards):
                 card.update(screen, player, index, self.cards_bg_rect)
                 button_caption(card.name, card.rect, screen)
+        super().update(screen, player)
