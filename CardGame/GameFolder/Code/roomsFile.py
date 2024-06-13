@@ -192,6 +192,9 @@ class InGame(Room):
         self.menu_button_rect = self.menu_button_image.get_rect()
         self.menu_button_rect.topright = (1366, 0)
 
+        self.info_bar = pygame.rect.Rect(0, 0, 1366, 25)
+        self.info_bar.topleft = (0, 0)
+
         pygame.display.set_caption("IN GAME")
 
     def event_listener(self, ev, player):
@@ -203,6 +206,16 @@ class InGame(Room):
                 print(last_room.state)
 
     def update(self, screen, player):
+        floor_count_text = text_font.render(f"Floor: {player.floor}", True, (0, 0, 0))
+        player_health_text = text_font.render(f"Health: {player.cur_health}/{player.max_health}", True, (0, 0, 0))
+        money_amount_text = text_font.render(f"${player.coins}", True, (0, 0, 0))
+
+        pygame.draw.rect(screen, (184, 183, 182), self.info_bar
+                         )
+        screen.blit(floor_count_text, (100 - (floor_count_text.get_width() // 2), 0))
+        screen.blit(player_health_text, (250 - (player_health_text.get_width() // 2), 0))
+        screen.blit(money_amount_text, (400 - (money_amount_text.get_width() // 2), 0))
+
         screen.blit(self.menu_button_image, self.menu_button_rect.topleft)
 
 
@@ -384,7 +397,7 @@ class CombatEncounter(InGame):
         elif combat_difficulty == CombatDifficulty.ELITE:
             fights = ([enemyFile.GremlinNob()],
                       [enemyFile.Lagavulin()],
-                      [enemyFile.Sentry(position=1),enemyFile.Sentry(position=2),enemyFile.Sentry(position=3)]
+                      [enemyFile.Sentry(position=1), enemyFile.Sentry(position=2), enemyFile.Sentry(position=3)]
                       )
 
         self.list_of_enemies += random.choice(fights)
@@ -554,6 +567,12 @@ class RandomEncounter(InGame):
         self.exit_color = BLACK
         self.exit_rect = pygame.Rect((1116, 0, 250, 250))
 
+    def event_listener(self, ev, player):
+        super().event_listener(ev, player)
+
+    def update(self, screen, player):
+        super().update(screen, player)
+
 
 # ======================================================================================================================
 
@@ -564,6 +583,7 @@ class Ritual(RandomEncounter):
         self.choice_3_rect = pygame.Rect((825, 400, 250, 250))
 
     def event_listener(self, ev, player):
+        super().event_listener(ev, player)
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if self.state == 0:
@@ -611,6 +631,8 @@ class Ritual(RandomEncounter):
             pygame.draw.rect(screen, self.exit_color, self.exit_rect)
             button_caption("Leave", self.exit_rect, screen)
 
+        super().update(screen, player)
+
 
 # ======================================================================================================================
 
@@ -621,6 +643,7 @@ class Beggar(RandomEncounter):
         self.choice_3_rect = pygame.Rect((825, 400, 250, 250))
 
     def event_listener(self, ev, player):
+        super().event_listener(ev, player)
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if self.state == 0:
@@ -685,6 +708,8 @@ class Beggar(RandomEncounter):
             pygame.draw.rect(screen, self.exit_color, self.exit_rect)
             button_caption("Leave", self.exit_rect, screen)
 
+        super().update(screen, player)
+
 
 # ======================================================================================================================
 
@@ -694,6 +719,7 @@ class Bridge(RandomEncounter):
         super().__init__()
 
     def event_listener(self, ev, player):
+        super().event_listener(ev, player)
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if self.state == 0:
@@ -740,6 +766,8 @@ class Bridge(RandomEncounter):
             pygame.draw.rect(screen, self.exit_color, self.exit_rect)
             button_caption("Leave", self.exit_rect, screen)
 
+        super().update(screen, player)
+
 
 # ======================================================================================================================
 
@@ -755,6 +783,7 @@ class RestRoom(InGame):
         self.heal = int(0.3 * player.max_health)
 
     def event_listener(self, ev, player):
+        super().event_listener(ev, player)
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if self.rest_rect.collidepoint(pos) and self.heal:
@@ -771,6 +800,8 @@ class RestRoom(InGame):
 
         pygame.draw.rect(screen, self.leave_color, self.leave_rect)
         button_caption("Leave", self.leave_rect, screen)
+
+        super().update(screen, player)
 
 
 # ======================================================================================================================
@@ -882,6 +913,7 @@ class Rewards(InGame):
         return random.choice(list_of_encounters)
 
     def event_listener(self, ev, player):
+        super().event_listener(ev, player)
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if not self.state:
@@ -928,3 +960,5 @@ class Rewards(InGame):
             for index, card in enumerate(self.rewards_cards):
                 card.update(screen, player, index, self.cards_bg_rect)
                 button_caption(card.name, card.rect, screen)
+
+        super().update(screen, player)

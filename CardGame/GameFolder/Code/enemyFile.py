@@ -275,14 +275,14 @@ class JawWorm(Enemy):
 
             self.last_action = self.next_action
 
-            if self.next_action == self.attack_11:
-                self.list_incoming.append(declarationFile.Attack(11))
-            elif self.next_action == self.attack_7_block_5:
-                self.list_incoming.append(declarationFile.Attack(7))
-                self.list_incoming.append(declarationFile.Attack(5))
-            elif self.next_action == self.gain_3_strength_block_6:
-                self.list_incoming.append(declarationFile.Block(6))
-                self.list_incoming.append(declarationFile.Buff(3))
+        if self.next_action == self.attack_11:
+            self.list_incoming.append(declarationFile.Attack(11))
+        elif self.next_action == self.attack_7_block_5:
+            self.list_incoming.append(declarationFile.Attack(7))
+            self.list_incoming.append(declarationFile.Block(5))
+        elif self.next_action == self.gain_3_strength_block_6:
+            self.list_incoming.append(declarationFile.Block(6))
+            self.list_incoming.append(declarationFile.Buff(3))
 
     def attack_11(self, player, list_of_enemies):
         self.deal_damage(11, player)
