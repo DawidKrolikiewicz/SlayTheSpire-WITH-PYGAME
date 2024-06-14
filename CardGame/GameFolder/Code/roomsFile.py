@@ -888,12 +888,15 @@ class Rewards(InGame):
         self.rewards_cards = []
         self.gold = 0
 
-        self.choice_1_color = BLUE
-        self.choice_1_rect = pygame.Rect((205, 400, 250, 250))
+        self.bg_img = pygame.image.load("../Sprites/Backgrounds/RewardsBg.png")
+        self.bg_rect = pygame.Rect((267, 80, 831, 650))
+
+        self.choice_1_img = pygame.image.load("../Sprites/Misc/LeftButton.png")
+        self.choice_1_rect = pygame.Rect((130, 430, 300, 157))
         self.choice_1_room = Menu(None)
 
-        self.choice_2_color = GREEN
-        self.choice_2_rect = pygame.Rect((911, 400, 250, 250))
+        self.choice_2_img = pygame.image.load("../Sprites/Misc/RightButton.png")
+        self.choice_2_rect = pygame.Rect((946, 430, 300, 157))
         self.choice_2_room = Menu(None)
 
         self.set_rooms(player)
@@ -902,21 +905,29 @@ class Rewards(InGame):
         self.choice_2_name = "Random Encounter" if self.is_random_encounter(
             self.choice_2_room) else self.choice_2_room.name
 
-        self.cards_color = PURPLE
-        self.cards_rect = pygame.Rect((1166, 0, 200, 150))
-
-        self.get_gold_color = GOLD
-        self.get_gold_rect = pygame.Rect((0, 0, 200, 150))
-
-        self.cards_leave_color = BLACK
-        self.cards_leave_rect = pygame.Rect((1216, 618, 150, 150))
-
-        self.cards_bg_color = RED
-        self.cards_bg_rect = pygame.Rect((0, 220, 783, 480))
-
         self.available_cards = cardsFile.ALL_CARDS
 
         self.set_rewards(rewards_level)
+
+        self.cards_img = pygame.image.load("../Sprites/Misc/RewardButton.png")
+        self.cards_rect = pygame.Rect((507, 300, 350, 70))
+        self.cards_text = text_font_big.render("Add a card to your deck", True, (255, 255, 255))
+        self.cards_text_rect = self.cards_text.get_rect()
+        self.cards_text_rect.center = self.cards_rect.center
+
+        self.get_gold_img = pygame.image.load("../Sprites/Misc/RewardButton.png")
+        self.get_gold_rect = pygame.Rect((507, 450, 350, 70))
+        self.get_gold_icon = pygame.image.load("../Sprites/Misc/GoldIcon.png")
+        self.get_gold_icon_rect = pygame.Rect((512, 457, 50, 55))
+        self.get_gold_text = text_font_big.render(f"{self.gold} Gold", True, (255, 255, 255))
+        self.get_gold_text_rect = self.get_gold_text.get_rect()
+        self.get_gold_text_rect.center = self.get_gold_rect.center
+
+        self.cards_leave_img = pygame.image.load("../Sprites/Misc/LeaveButton.png")
+        self.cards_leave_rect = pygame.Rect((1220, 640, 100, 100))
+
+        self.cards_bg_img = pygame.image.load("../Sprites/Backgrounds/stone_bg.png")
+        self.cards_bg_rect = pygame.Rect((0, 220, 783, 480))
 
     def set_rewards(self, rewards_level):
         cards_weights = []
@@ -956,7 +967,7 @@ class Rewards(InGame):
 
             self.gold = (random.randint(40, 60))
 
-        self.rewards_cards = [random.choices(self.available_cards, cards_weights)[0]() for _ in range(2)]
+        self.rewards_cards = [random.choices(self.available_cards, cards_weights)[0]() for _ in range(3)]
 
     def set_rooms(self, player):
         room_types = [CombatEncounter, self.choose_random_encounter, Shop, RestRoom]
@@ -1009,30 +1020,32 @@ class Rewards(InGame):
                     if card.rect.collidepoint(pos):
                         player.add_card_to_run_deck(card)
                         self.rewards_cards.clear()
+                        self.state = 0
 
     def update(self, screen, player):
+        screen.fill(BLACK)
         if self.state == 0:
-            pygame.draw.rect(screen, self.choice_1_color, self.choice_1_rect)
+            screen.blit(self.bg_img, self.bg_rect)
+
+            screen.blit(self.choice_1_img, self.choice_1_rect)
             button_caption(self.choice_1_name, self.choice_1_rect, screen)
 
-            pygame.draw.rect(screen, self.choice_2_color, self.choice_2_rect)
+            screen.blit(self.choice_2_img, self.choice_2_rect)
             button_caption(self.choice_2_name, self.choice_2_rect, screen)
 
-            if self.rewards_cards:
-                pygame.draw.rect(screen, self.cards_color, self.cards_rect)
-                button_caption("Choose a card", self.cards_rect, screen)
-
             if self.gold:
-                pygame.draw.rect(screen, self.get_gold_color, self.get_gold_rect)
-                button_caption(f"Gold: {self.gold}", self.get_gold_rect, screen)
+                screen.blit(self.get_gold_img, self.get_gold_rect)
+                screen.blit(self.get_gold_icon, self.get_gold_icon_rect)
+                screen.blit(self.get_gold_text, self.get_gold_text_rect)
+
+            if self.rewards_cards:
+                screen.blit(self.cards_img, self.cards_rect)
+                screen.blit(self.cards_text, self.cards_text_rect)
 
         if self.state == 1:
-            pygame.draw.rect(screen, self.cards_leave_color, self.cards_leave_rect)
-            button_caption("Leave", self.cards_leave_rect, screen)
+            screen.blit(self.cards_leave_img, self.cards_leave_rect)
+            screen.blit(self.cards_bg_img, self.cards_bg_rect)
 
-            pygame.draw.rect(screen, self.cards_bg_color, self.cards_bg_rect)
-
-            self.cards_bg_rect.update(0, 220, 783, 480)
             for index, card in enumerate(self.rewards_cards):
                 card.update(screen, player, index, self.cards_bg_rect)
                 button_caption(card.name, card.rect, screen)
