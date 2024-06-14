@@ -6,6 +6,7 @@ from fontsFile import text_font, text_font_big, text_font_bigger
 import inspect
 import enum
 import ongoingFile as o
+import time
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -565,9 +566,9 @@ class RandomEncounter(InGame):
         self.name_rect = self.ev_name.get_rect()
         self.name_rect.topleft = (220, 143)
 
-        self.choice_1_color = pygame.image.load("../Sprites/Misc/ChoiceButton.png")
+        self.choice_1_img = pygame.image.load("../Sprites/Misc/ChoiceButton.png")
         self.choice_1_rect = pygame.Rect((540, 400, 623, 46))
-        self.choice_2_color = pygame.image.load("../Sprites/Misc/ChoiceButton.png")
+        self.choice_2_img = pygame.image.load("../Sprites/Misc/ChoiceButton.png")
         self.choice_2_rect = pygame.Rect((540, 470, 623, 46))
 
         self.exit_img = pygame.image.load("../Sprites/Misc/LeaveButton.png")
@@ -590,7 +591,7 @@ class Ritual(RandomEncounter):
         self.ev_photo = pygame.image.load("../Sprites/Misc/Ritual.png")
         self.ev_photo_rect = pygame.Rect((120, 250, 400, 400))
 
-        self.choice_3_color = pygame.image.load("../Sprites/Misc/ChoiceButton.png")
+        self.choice_3_img = pygame.image.load("../Sprites/Misc/ChoiceButton.png")
         self.choice_3_rect = pygame.Rect((540, 540, 623, 46))
 
         self.choice_1_text = text_font_big.render("Attack them", True, (255, 255, 255))
@@ -628,13 +629,13 @@ class Ritual(RandomEncounter):
         screen.blit(self.ev_photo, self.ev_photo_rect)
         if self.state == 0:
 
-            screen.blit(self.choice_1_color, self.choice_1_rect)
+            screen.blit(self.choice_1_img, self.choice_1_rect)
             screen.blit(self.choice_1_text, self.choice_1_text_rect)
 
-            screen.blit(self.choice_2_color, self.choice_2_rect)
+            screen.blit(self.choice_2_img, self.choice_2_rect)
             screen.blit(self.choice_2_text, self.choice_2_text_rect)
 
-            screen.blit(self.choice_3_color, self.choice_3_rect)
+            screen.blit(self.choice_3_img, self.choice_3_rect)
             screen.blit(self.choice_3_text, self.choice_3_text_rect)
 
             multi_text_render("You have stumbled upon two masked man, trying to sacrifice poor, emaciated man.\n"
@@ -668,7 +669,7 @@ class Beggar(RandomEncounter):
         self.ev_photo = pygame.image.load("../Sprites/Misc/Beggar.png")
         self.ev_photo_rect = pygame.Rect((120, 250, 400, 400))
 
-        self.choice_3_color = pygame.image.load("../Sprites/Misc/ChoiceButton.png")
+        self.choice_3_img = pygame.image.load("../Sprites/Misc/ChoiceButton.png")
         self.choice_3_rect = pygame.Rect((540, 540, 623, 46))
 
         self.choice_1_text = text_font_big.render("Give him some gold (30)", True, (255, 255, 255))
@@ -717,13 +718,13 @@ class Beggar(RandomEncounter):
         screen.blit(self.ev_photo, self.ev_photo_rect)
         if self.state == 0:
 
-            screen.blit(self.choice_1_color, self.choice_1_rect)
+            screen.blit(self.choice_1_img, self.choice_1_rect)
             screen.blit(self.choice_1_text, self.choice_1_text_rect)
 
-            screen.blit(self.choice_2_color, self.choice_2_rect)
+            screen.blit(self.choice_2_img, self.choice_2_rect)
             screen.blit(self.choice_2_text, self.choice_2_text_rect)
 
-            screen.blit(self.choice_3_color, self.choice_3_rect)
+            screen.blit(self.choice_3_img, self.choice_3_rect)
             screen.blit(self.choice_3_text, self.choice_3_text_rect)
 
             multi_text_render("A lone beggar approaches you, begging for your help.\n"
@@ -793,10 +794,10 @@ class Bridge(RandomEncounter):
         screen.blit(self.ev_photo, self.ev_photo_rect)
 
         if self.state == 0:
-            screen.blit(self.choice_1_color, self.choice_1_rect)
+            screen.blit(self.choice_1_img, self.choice_1_rect)
             screen.blit(self.choice_1_text, self.choice_1_text_rect)
 
-            screen.blit(self.choice_2_color, self.choice_2_rect)
+            screen.blit(self.choice_2_img, self.choice_2_rect)
             screen.blit(self.choice_2_text, self.choice_2_text_rect)
 
             multi_text_render("A giant chasm blocks your path.\n"
@@ -828,19 +829,29 @@ class Bridge(RandomEncounter):
 class RestRoom(InGame):
     def __init__(self, player):
         super().__init__()
-        self.rest_color = BLUE
-        self.rest_rect = pygame.Rect((205, 400, 250, 250))
 
-        self.leave_color = BLACK
+        self.bg_img = pygame.image.load("../Sprites/Backgrounds/RestBg.png")
+        self.bg_rect = self.bg_img.get_rect()
+
+        self.rest_img = pygame.image.load("../Sprites/Misc/RestButton.png")
+        self.rest_rect = pygame.Rect((700, 200, 222, 145))
+
+        self.leave_img = pygame.image.load("../Sprites/Misc/LeaveButton.png")
         self.leave_rect = pygame.Rect((1216, 580, 150, 150))
 
         self.heal = int(0.3 * player.max_health)
+
+        self.darken = False
+        self.darken_start_time = None
+        self.alpha = 0
 
     def event_listener(self, ev, player):
         super().event_listener(ev, player)
         if ev.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if self.rest_rect.collidepoint(pos) and self.heal:
+                self.darken = True
+                self.darken_start_time = time.time()
                 player.heal(self.heal, player)
                 self.heal = 0
             if self.leave_rect.collidepoint(pos):
@@ -848,11 +859,23 @@ class RestRoom(InGame):
                 player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
 
     def update(self, screen, player):
-        if self.heal:
-            pygame.draw.rect(screen, self.rest_color, self.rest_rect)
-            button_caption("Rest", self.rest_rect, screen)
+        screen.blit(self.bg_img, self.bg_rect)
+        screen.blit(self.leave_img, self.leave_rect)
+        if self.darken:
+            elapsed_time = time.time() - self.darken_start_time
+            if elapsed_time < 2.75:
+                self.alpha = int((elapsed_time / 2) * 255)
+                dark_surface = pygame.Surface((1366, 768))
+                dark_surface.fill(BLACK)
+                dark_surface.set_alpha(self.alpha)
+                screen.blit(dark_surface, (0, 0))
+            else:
+                self.darken = False
+                self.alpha = 0
 
-        pygame.draw.rect(screen, self.leave_color, self.leave_rect)
+        if self.heal:
+            screen.blit(self.rest_img, self.rest_rect)
+            button_caption("Rest", self.rest_rect, screen)
 
         super().update(screen, player)
 
