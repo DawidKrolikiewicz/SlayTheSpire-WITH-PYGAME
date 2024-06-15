@@ -217,6 +217,8 @@ class Player(characterFile.Character):
         self.shuffle_deck()
         for card in self.deck:
             card.reset_card_position()
+            if card.name == "Rampage":
+                card.damage_value = 8
 
     def end_combat(self):
         self.deck.clear()
