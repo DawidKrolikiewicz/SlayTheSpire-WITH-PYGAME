@@ -373,13 +373,13 @@ class CombatEncounter(InGame):
              enemyFile.SneakyGremlin], k=4)
 
         if combat_difficulty == CombatDifficulty.EASY:
-            fights = ([enemyFile.Cultist()],
-                      [enemyFile.JawWorm()],
-                      [enemyFile.Frog(), enemyFile.Frog(), enemyFile.Worm()],
+            fights = (#[enemyFile.Cultist()],
+                      #[enemyFile.JawWorm()],
+                      #[enemyFile.Frog(), enemyFile.Frog(), enemyFile.Worm()],
                       [enemyFile.Worm(), enemyFile.Icecream(), enemyFile.Worm()],
-                      [enemyFile.RedLouse(), enemyFile.GreenLouse()],
-                      [enemyFile.AcidSlimeM(), enemyFile.SpikeSlimeS()],
-                      [enemyFile.SpikeSlimeM(), enemyFile.AcidSlimeS()]
+                      #[enemyFile.RedLouse(), enemyFile.GreenLouse()],
+                      #[enemyFile.AcidSlimeM(), enemyFile.SpikeSlimeS()],
+                      #[enemyFile.SpikeSlimeM(), enemyFile.AcidSlimeS()]
                       )
 
         elif combat_difficulty == CombatDifficulty.NORMAL:
