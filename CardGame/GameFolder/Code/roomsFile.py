@@ -201,15 +201,7 @@ class InGame(Room):
 
         pygame.display.set_caption("IN GAME")
 
-    def event_listener(self, ev, player):
-        if ev.type == pygame.MOUSEBUTTONDOWN:
-            pos = pygame.mouse.get_pos()
-            if self.menu_button_rect.collidepoint(pos):
-                last_room = player.current_room
-                player.current_room = Menu(last_room)
-                print(last_room.state)
-
-    def update(self, screen, player):
+    def draw_info_bar(self, screen, player):
         floor_count_text = text_font.render(f"Floor: {player.floor}", True, (0, 0, 0))
         player_health_text = text_font.render(f"Health: {player.cur_health}/{player.max_health}", True, (0, 0, 0))
         money_amount_text = text_font.render(f"${player.coins}", True, (0, 0, 0))
@@ -221,6 +213,17 @@ class InGame(Room):
         screen.blit(money_amount_text, (400 - (money_amount_text.get_width() // 2), 0))
 
         screen.blit(self.menu_button_image, self.menu_button_rect.topleft)
+
+    def event_listener(self, ev, player):
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            if self.menu_button_rect.collidepoint(pos):
+                last_room = player.current_room
+                player.current_room = Menu(last_room)
+                print(last_room.state)
+
+    def update(self, screen, player):
+        self.draw_info_bar(screen, player)
 
 
 # ======================================================================================================================
@@ -592,12 +595,10 @@ class RandomEncounter(InGame):
         screen.blit(self.bg_img, self.bg_rect)
         screen.blit(self.ev_img, self.ev_rect)
         screen.blit(self.ev_name, self.name_rect)
+        self.draw_info_bar(screen, player)
 
     def event_listener(self, ev, player):
         super().event_listener(ev, player)
-
-    def update(self, screen, player):
-        super().update(screen, player)
 
 
 # ======================================================================================================================
@@ -643,9 +644,10 @@ class Ritual(RandomEncounter):
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
 
     def update(self, screen, player):
+        super().update(screen, player)
         screen.blit(self.ev_photo, self.ev_photo_rect)
-        if self.state == 0:
 
+        if self.state == 0:
             screen.blit(self.choice_1_img, self.choice_1_rect)
             screen.blit(self.choice_1_text, self.choice_1_text_rect)
 
@@ -675,8 +677,6 @@ class Ritual(RandomEncounter):
             multi_text_render("You leave, ignoring this poor man's cries for help.\n"
                               "His problems are not yours.\n", screen)
             screen.blit(self.exit_img, self.exit_rect)
-
-        super().update(screen, player)
 
 
 # ======================================================================================================================
@@ -733,9 +733,10 @@ class Beggar(RandomEncounter):
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
 
     def update(self, screen, player):
+        super().update(screen, player)
         screen.blit(self.ev_photo, self.ev_photo_rect)
-        if self.state == 0:
 
+        if self.state == 0:
             screen.blit(self.choice_1_img, self.choice_1_rect)
             screen.blit(self.choice_1_text, self.choice_1_text_rect)
 
@@ -771,11 +772,8 @@ class Beggar(RandomEncounter):
                               "You lose 10 current health", screen)
             screen.blit(self.exit_img, self.exit_rect)
 
-        super().update(screen, player)
-
 
 # ======================================================================================================================
-
 
 class Bridge(RandomEncounter):
     def __init__(self):
@@ -810,6 +808,7 @@ class Bridge(RandomEncounter):
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
 
     def update(self, screen, player):
+        super().update(screen, player)
         screen.blit(self.ev_photo, self.ev_photo_rect)
 
         if self.state == 0:
@@ -841,8 +840,6 @@ class Bridge(RandomEncounter):
                               "You gained card: Wound", screen)
             screen.blit(self.exit_img, self.exit_rect)
             button_caption("Leave", self.exit_rect, screen)
-
-        super().update(screen, player)
 
 
 # ======================================================================================================================
@@ -899,6 +896,7 @@ class RestRoom(InGame):
             button_caption("Rest", self.rest_rect, screen)
 
         super().update(screen, player)
+
 
 # ======================================================================================================================
 
