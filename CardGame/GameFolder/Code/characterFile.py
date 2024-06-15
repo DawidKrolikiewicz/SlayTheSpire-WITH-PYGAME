@@ -3,6 +3,7 @@ import cardsFile
 import ongoingFile as o
 from fontsFile import text_font
 import animationsFile
+import sfxFile
 
 
 class Character(pygame.sprite.Sprite):
@@ -110,8 +111,6 @@ class Character(pygame.sprite.Sprite):
 
         damage = int(damage)
 
-        animationsFile.DamageDealtAnim(self, target, damage)  # TRIGGER FOR ANIMATION
-
         if hit_block:
             og_block = target.block
             target.block -= damage
@@ -120,7 +119,12 @@ class Character(pygame.sprite.Sprite):
                 target.block = 0
 
         if damage <= 0:
+            sfxFile.DamageBlocked.play()
             return
+
+        animationsFile.DamageDealtAnim(self, target, damage)  # TRIGGER FOR ANIMATION
+
+        sfxFile.Damage.play()
 
         if o.Effect.CURLUP in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.CURLUP].action(target)
@@ -146,6 +150,7 @@ class Character(pygame.sprite.Sprite):
 
         target.block += value
         animationsFile.BlockAddedAnim(target, target, value)  # TRIGGER FOR ANIMATION
+        sfxFile.BlockGained.play()
 
     def heal(self, value, target):
         target.cur_health += value
