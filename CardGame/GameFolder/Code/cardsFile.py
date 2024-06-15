@@ -111,8 +111,8 @@ class CardBase(pygame.sprite.Sprite):
             spacing = (hand_rect.width - self.rect.width) / 1.2
 
             self.place = pygame.Vector2(
-                hand_rect.left + (index + 0.4) * spacing,
-                hand_rect.top + hand_rect.height / 2.2
+                hand_rect.left + (index + 0.55) * spacing,
+                hand_rect.top + hand_rect.height / 2.8
             )
             self.rect.center = self.place
 
