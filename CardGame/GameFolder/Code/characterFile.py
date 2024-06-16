@@ -77,8 +77,16 @@ class Character(pygame.sprite.Sprite):
         self.counter -= 1
 
         pygame.draw.rect(screen, (150, 150, 150), self.rect_ongoing)
+        to_remove = []
         for key in self.dict_of_ongoing:
             self.dict_of_ongoing[key].update(self, screen)
+            if self.dict_of_ongoing[key].value == 0:
+                to_remove.append(key)
+
+        for key in to_remove:
+            self.dict_of_ongoing.pop(key)
+
+        to_remove.clear()
 
     def info(self):
         print(f">>  {self.name}'s info is being displayed!")

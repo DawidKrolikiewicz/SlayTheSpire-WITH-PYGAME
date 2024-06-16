@@ -3,6 +3,7 @@ import pygame.sprite
 import playerFile
 import characterFile
 import enum
+from fontsFile import text_font
 
 
 class Effect(enum.Enum):
@@ -58,6 +59,7 @@ class Ongoing(pygame.sprite.Sprite):
         self.image_value = None
         self.rect = self.image.get_rect()
         self.rect.centery = 400
+        self.text = text_font.render("Info about what this ongoing effect does!", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -71,6 +73,9 @@ class Ongoing(pygame.sprite.Sprite):
             if self.no_stack is False:
                 self.image_value = characterFile.text_font.render(f"{self.value}", True, (0, 0, 0))
                 screen.blit(self.image_value, self.rect.topleft)
+        pos = pygame.mouse.get_pos()
+        if self.rect.collidepoint(pos) and pygame.mouse.get_pressed()[2]:
+            screen.blit(self.text, (900 - self.text.get_width() // 2, 0))
 
 
 # ============================= Strength =============================
@@ -83,6 +88,7 @@ class Strength(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/StrengthIcon.png")
+        self.text = text_font.render("Attacks deal X more damage", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -102,6 +108,7 @@ class Dexterity(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/DexterityIcon.png")
+        self.text = text_font.render("Gain X extra block whenever you gain block", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -121,6 +128,7 @@ class Frail(Ongoing):
         self.value = self.duration
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/FrailIcon.png")
+        self.text = text_font.render("Gain 25% less block for X turns", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -140,6 +148,7 @@ class Vulnerable(Ongoing):
         self.value = self.duration
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/VulnerableIcon.png")
+        self.text = text_font.render("Take 50% damage for X turns", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -159,6 +168,7 @@ class Weak(Ongoing):
         self.value = self.duration
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/WeakIcon.png")
+        self.text = text_font.render("Deal 25% less damage for X turns", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -180,6 +190,7 @@ class Ritual(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/RitualIcon.png")
+        self.text = text_font.render("Gain X strength at the end of turns", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -199,6 +210,7 @@ class CurlUp(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/CurlUpIcon.png")
+        self.text = text_font.render("Taking damage for the first time gives X block", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -224,6 +236,7 @@ class Juggernaut(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/JuggernautIcon.png")
+        self.text = text_font.render("Gaining block deal X damage", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         if ev.type == playerFile.ON_PLAYER_GAIN_BLOCK:
@@ -245,6 +258,7 @@ class StrengthDown(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/StrengthDownIcon.png")
+        self.text = text_font.render("At the end of the turn, lose X strength", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         if ev.type == playerFile.ON_TURN_END:
@@ -268,6 +282,7 @@ class NoDraw(Ongoing):
         self.value = self.duration
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/NoDrawIcon.png")
+        self.text = text_font.render("Can't draw cards until the end of the turn", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -289,6 +304,7 @@ class Combust(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/CombustIcon.png")
+        self.text = text_font.render("Lose X/5 hp and deal X damage to enemies at the end of turns", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         if ev.type == playerFile.ON_TURN_END:
@@ -311,6 +327,7 @@ class DarkEmbrace(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/DarkEmbraceIcon.png")
+        self.text = text_font.render("When you exhaust a card, draw X", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         if ev.type == playerFile.ON_CARD_EXHAUSTED:
@@ -331,6 +348,7 @@ class Evolve(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/EvolveIcon.png")
+        self.text = text_font.render("Whenever you draw status card, draw X", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         if ev.type == playerFile.ON_STATUS_CARD_DRAWN:
@@ -351,6 +369,7 @@ class FeelNoPain(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/FeelNoPainIcon.png")
+        self.text = text_font.render("Whenever you exhaust a card, gain X block", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         if ev.type == playerFile.ON_STATUS_CARD_DRAWN:
@@ -371,6 +390,7 @@ class FireBreathing(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/FireBreathingIcon.png")
+        self.text = text_font.render("Whenever you draw status or curse, deal X damage to enemies", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         if ev.type == playerFile.ON_STATUS_CARD_DRAWN or ev.type == playerFile.ON_CURSE_CARD_DRAWN:
@@ -392,6 +412,7 @@ class FlameBarrier(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/FlameBarrierIcon.png")
+        self.text = text_font.render("Whenever you take damage this turn, deal X damage back", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         if ev.type == playerFile.ON_TURN_END:
@@ -413,6 +434,7 @@ class Metallicize(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/MetallicizeIcon.png")
+        self.text = text_font.render("Gain X block at the end of turns", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         # EVENT DOESN'T PROCESS BETWEEN PLAYER ENDING TURN AND ENEMY STARTING THEIR ATTACK SO :^)
@@ -434,6 +456,7 @@ class Rage(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/RageIcon.png")
+        self.text = text_font.render("Whenever you play an attack this turn, gain X block", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         if ev.type == playerFile.ON_ATTACK_PLAYED:
@@ -456,6 +479,7 @@ class Rupture(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/RuptureIcon.png")
+        self.text = text_font.render("Whenever you lose hp from a card, gain X strength", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         if ev.type == playerFile.ON_PLAYER_LOSE_HP_FROM_CARD:
@@ -476,6 +500,7 @@ class Barricade(Ongoing):
         self.value = 1
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/BarricadeIcon.png")
+        self.text = text_font.render("Don't lose block at the start of turns", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -495,6 +520,7 @@ class Berserk(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/BerserkIcon.png")
+        self.text = text_font.render("Gain X mana at the start of your turns", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -514,6 +540,7 @@ class Brutality(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/BrutalityIcon.png")
+        self.text = text_font.render("Lose X health and draw X cards at the start of turns", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -533,6 +560,7 @@ class Corruption(Ongoing):
         self.value = 1
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/CorruptionIcon.png")
+        self.text = text_font.render("Skill cost 0 and exhaust when played", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -552,6 +580,7 @@ class DemonForm(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/DemonFormIcon.png")
+        self.text = text_font.render("Gain X strength at the start of turns", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -571,6 +600,7 @@ class DoubleTap(Ongoing):
         self.value = self.counter
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/DoubleTapIcon.png")
+        self.text = text_font.render("Next attack is played twice", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         if ev.type == playerFile.ON_TURN_END:
@@ -590,6 +620,7 @@ class Entangled(Ongoing):
         self.value = self.duration
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/EntangledIcon.png")
+        self.text = text_font.render("You can't play attacks for X turns", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -607,6 +638,7 @@ class Angry(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/RageIcon.png")
+        self.text = text_font.render("On damage taken, gain X strength", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -627,6 +659,7 @@ class SporeCloud(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/SporeCloudIcon.png")
+        self.text = text_font.render("On death, make opponent Vulnurable for X turns", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -644,6 +677,7 @@ class Thievery(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/ThieveryIcon.png")
+        self.text = text_font.render("On damage dealt, steals X gold", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
@@ -661,6 +695,7 @@ class Enrage(Ongoing):
         self.value = self.intensity
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/RageIcon.png")
+        self.text = text_font.render("Whenever skill is played, gain X strength", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass
