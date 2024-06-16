@@ -52,6 +52,7 @@ class Enemy(characterFile.Character):
                 screen.blit(action_type.image, action_type.rect.topleft)
                 if action_type.value is not None:
                     screen.blit(action_type.value_image, action_type.rect.topleft)
+                    action_type.update(screen)
 
     def deal_damage(self, damage, target, is_attack=True, hit_block=True):
         super().deal_damage(damage, target, is_attack, hit_block)
