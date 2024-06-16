@@ -52,7 +52,8 @@ class Enemy(characterFile.Character):
                 screen.blit(action_type.image, action_type.rect.topleft)
                 if action_type.value is not None:
                     screen.blit(action_type.value_image, action_type.rect.topleft)
-                    action_type.update(screen)
+
+                action_type.update(screen)
 
     def deal_damage(self, damage, target, is_attack=True, hit_block=True):
         super().deal_damage(damage, target, is_attack, hit_block)
@@ -1116,6 +1117,14 @@ class GremlinNob(Enemy):
             if len(self.last_actions) > 2:
                 self.last_actions.pop(0)
 
+        if self.next_action == self.attack_14:
+            self.list_incoming.append(declarationFile.Attack(14))
+        elif self.next_action == self.attack_6_apply_3_vulnerable:
+            self.list_incoming.append(declarationFile.Attack(6))
+            self.list_incoming.append(declarationFile.Debuff(3))
+        elif self.next_action == self.gain_2_enrage:
+            self.list_incoming.append(declarationFile.Buff(2))
+
     def attack_14(self, player, list_of_enemies):
         self.deal_damage(14, player)
 
@@ -1147,6 +1156,7 @@ class Lagavulin(Enemy):
     def declare_action(self, player, list_of_enemies):
         if self.sleep_count >= 3 or self.cur_health < self.max_health and self.state != 1:
             self.state = 1
+            self.sleep_count = 0
             self.image_sprite = pygame.image.load("../Sprites/Characters/Lagavulin Awake.png")
             self.add_metallicize(-8, self)
 
@@ -1160,6 +1170,14 @@ class Lagavulin(Enemy):
             else:
                 self.next_action = self.lose_1_dex_1_str
                 self.attack_count = 0
+
+        if self.next_action == self.attack_18:
+            self.list_incoming.append(declarationFile.Attack(18))
+        elif self.next_action == self.lose_1_dex_1_str:
+            self.list_incoming.append(declarationFile.Debuff(1))
+            self.list_incoming.append(declarationFile.Debuff(1))
+        elif self.next_action == self.sleep:
+            self.list_incoming.append(declarationFile.Sleep())
 
     def attack_18(self, player, list_of_enemies):
         self.deal_damage(18, player)
@@ -1194,6 +1212,11 @@ class Sentry(Enemy):
     def declare_action(self, player, list_of_enemies):
         self.next_action = self.list_of_actions[self.move_index % len(self.list_of_actions)]
         self.move_index += 1
+
+        if self.next_action == self.attack_9:
+            self.list_incoming.append(declarationFile.Attack(9))
+        elif self.next_action == self.shuffle_2_dazed:
+            self.list_incoming.append(declarationFile.Debuff(2))
 
     def attack_9(self, player, list_of_enemies):
         self.deal_damage(9, player)

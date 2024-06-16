@@ -69,7 +69,7 @@ class Sleep(Declaration):
         super().__init__(None)
         self.image = pygame.image.load("../Sprites/Misc/SleepIntent.png")
         self.rect = self.image.get_rect()
-        self.text = text_font.render("Enemy intends to... do nothing. They are sleeping", True, (0, 0, 0))
+        self.text = text_font.render("Enemy is sleeping - but they might wake up", True, (0, 0, 0))
 
 
 class Escape(Declaration):

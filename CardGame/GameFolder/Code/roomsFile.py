@@ -241,8 +241,8 @@ class CombatEncounter(InGame):
             self.combat_difficulty = CombatDifficulty.EASY
         elif player.floor < 7:
             self.combat_difficulty = CombatDifficulty.NORMAL
-        elif player.floor == 16:
-            self.combat_difficulty = CombatDifficulty.BOSS
+#        elif player.floor == 16:
+#            self.combat_difficulty = CombatDifficulty.BOSS
         else:
             self.combat_difficulty = \
                 random.choices([CombatDifficulty.NORMAL, CombatDifficulty.ELITE], weights=[0.80, 0.20], k=1)[0]
