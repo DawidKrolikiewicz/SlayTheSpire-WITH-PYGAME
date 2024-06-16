@@ -164,7 +164,7 @@ class Menu(Room):
                 player.current_room = Shop(player)
                 pass
             elif self.menu_button_3_rect.collidepoint(pos):
-                list_of_encounters = [Ritual(), Beggar(), Bridge()]
+                list_of_encounters = [Ritual(), Beggar(), Bridge(), Goop(), Serpent(), Goodies()]
                 player.current_room = random.choice(list_of_encounters)
             elif self.menu_button_4_rect.collidepoint(pos):
                 player.current_room = RestRoom(player)
@@ -244,7 +244,8 @@ class CombatEncounter(InGame):
         elif player.floor == 16:
             self.combat_difficulty = CombatDifficulty.BOSS
         else:
-            self.combat_difficulty = random.choices([CombatDifficulty.NORMAL, CombatDifficulty.ELITE], weights= [0.80, 0.20], k=1)[0]
+            self.combat_difficulty = \
+                random.choices([CombatDifficulty.NORMAL, CombatDifficulty.ELITE], weights=[0.80, 0.20], k=1)[0]
 
         if custom_list_of_enemies is not None and custom_combat_difficulty is not None:
             self.list_of_enemies = custom_list_of_enemies
@@ -627,7 +628,8 @@ class Ritual(RandomEncounter):
         self.choice_1_text_rect = self.choice_1_text.get_rect()
         self.choice_1_text_rect.center = self.choice_1_rect.center
 
-        self.choice_2_text = text_font_big.render("Join the prayer, as they slaughter their pray", True, (255, 255, 255))
+        self.choice_2_text = text_font_big.render("Join the prayer, as they slaughter their pray", True,
+                                                  (255, 255, 255))
         self.choice_2_text_rect = self.choice_2_text.get_rect()
         self.choice_2_text_rect.center = self.choice_2_rect.center
 
@@ -854,6 +856,201 @@ class Bridge(RandomEncounter):
 
 # ======================================================================================================================
 
+class Goop(RandomEncounter):
+    def __init__(self):
+        super().__init__()
+
+        self.ev_photo = pygame.image.load("../Sprites/Misc/WorldOfGoop.png")
+        self.ev_photo_rect = pygame.Rect((120, 250, 400, 400))
+
+        self.choice_1_text = text_font_big.render("Gather Gold", True, (255, 255, 255))
+        self.choice_1_text_rect = self.choice_1_text.get_rect()
+        self.choice_1_text_rect.center = self.choice_1_rect.center
+
+        self.choice_2_text = text_font_big.render("Leave it", True, (255, 255, 255))
+        self.choice_2_text_rect = self.choice_2_text.get_rect()
+        self.choice_2_text_rect.center = self.choice_2_rect.center
+
+    def event_listener(self, ev, player):
+        super().event_listener(ev, player)
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            if self.state == 0:
+                if self.choice_1_rect.collidepoint(pos):
+                    player.cur_health -= 11
+                    player.coins += 75
+                    self.state = 1
+                elif self.choice_2_rect.collidepoint(pos):
+                    player.coins -= random.randint(20, 50)
+                    self.state = 2
+            elif self.state in (1, 2):
+                if self.exit_rect.collidepoint(pos):
+                    player.floor += 1
+                    player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
+
+    def update(self, screen, player):
+        super().update(screen, player)
+        screen.blit(self.ev_photo, self.ev_photo_rect)
+
+        if self.state == 0:
+            screen.blit(self.choice_1_img, self.choice_1_rect)
+            screen.blit(self.choice_1_text, self.choice_1_text_rect)
+
+            screen.blit(self.choice_2_img, self.choice_2_rect)
+            screen.blit(self.choice_2_text, self.choice_2_text_rect)
+
+            multi_text_render("You fall into a puddle. IT'S MADE OF SLIME GOOP!\n"
+                              "Frantically you claw yourself out over several minutes\n"
+                              "as you feel the goop starting to burn.\n"
+                              "Climbing out, you notice that some of your gold is missing.\n"
+                              "Looking back you see your missing coins combined with gold\n"
+                              "from unfortunate adventurers mixed together in the puddle.", screen)
+        elif self.state == 1:
+            multi_text_render(
+                "Feeling the sing of the goop as the prolonged exposure starts to melt away at your skin,\n"
+                "you manage to fish out the gold\n\n"
+                "You gain 75 gold, but lose 11 health", screen)
+            screen.blit(self.exit_img, self.exit_rect)
+        elif self.state == 2:
+            multi_text_render("You decide that mess is not worth it.\n\n"
+                              "You lose gold", screen)
+            screen.blit(self.exit_img, self.exit_rect)
+
+
+# ======================================================================================================================
+
+class Serpent(RandomEncounter):
+    def __init__(self):
+        super().__init__()
+
+        self.ev_photo = pygame.image.load("../Sprites/Misc/Serpent.png")
+        self.ev_photo_rect = pygame.Rect((120, 250, 400, 400))
+
+        self.choice_1_text = text_font_big.render("Agree", True, (255, 255, 255))
+        self.choice_1_text_rect = self.choice_1_text.get_rect()
+        self.choice_1_text_rect.center = self.choice_1_rect.center
+
+        self.choice_2_text = text_font_big.render("Disagree", True, (255, 255, 255))
+        self.choice_2_text_rect = self.choice_2_text.get_rect()
+        self.choice_2_text_rect.center = self.choice_2_rect.center
+
+    def event_listener(self, ev, player):
+        super().event_listener(ev, player)
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            if self.state == 0:
+                if self.choice_1_rect.collidepoint(pos):
+                    player.add_card_to_run_deck(cardsFile.Wound())
+                    player.coins += 75
+                    self.state = 1
+                elif self.choice_2_rect.collidepoint(pos):
+                    self.state = 2
+            elif self.state in (1, 2):
+                if self.exit_rect.collidepoint(pos):
+                    player.floor += 1
+                    player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
+
+    def update(self, screen, player):
+        super().update(screen, player)
+        screen.blit(self.ev_photo, self.ev_photo_rect)
+
+        if self.state == 0:
+            screen.blit(self.choice_1_img, self.choice_1_rect)
+            screen.blit(self.choice_1_text, self.choice_1_text_rect)
+
+            screen.blit(self.choice_2_img, self.choice_2_rect)
+            screen.blit(self.choice_2_text, self.choice_2_text_rect)
+
+            multi_text_render("You walk into a room with enormous serpent creature within.\n"
+                              "Serpent: \"Ho hoo! Hello! I ask a simple question, adventurer.\"\n"
+                              "Serpent: \"The most fulfilling of lives is that in whick you can buy anything!\"\n"
+                              "Serpent: \"Do you agree?\"\n", screen)
+        elif self.state == 1:
+            multi_text_render("Serpent: \"Yeeeeeeeeeeesssssssssssss.\"\n"
+                              "Thisss will all be worthhh it\n"
+                              "The serpent rears its head and blasts a stream of gold upwards!\n"
+                              "It is amazing and terrifying simultaneously.\n"
+                              "You gather all the gold, thank the snake, and get going.\n\n"
+                              "You get 75 gold and Wound card.", screen)
+            screen.blit(self.exit_img, self.exit_rect)
+        elif self.state == 2:
+            multi_text_render("The serpent stares at you with a look of extreme disappointment", screen)
+            screen.blit(self.exit_img, self.exit_rect)
+
+
+# ======================================================================================================================
+
+class Goodies(RandomEncounter):
+    def __init__(self):
+        super().__init__()
+
+        self.ev_photo = pygame.image.load("../Sprites/Misc/Goodies.png")
+        self.ev_photo_rect = pygame.Rect((120, 250, 400, 400))
+
+        self.choice_3_img = pygame.image.load("../Sprites/Misc/ChoiceButton.png")
+        self.choice_3_rect = pygame.Rect((540, 540, 623, 46))
+
+        self.choice_1_text = text_font_big.render("Banana: Heal 1/3 of your max HP", True, (255, 255, 255))
+        self.choice_1_text_rect = self.choice_1_text.get_rect()
+        self.choice_1_text_rect.center = self.choice_1_rect.center
+
+        self.choice_2_text = text_font_big.render("Donut: Max HP +5", True,
+                                                  (255, 255, 255))
+        self.choice_2_text_rect = self.choice_2_text.get_rect()
+        self.choice_2_text_rect.center = self.choice_2_rect.center
+
+        self.choice_3_text = text_font_big.render("Add a random rare card to your deck, gain Wound card", True, (255, 255, 255))
+        self.choice_3_text_rect = self.choice_3_text.get_rect()
+        self.choice_3_text_rect.center = self.choice_3_rect.center
+
+    def event_listener(self, ev, player):
+        super().event_listener(ev, player)
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            if self.state == 0:
+                if self.choice_1_rect.collidepoint(pos):
+                    player.heal(int(player.max_health / 3), player)
+                    self.state = 1
+                elif self.choice_2_rect.collidepoint(pos):
+                    player.max_health += 5
+                    player.heal(5, player)
+                    self.state = 1
+                elif self.choice_3_rect.collidepoint(pos):
+                    player.add_card_to_run_deck(cardsFile.Wound())
+                    player.add_card_to_run_deck(random.choice(cardsFile.RARE_CARDS)())
+                    self.state = 1
+            else:
+                if self.exit_rect.collidepoint(pos):
+                    player.floor += 1
+                    player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
+
+    def update(self, screen, player):
+        super().update(screen, player)
+        screen.blit(self.ev_photo, self.ev_photo_rect)
+
+        if self.state == 0:
+            screen.blit(self.choice_1_img, self.choice_1_rect)
+            screen.blit(self.choice_1_text, self.choice_1_text_rect)
+
+            screen.blit(self.choice_2_img, self.choice_2_rect)
+            screen.blit(self.choice_2_text, self.choice_2_text_rect)
+
+            screen.blit(self.choice_3_img, self.choice_3_rect)
+            screen.blit(self.choice_3_text, self.choice_3_text_rect)
+
+            multi_text_render("As you come to a dead-end and begin to turn around,\n"
+                              "walls slam down from the ceiling, trapping you!\n"
+                              "\"Forget what you know, and I'll let you go.\"\n"
+                              "\"I require change to see a new space.\"\n"
+                              "\"If you want to pass me, then you must grow.\"", screen)
+        else:
+            multi_text_render("Satisfied, the walls in front of you merge back into the ceiling,\n"
+                              "leaving a path forward.", screen)
+            screen.blit(self.exit_img, self.exit_rect)
+
+
+# ======================================================================================================================
+
 class RestRoom(InGame):
     def __init__(self, player):
         super().__init__()
@@ -1029,7 +1226,10 @@ class Rewards(InGame):
         elif player.floor == 15:
             self.choice_1_room, self.choice_2_room = RestRoom(player), RestRoom(player)
         elif player.floor == 16:
-            self.choice_1_room, self.choice_2_room = CombatEncounter(player, custom_list_of_enemies=[enemyFile.Lagavulin()], custom_combat_difficulty=CombatDifficulty.BOSS), CombatEncounter(player, custom_list_of_enemies=[enemyFile.Lagavulin()], custom_combat_difficulty=CombatDifficulty.BOSS)
+            self.choice_1_room, self.choice_2_room = CombatEncounter(player,
+                                                                     custom_list_of_enemies=[enemyFile.Lagavulin()],
+                                                                     custom_combat_difficulty=CombatDifficulty.BOSS), CombatEncounter(
+                player, custom_list_of_enemies=[enemyFile.Lagavulin()], custom_combat_difficulty=CombatDifficulty.BOSS)
         else:
             self.choice_1_room = random.choices(room_types, [0.55, 0.15, 0.2, 0.1])[0]
             self.choice_1_room = self.check_arguments(player, self.choice_1_room)
@@ -1044,10 +1244,10 @@ class Rewards(InGame):
             return room()
 
     def is_random_encounter(self, room):
-        return isinstance(room, Ritual) or isinstance(room, Beggar) or isinstance(room, Bridge)
+        return isinstance(room, RandomEncounter)
 
     def choose_random_encounter(self):
-        list_of_encounters = [Ritual(), Beggar(), Bridge()]
+        list_of_encounters = [Ritual(), Beggar(), Bridge(), Goop(), Serpent(), Goodies()]
         return random.choice(list_of_encounters)
 
     def event_listener(self, ev, player):
