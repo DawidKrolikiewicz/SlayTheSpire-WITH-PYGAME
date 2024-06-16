@@ -41,6 +41,7 @@ class CombatDifficulty(enum.Enum):
     EASY = 1
     NORMAL = 2
     ELITE = 3
+    BOSS = 4
 
 
 def multi_text_render(text, screen):
@@ -240,6 +241,8 @@ class CombatEncounter(InGame):
             self.combat_difficulty = CombatDifficulty.EASY
         elif player.floor < 7:
             self.combat_difficulty = CombatDifficulty.NORMAL
+        elif player.floor == 16:
+            self.combat_difficulty = CombatDifficulty.BOSS
         else:
             self.combat_difficulty = random.choices([CombatDifficulty.NORMAL, CombatDifficulty.ELITE], weights= [0.80, 0.20], k=1)[0]
 
@@ -356,7 +359,7 @@ class CombatEncounter(InGame):
             elif all(enemy.cur_health <= 0 for enemy in self.list_of_enemies):
                 print(f">> (((  WIN!  )))")
                 player.end_combat()
-                player.floor += 1
+                player.floor += 5
                 player.current_room = Rewards(RewardsLevel.NORMAL_FIGHT, player)
 
         if self.state == 3:
@@ -640,7 +643,7 @@ class Ritual(RandomEncounter):
                 if self.choice_1_rect.collidepoint(pos):
                     self.state = 1
                 elif self.choice_2_rect.collidepoint(pos):
-                    player.add_card_to_run_deck(cardsFile.Ritual())
+                    player.add_card_to_run_deck(cardsFile.Feed())
                     player.add_card_to_run_deck(cardsFile.Wound())
                     self.state = 2
                 elif self.choice_3_rect.collidepoint(pos):
@@ -678,7 +681,7 @@ class Ritual(RandomEncounter):
                               "The screams of killed man slowly fade away, leaving you with nothing but silence.\n"
                               "You look at the cultists, feasting on sacrifice's blood, their muscles growing visibly.\n"
                               "You can perform the same ritual now, but the feeling of uneasiness doesn't leave you.\n\n"
-                              "You gain both Ritual and Wound cards", screen)
+                              "You gain both Feed and Wound cards", screen)
             screen.blit(self.exit_img, self.exit_rect)
         elif self.state == 3:
             multi_text_render("You leave, ignoring this poor man's cries for help.\n"
@@ -698,7 +701,7 @@ class Beggar(RandomEncounter):
         self.choice_3_img = pygame.image.load("../Sprites/Misc/ChoiceButton.png")
         self.choice_3_rect = pygame.Rect((540, 540, 623, 46))
 
-        self.choice_1_text = text_font_big.render("Give him some gold (30)", True, (255, 255, 255))
+        self.choice_1_text = text_font_big.render("Give him some gold (50)", True, (255, 255, 255))
         self.choice_1_text_rect = self.choice_1_text.get_rect()
         self.choice_1_text_rect.center = self.choice_1_rect.center
 
@@ -719,7 +722,7 @@ class Beggar(RandomEncounter):
                 if self.choice_1_rect.collidepoint(pos):
                     if player.coins >= 30:
                         player.coins -= 30
-                        player.add_card_to_run_deck(cardsFile.Fireball())
+                        player.add_card_to_run_deck(cardsFile.Bludgeon())
                         self.state = 1
                 elif self.choice_2_rect.collidepoint(pos):
                     flex_card = None
@@ -729,7 +732,7 @@ class Beggar(RandomEncounter):
                             break
                     if flex_card:
                         player.remove_card_from_run_deck(flex_card)
-                        player.add_card_to_run_deck(cardsFile.Fireball())
+                        player.add_card_to_run_deck(cardsFile.Bludgeon())
                         self.state = 2
                 elif self.choice_3_rect.collidepoint(pos):
                     player.cur_health -= 10
@@ -761,14 +764,14 @@ class Beggar(RandomEncounter):
                               "He then looks you in the eyes, leans slightly and touches your left temple.\n"
                               "New knowledge floods your mind, leaving you with new ability.\n"
                               "When you open your eyes, the beggar is gone.\n\n"
-                              "You lose 30 gold, but gain Fireball card", screen)
+                              "You lose 50 gold, but gain Bludgeon card", screen)
             screen.blit(self.exit_img, self.exit_rect)
         elif self.state == 2:
             multi_text_render("Delighted beggar takes bread you gave him, biting on it eagerly.\n"
                               "He then looks you in the eyes, leans slightly and touches your left temple.\n"
                               "New knowledge floods your mind, leaving you with new ability.\n"
                               "When you open your eyes, the beggar is gone.\n\n"
-                              "You lose Flex card, but gain Fireball card", screen)
+                              "You lose Flex card, but gain Bludgeon card", screen)
             screen.blit(self.exit_img, self.exit_rect)
         elif self.state == 3:
             multi_text_render("Beggar looks you in the eyes for a while, slowly shaking.\n"
@@ -934,9 +937,20 @@ class Rewards(InGame):
             self.choice_2_room) else self.choice_2_room.name
 
         if isinstance(self.choice_1_room, CombatEncounter):
-            self.choice_1_name = "Elite Encounter" if self.choice_1_room.combat_difficulty == CombatDifficulty.ELITE else self.choice_1_room.name
+            if self.choice_1_room.combat_difficulty == CombatDifficulty.ELITE:
+                self.choice_1_name = "Elite Encounter"
+            elif self.choice_1_room.combat_difficulty == CombatDifficulty.BOSS:
+                self.choice_1_name = "Boss"
+            else:
+                self.choice_1_name = self.choice_1_room.name
+
         if isinstance(self.choice_2_room, CombatEncounter):
-            self.choice_2_name = "Elite Encounter" if self.choice_2_room.combat_difficulty == CombatDifficulty.ELITE else self.choice_2_room.name
+            if self.choice_2_room.combat_difficulty == CombatDifficulty.ELITE:
+                self.choice_2_name = "Elite Encounter"
+            elif self.choice_2_room.combat_difficulty == CombatDifficulty.BOSS:
+                self.choice_2_name = "Boss"
+            else:
+                self.choice_2_name = self.choice_2_room.name
 
         self.available_cards = cardsFile.ALL_CARDS
 
@@ -1014,6 +1028,8 @@ class Rewards(InGame):
             self.choice_2_room = self.check_arguments(player, self.choice_2_room)
         elif player.floor == 15:
             self.choice_1_room, self.choice_2_room = RestRoom(player), RestRoom(player)
+        elif player.floor == 16:
+            self.choice_1_room, self.choice_2_room = CombatEncounter(player, custom_list_of_enemies=[enemyFile.Lagavulin()], custom_combat_difficulty=CombatDifficulty.BOSS), CombatEncounter(player, custom_list_of_enemies=[enemyFile.Lagavulin()], custom_combat_difficulty=CombatDifficulty.BOSS)
         else:
             self.choice_1_room = random.choices(room_types, [0.55, 0.15, 0.2, 0.1])[0]
             self.choice_1_room = self.check_arguments(player, self.choice_1_room)
