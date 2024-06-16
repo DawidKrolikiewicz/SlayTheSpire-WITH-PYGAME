@@ -1144,7 +1144,7 @@ class Lagavulin(Enemy):
         self.attack_count = 0
 
     def declare_action(self, player, list_of_enemies):
-        if self.sleep_count >= 3 or self.cur_health < self.max_health:
+        if self.sleep_count >= 3 or self.cur_health < self.max_health and self.state != 1:
             self.state = 1
             self.image_sprite = pygame.image.load("../Sprites/Characters/Lagavulin Awake.png")
             self.add_metallicize(-8, self)
