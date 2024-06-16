@@ -6,6 +6,7 @@ import cardsFile
 import ongoingFile as o
 import animationsFile
 import fontsFile
+import sfxFile
 
 ON_CARD_EXHAUSTED = pygame.USEREVENT + 1
 ON_STATUS_CARD_DRAWN = pygame.USEREVENT + 2
@@ -111,6 +112,7 @@ class Player(characterFile.Character):
                     self.remove_card(card)
                 elif not card.exhaust:
                     self.discard_card(card)
+                    sfxFile.card_played.play()
                 elif card.exhaust:
                     self.exhaust_card(card)
                 else:
@@ -204,11 +206,13 @@ class Player(characterFile.Character):
         if card.name == "Sentinel":
             self.gain_mana(2)
         pygame.event.post(pygame.event.Event(ON_CARD_EXHAUSTED))
+        sfxFile.card_exhausted.play()
 
     def remove_card(self, card):
         # (For Powers)
         self.hand.remove(card)
         card.reset_card_position()
+        sfxFile.power_played.play()
 
     def gain_mana(self, how_much):
         self.mana += how_much
@@ -218,6 +222,11 @@ class Player(characterFile.Character):
         self.shuffle_deck()
         for card in self.deck:
             card.reset_card_position()
+            if card.name == "Rampage":
+                card.damage_value = 8
+
+        if 0 < self.cur_health < self.max_health:
+            self.heal(6, self)
 
     def end_combat(self):
         self.fight_count += 1
@@ -226,8 +235,6 @@ class Player(characterFile.Character):
         self.discard.clear()
         self.dict_of_ongoing.clear()
         self.anim_list.clear()
-        if self.cur_health > 0:
-            self.heal(6, self)
 
     def start_turn(self):
         self.mana = 3
