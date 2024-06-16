@@ -360,8 +360,16 @@ class CombatEncounter(InGame):
             elif all(enemy.cur_health <= 0 for enemy in self.list_of_enemies):
                 print(f">> (((  WIN!  )))")
                 player.end_combat()
-                player.floor += 5
-                player.current_room = Rewards(RewardsLevel.NORMAL_FIGHT, player)
+                player.floor += 1
+                rewards = 0
+                if self.combat_difficulty == CombatDifficulty.EASY:
+                    rewards = RewardsLevel.EASY_FIGHT
+                elif self.combat_difficulty == CombatDifficulty.NORMAL:
+                    rewards = RewardsLevel.NORMAL_FIGHT
+                elif self.combat_difficulty == CombatDifficulty.ELITE:
+                    rewards = RewardsLevel.ELITE_FIGHT
+
+                player.current_room = Rewards(rewards, player)
 
         if self.state == 3:
             # END TURN

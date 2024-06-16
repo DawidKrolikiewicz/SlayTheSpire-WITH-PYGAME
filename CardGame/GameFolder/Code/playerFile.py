@@ -226,7 +226,7 @@ class Player(characterFile.Character):
                 card.damage_value = 8
 
         if 0 < self.cur_health < self.max_health:
-            self.heal(6, self)
+            self.heal(3, self)
 
     def end_combat(self):
         self.fight_count += 1
