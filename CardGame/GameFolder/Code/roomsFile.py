@@ -7,6 +7,7 @@ import inspect
 import enum
 import ongoingFile as o
 import time
+import playerFile
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -150,7 +151,7 @@ class Menu(Room):
                                      cardsFile.Defend, cardsFile.Defend, cardsFile.Defend, cardsFile.Defend,
                                      cardsFile.Bash]
                     player.run_deck = [card() for card in STARTING_DECK]
-                    player.current_room = CombatEncounter()
+                    player.current_room = CombatEncounter(player)
 
                 else:
                     # Continue Current Run
@@ -229,12 +230,18 @@ class InGame(Room):
 # ======================================================================================================================
 
 class CombatEncounter(InGame):
-    def __init__(self, combat_difficulty=CombatDifficulty.EASY, custom_list_of_enemies=None,
+    def __init__(self, player, custom_list_of_enemies=None,
                  custom_combat_difficulty=None):
         super().__init__()
+        self.name = "Combat Encounter"
 
         self.list_of_enemies = []
-        self.combat_difficulty = combat_difficulty
+        if player.fight_count < 3:
+            self.combat_difficulty = CombatDifficulty.EASY
+        elif player.floor < 7:
+            self.combat_difficulty = CombatDifficulty.NORMAL
+        else:
+            self.combat_difficulty = random.choices([CombatDifficulty.NORMAL, CombatDifficulty.ELITE], weights= [0.80, 0.20], k=1)[0]
 
         if custom_list_of_enemies is not None and custom_combat_difficulty is not None:
             self.list_of_enemies = custom_list_of_enemies
@@ -393,14 +400,14 @@ class CombatEncounter(InGame):
                       [enemyFile.RedLouse(), enemyFile.GreenLouse(), enemyFile.RedLouse()],
                       [enemyFile.GreenLouse(), enemyFile.RedLouse(), enemyFile.GreenLouse()],
                       [enemyFile.FungiBeast(), enemyFile.FungiBeast()],
-                      [enemyFile.AcidSlimeM, enemyFile.Looter()],
-                      [enemyFile.AcidSlimeM, enemyFile.RedSlaver()],
-                      [enemyFile.SpikeSlimeM, enemyFile.Cultist()],
-                      [enemyFile.SpikeSlimeM, enemyFile.BlueSlaver()],
+                      [enemyFile.AcidSlimeM(), enemyFile.Looter()],
+                      [enemyFile.AcidSlimeM(), enemyFile.RedSlaver()],
+                      [enemyFile.SpikeSlimeM(), enemyFile.Cultist()],
+                      [enemyFile.SpikeSlimeM(), enemyFile.BlueSlaver()],
                       [enemyFile.FungiBeast(), enemyFile.SpikeSlimeM()],
                       [enemyFile.JawWorm(), enemyFile.RedLouse(), enemyFile.GreenLouse()],
                       [enemyFile.JawWorm(), enemyFile.AcidSlimeM()],
-                      [enemyFile.Looter]
+                      [enemyFile.Looter()]
                       )
         elif combat_difficulty == CombatDifficulty.ELITE:
             fights = ([enemyFile.GremlinNob()],
@@ -460,7 +467,7 @@ class Shop(InGame):
         self.bg_rect = self.bg_img.get_rect()
 
         self.remove_card_img = pygame.image.load("../Sprites/Misc/RemoveButton.png")
-        self.remove_card_rect = pygame.Rect((50, 0, 100, 100))
+        self.remove_card_rect = pygame.Rect((50, 60, 100, 100))
 
         self.leave_img = pygame.image.load("../Sprites/Misc/LeaveButton.png")
         self.leave_rect = pygame.Rect((1220, 640, 100, 100))
@@ -570,7 +577,6 @@ class Shop(InGame):
 class RandomEncounter(InGame):
     def __init__(self):
         super().__init__()
-        self.name = self.__class__.__name__
 
         self.bg_img = pygame.image.load("../Sprites/Backgrounds/Event_BG.png")
         self.bg_rect = self.bg_img.get_rect()
@@ -589,6 +595,7 @@ class RandomEncounter(InGame):
 
         self.exit_img = pygame.image.load("../Sprites/Misc/LeaveButton.png")
         self.exit_rect = pygame.Rect((1160, 580, 100, 100))
+        pygame.display.set_caption("RANDOM ENCOUNTER")
 
     def update(self, screen, player):
         super().update(screen, player)
@@ -663,7 +670,7 @@ class Ritual(RandomEncounter):
                               "What do you do?\n",
                               screen)
         elif self.state == 1:
-            player.current_room = CombatEncounter(CombatDifficulty.EASY, [enemyFile.Cultist(), enemyFile.Cultist()],
+            player.current_room = CombatEncounter(player, [enemyFile.Cultist(), enemyFile.Cultist()],
                                                   custom_combat_difficulty=CombatDifficulty.EASY)
 
         elif self.state == 2:
@@ -847,6 +854,7 @@ class Bridge(RandomEncounter):
 class RestRoom(InGame):
     def __init__(self, player):
         super().__init__()
+        self.name = "Rest Room"
 
         self.bg_img = pygame.image.load("../Sprites/Backgrounds/RestBg.png")
         self.bg_rect = self.bg_img.get_rect()
@@ -862,6 +870,8 @@ class RestRoom(InGame):
         self.darken = False
         self.darken_start_time = None
         self.alpha = 0
+
+        pygame.display.set_caption("REST ROOM")
 
     def event_listener(self, ev, player):
         super().event_listener(ev, player)
@@ -923,6 +933,11 @@ class Rewards(InGame):
         self.choice_2_name = "Random Encounter" if self.is_random_encounter(
             self.choice_2_room) else self.choice_2_room.name
 
+        if isinstance(self.choice_1_room, CombatEncounter):
+            self.choice_1_name = "Elite Encounter" if self.choice_1_room.combat_difficulty == CombatDifficulty.ELITE else self.choice_1_room.name
+        if isinstance(self.choice_2_room, CombatEncounter):
+            self.choice_2_name = "Elite Encounter" if self.choice_2_room.combat_difficulty == CombatDifficulty.ELITE else self.choice_2_room.name
+
         self.available_cards = cardsFile.ALL_CARDS
 
         self.set_rewards(rewards_level)
@@ -946,6 +961,8 @@ class Rewards(InGame):
 
         self.cards_bg_img = pygame.image.load("../Sprites/Backgrounds/stone_bg.png")
         self.cards_bg_rect = pygame.Rect((0, 220, 783, 480))
+
+        pygame.display.set_caption("REWARDS")
 
     def set_rewards(self, rewards_level):
         cards_weights = []

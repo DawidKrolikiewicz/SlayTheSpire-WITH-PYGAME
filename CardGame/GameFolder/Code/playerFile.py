@@ -23,6 +23,7 @@ class Player(characterFile.Character):
     def __init__(self, name, health, starting_deck):
         super().__init__(name, health)
         # RUN RELATED
+        self.fight_count = 0
         self.floor = 0
         self.coins = 50
         self.run_deck = starting_deck
@@ -219,6 +220,7 @@ class Player(characterFile.Character):
             card.reset_card_position()
 
     def end_combat(self):
+        self.fight_count += 1
         self.deck.clear()
         self.hand.clear()
         self.discard.clear()
