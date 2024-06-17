@@ -4,6 +4,7 @@ import playerFile
 import sfxFile
 
 pygame.init()
+pygame.mixer.init()
 
 # 1366 x 768
 SCREEN_WIDTH = 1366
@@ -58,4 +59,5 @@ while is_running:
     # Display actual FPS
     # print(int(timer.get_fps()))
 
+pygame.mixer.music.stop()
 pygame.quit()
