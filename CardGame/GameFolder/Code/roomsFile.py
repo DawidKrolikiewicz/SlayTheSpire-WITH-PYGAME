@@ -22,12 +22,18 @@ SLIDER_HEIGHT = 668
 SLIDER_X = 588
 SLIDER_Y = 50
 
+class RewardsLevel(enum.Enum):
+    NO_REWARDS = 1
+    EASY_FIGHT = 2
+    NORMAL_FIGHT = 3
+    ELITE_FIGHT = 4
 
-# > Room   (superclass)
-# - Menu
-# > InGame (superclass)
-# - CombatEncounter
-# - Shop
+
+class CombatDifficulty(enum.Enum):
+    EASY = 1
+    NORMAL = 2
+    ELITE = 3
+    BOSS = 4
 
 
 class RewardsLevel(enum.Enum):
@@ -118,7 +124,7 @@ class Room:
     def play_music(self):
         pygame.mixer.music.load(self.music)
         pygame.mixer.music.play(-1)
-        pygame.mixer.music.set_volume(0.3)
+        pygame.mixer.music.set_volume(0.15)
 
     def event_listener(self, ev, player):
         pass
@@ -153,8 +159,12 @@ class Menu(Room):
                 if player.floor == 0 or player.cur_health <= 0:
                     # Start New Run
                     print("Start New Run!!!")
+                    player.fight_count = 0
                     player.floor = 1
+                    player.max_health = 70
                     player.cur_health = player.max_health
+                    player.coins = 50
+
                     STARTING_DECK = [cardsFile.Strike, cardsFile.Strike, cardsFile.Strike, cardsFile.Strike,
                                      cardsFile.Strike,
                                      cardsFile.Defend, cardsFile.Defend, cardsFile.Defend, cardsFile.Defend,
@@ -168,14 +178,18 @@ class Menu(Room):
                     # Continue Current Run
                     print("Cont from last room")
                     player.current_room = self.last_room
+                pass
 
-                pass
             elif self.menu_button_2_rect.collidepoint(pos):
-                player.current_room = Shop(player)
+                if player.endless is True:
+                    player.endless = False
+                else:
+                    player.endless = True
                 pass
+
             elif self.menu_button_3_rect.collidepoint(pos):
-                list_of_encounters = [Ritual(), Beggar(), Bridge(), Goop(), Serpent(), Goodies()]
-                player.current_room = random.choice(list_of_encounters)
+                pass
+
             elif self.menu_button_4_rect.collidepoint(pos):
                 player.current_room = RestRoom(player)
 
@@ -195,7 +209,16 @@ class Menu(Room):
         button_1_text_rect = button_1_text.get_rect()
         button_1_text_rect.center = self.menu_button_1_rect.center
 
+        if player.endless is True:
+            button_2_text = text_font_big.render("ENDLESS MODE: ON ", True, (0, 0, 0))
+        else:
+            button_2_text = text_font_big.render("ENDLESS MODE: OFF", True, (0, 0, 0))
+
+        button_2_text_rect = button_2_text.get_rect()
+        button_2_text_rect.center = self.menu_button_2_rect.center
+
         screen.blit(button_1_text, button_1_text_rect)
+        screen.blit(button_2_text, button_2_text_rect)
 
 
 # ======================================================================================================================
@@ -218,6 +241,7 @@ class InGame(Room):
         player_health_text = text_font.render(f"Health: {player.cur_health}/{player.max_health}", True, (0, 0, 0))
         money_amount_text = text_font.render(f"${player.coins}", True, (0, 0, 0))
         points_amount_text = text_font.render(f"Points: {player.points}", True, (0, 0, 0))
+
 
         pygame.draw.rect(screen, (184, 183, 182), self.info_bar
                          )
@@ -256,7 +280,7 @@ class CombatEncounter(InGame):
             self.combat_difficulty = CombatDifficulty.EASY
         elif player.floor < 7:
             self.combat_difficulty = CombatDifficulty.NORMAL
-        elif player.floor == 16:
+        elif (player.floor % 25) == 0:
             self.combat_difficulty = CombatDifficulty.BOSS
             self.music = "../Sound Effects/BossMusic.mp3"
         else:
@@ -367,6 +391,7 @@ class CombatEncounter(InGame):
                     if o.Effect.THIEVERY in enemy.dict_of_ongoing:
                         player.coins += enemy.stolen_gold
                     player.points += 2
+
                     self.list_of_enemies.remove(enemy)
                     print(f"Enemy {enemy.name} is DEAD!")
 
@@ -376,7 +401,6 @@ class CombatEncounter(InGame):
                 player.current_room = Ending(player)  # LOSE
                 player.current_room.play_music()
             elif all(enemy.cur_health <= 0 for enemy in self.list_of_enemies):
-                print(f">> (((  WIN!  )))")
                 if self.combat_difficulty == CombatDifficulty.ELITE:
                     player.points += 10
                 elif self.combat_difficulty == CombatDifficulty.BOSS:
@@ -384,6 +408,7 @@ class CombatEncounter(InGame):
                 player.end_combat()
                 player.floor += 1
                 player.points += 5
+
                 rewards = 0
                 if self.combat_difficulty == CombatDifficulty.EASY:
                     rewards = RewardsLevel.EASY_FIGHT
@@ -394,10 +419,17 @@ class CombatEncounter(InGame):
                 elif self.combat_difficulty == CombatDifficulty.BOSS:
                     sfxFile.yey.play()
                     pygame.time.wait(1000)
-                    player.floor = 0
-                    player.current_room = Ending(player)
-                    player.current_room.play_music()
-                    return
+
+                    if player.endless is True:
+                        rewards = RewardsLevel.ELITE_FIGHT
+                        player.max_health = int(0.8 * player.max_health)
+                        if player.cur_health > player.max_health:
+                            player.cur_health = player.max_health
+                    else:
+                        player.floor = 0
+                        player.current_room = Ending(player)
+                        player.current_room.play_music()
+                        return
 
                 player.current_room = Rewards(rewards, player)
                 player.current_room.play_music()
@@ -569,6 +601,7 @@ class Shop(InGame):
                     print(f"LEAVING SHOP")
                     player.floor += 1
                     player.points += 5
+
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
                     player.current_room.play_music()
                 elif self.remove_card_rect.collidepoint(pos) and not self.card_sold:
@@ -697,6 +730,7 @@ class Ritual(RandomEncounter):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
                     player.points += 5
+
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
                     player.current_room.play_music()
 
@@ -789,6 +823,7 @@ class Beggar(RandomEncounter):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
                     player.points += 5
+
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
                     player.current_room.play_music()
 
@@ -835,6 +870,8 @@ class Beggar(RandomEncounter):
 
 # ======================================================================================================================
 
+# ======================================================================================================================
+
 class Bridge(RandomEncounter):
     def __init__(self):
         super().__init__()
@@ -866,6 +903,7 @@ class Bridge(RandomEncounter):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
                     player.points += 5
+
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
                     player.current_room.play_music()
 
@@ -937,6 +975,7 @@ class Goop(RandomEncounter):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
                     player.points += 5
+
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
                     player.current_room.play_music()
 
@@ -1001,6 +1040,7 @@ class Serpent(RandomEncounter):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
                     player.points += 5
+
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
                     player.current_room.play_music()
 
@@ -1055,6 +1095,7 @@ class Goodies(RandomEncounter):
 
         self.choice_3_text = text_font_big.render("Add a random rare card to your deck, gain Wound card", True,
                                                   (255, 255, 255))
+
         self.choice_3_text_rect = self.choice_3_text.get_rect()
         self.choice_3_text_rect.center = self.choice_3_rect.center
 
@@ -1078,6 +1119,7 @@ class Goodies(RandomEncounter):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
                     player.points += 5
+
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
                     player.current_room.play_music()
 
@@ -1142,6 +1184,7 @@ class RestRoom(InGame):
             if self.leave_rect.collidepoint(pos):
                 player.floor += 1
                 player.points += 5
+
                 player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
                 player.current_room.play_music()
 
@@ -1282,9 +1325,10 @@ class Rewards(InGame):
 
             self.choice_2_room = random.choices(room_types, [0.65, 0.20, 0.15, 0])[0]
             self.choice_2_room = self.check_arguments(player, self.choice_2_room)
-        elif player.floor == 15:
+
+        elif (player.floor % 25) == 24:
             self.choice_1_room, self.choice_2_room = RestRoom(player), RestRoom(player)
-        elif player.floor == 16:
+        elif (player.floor % 25) == 0:
             self.choice_1_room, self.choice_2_room = CombatEncounter(player), CombatEncounter(player)
             pass
         else:
@@ -1420,3 +1464,4 @@ class Ending(InGame):
                 player.current_room = Menu(None)
 
         super().update(screen, player)
+

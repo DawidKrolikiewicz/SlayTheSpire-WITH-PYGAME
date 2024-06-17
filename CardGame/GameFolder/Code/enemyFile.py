@@ -1242,10 +1242,10 @@ class Boss(Enemy):
 
     def declare_action(self, player, list_of_enemies):
         if self.phase == 1:
-            self.list_of_actions = [self.armor, self.deal10, self.deal4_shuffle2dazed]
+            self.list_of_actions = [self.armor, self.attack10, self.attack4_shuffle2dazed]
             pass
         elif self.phase == 2:
-            self.list_of_actions = [self.lessArmor_debuff, self.deal3_4times, self.gainStr_shuffle2would]
+            self.list_of_actions = [self.lessArmor_debuff, self.attack3_4times, self.gainStr_shuffle2would]
             pass
         elif self.phase == 3:
             self.list_of_actions = [self.cleanse_buff, self.debuff, self.defend10, self.attack30]
@@ -1259,16 +1259,16 @@ class Boss(Enemy):
 
         if self.next_action == self.armor:
             self.list_incoming.append(declarationFile.Buff(5))
-        elif self.next_action == self.deal10:
+        elif self.next_action == self.attack10:
             self.list_incoming.append(declarationFile.Attack(10))
-        elif self.next_action == self.deal4_shuffle2dazed:
+        elif self.next_action == self.attack4_shuffle2dazed:
             self.list_incoming.append(declarationFile.Attack(4))
             self.list_incoming.append(declarationFile.Debuff(2))
 
         elif self.next_action == self.lessArmor_debuff:
             self.list_incoming.append(declarationFile.Debuff(1))
             self.list_incoming.append(declarationFile.Debuff(1))
-        elif self.next_action == self.deal3_4times:
+        elif self.next_action == self.attack3_4times:
             self.list_incoming.append(declarationFile.MultiAttack(4, 3))
         elif self.next_action == self.gainStr_shuffle2would:
             self.list_incoming.append(declarationFile.Buff(1))
@@ -1298,10 +1298,10 @@ class Boss(Enemy):
     def armor(self, player, list_of_enemies):
         self.add_metallicize(5, self)
 
-    def deal10(self, player, list_of_enemies):
+    def attack10(self, player, list_of_enemies):
         self.deal_damage(10, player)
 
-    def deal4_shuffle2dazed(self, player, list_of_enemies):
+    def attack4_shuffle2dazed(self, player, list_of_enemies):
         self.deal_damage(4, player)
         for i in range(2):
             player.add_card_to_discard(cardsFile.Dazed())
@@ -1311,7 +1311,7 @@ class Boss(Enemy):
         self.add_strength(-1, player)
         self.add_dexterity(-1, player)
 
-    def deal3_4times(self, player, list_of_enemies):
+    def attack3_4times(self, player, list_of_enemies):
         for i in range(4):
             self.deal_damage(3, player)
 

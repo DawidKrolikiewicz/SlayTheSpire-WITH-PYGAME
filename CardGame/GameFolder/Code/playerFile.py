@@ -30,6 +30,8 @@ class Player(characterFile.Character):
         self.floor = 0
         self.coins = 50
         self.run_deck = starting_deck
+        self.endless = False
+        
         # COMBAT RELATED
         self.max_hand_size = 10
         self.deck = []
@@ -96,8 +98,7 @@ class Player(characterFile.Character):
             print(f">>  {self.name} is playing a card:")
 
             if o.Effect.CORRUPTION in self.dict_of_ongoing and card.type == cardsFile.CardType.SKILL:
-                card.cost = 0
-                card.exhaust = True
+                use_mana = False
 
             if o.Effect.ENTANGLED in self.dict_of_ongoing and card.type == cardsFile.CardType.ATTACK:
                 if self.dict_of_ongoing[o.Effect.ENTANGLED].value > 0:
@@ -113,11 +114,11 @@ class Player(characterFile.Character):
 
                 if card.type == cardsFile.CardType.POWER:
                     self.remove_card(card)
+                elif card.exhaust or o.Effect.CORRUPTION in self.dict_of_ongoing and card.type == cardsFile.CardType.SKILL:
+                    self.exhaust_card(card)
                 elif not card.exhaust:
                     self.discard_card(card)
                     sfxFile.card_played.play()
-                elif card.exhaust:
-                    self.exhaust_card(card)
                 else:
                     print("There is some CRITICAL error here D:")
 
