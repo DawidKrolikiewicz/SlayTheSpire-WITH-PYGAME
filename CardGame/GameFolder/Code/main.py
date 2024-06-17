@@ -1,8 +1,11 @@
 import pygame
 import cardsFile
 import playerFile
+import sfxFile
+import roomsFile
 
 pygame.init()
+pygame.mixer.init()
 
 # 1366 x 768
 SCREEN_WIDTH = 1366
@@ -20,13 +23,11 @@ timer = pygame.time.Clock()
 
 PLAYER_NAME = "VictoriousGuy"
 STARTING_HEALTH = 70
-STARTING_DECK = [cardsFile.Covid19Vaccine(), cardsFile.Covid19Vaccine(),
-                 cardsFile.Bonk(), cardsFile.Bonk(),
-                 cardsFile.PanicRoll(), cardsFile.PanicRoll(),
-                 cardsFile.TinCanArmor(), cardsFile.TinCanArmor(),
-                 cardsFile.A100pNatural(), cardsFile.Covid19(), cardsFile.Juggernaut()]
+STARTING_DECK = [cardsFile.Strike, cardsFile.Strike, cardsFile.Strike, cardsFile.Strike, cardsFile.Strike,
+                 cardsFile.Defend, cardsFile.Defend, cardsFile.Defend, cardsFile.Defend,
+                 cardsFile.Bash]
 
-PLAYER = playerFile.Player(PLAYER_NAME, STARTING_HEALTH, STARTING_DECK)
+PLAYER = playerFile.Player(PLAYER_NAME, STARTING_HEALTH, [card() for card in STARTING_DECK])
 
 # ======================================================================================================================
 
@@ -40,6 +41,14 @@ while is_running:
             is_running = False
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             is_running = False
+        # ====== OTHER (TESTING MAINLY ¯\_(ツ)_/¯ ) ======
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+            PLAYER.floor = 16
+            PLAYER.fight_count = 3
+            PLAYER.end_combat()
+            PLAYER.current_room = PLAYER.max_health
+            PLAYER.current_room = roomsFile.Rewards(roomsFile.RewardsLevel.NO_REWARDS, PLAYER)
+
         # ===========   EVENT LISTEN IN THIS ROOM ONLY  ===========
         PLAYER.current_room.event_listener(event, PLAYER)
 
@@ -57,4 +66,5 @@ while is_running:
     # Display actual FPS
     # print(int(timer.get_fps()))
 
+pygame.mixer.music.stop()
 pygame.quit()
