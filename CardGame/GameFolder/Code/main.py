@@ -2,6 +2,7 @@ import pygame
 import cardsFile
 import playerFile
 import sfxFile
+import roomsFile
 
 pygame.init()
 pygame.mixer.init()
@@ -41,6 +42,11 @@ while is_running:
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             is_running = False
         # ====== OTHER (TESTING MAINLY ¯\_(ツ)_/¯ ) ======
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
+            PLAYER.floor = 16
+            PLAYER.fight_count = 3
+            PLAYER.end_combat()
+            PLAYER.current_room = roomsFile.Rewards(roomsFile.RewardsLevel.NO_REWARDS, PLAYER)
 
         # ===========   EVENT LISTEN IN THIS ROOM ONLY  ===========
         PLAYER.current_room.event_listener(event, PLAYER)

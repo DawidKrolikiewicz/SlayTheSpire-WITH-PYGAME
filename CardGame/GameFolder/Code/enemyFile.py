@@ -1225,3 +1225,118 @@ class Sentry(Enemy):
         player.add_card_to_discard(cardsFile.Dazed())
         player.add_card_to_discard(cardsFile.Dazed())
 
+
+class Boss(Enemy):
+    def __init__(self, name="BOSS", health=101):
+        super().__init__(name, health)
+        self.name = name
+        self.max_health = health
+        self.cur_health = self.max_health
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Boss1.png")
+        self.rect_sprite = self.image_sprite.get_rect()
+        self.rect_sprite.bottom = 350
+        self.state = 0
+        self.phase = 1
+
+        self.list_of_actions = []
+
+    def declare_action(self, player, list_of_enemies):
+        if self.phase == 1:
+            self.list_of_actions = [self.armor, self.deal10, self.deal4_shuffle2dazed]
+            pass
+        elif self.phase == 2:
+            self.list_of_actions = [self.lessArmor_debuff, self.deal3_4times, self.gainStr_shuffle2would]
+            pass
+        elif self.phase == 3:
+            self.list_of_actions = [self.cleanse_buff, self.debuff, self.defend10, self.attack30]
+            pass
+
+        self.next_action = self.list_of_actions[self.state]
+        if self.state < len(self.list_of_actions) - 1:
+            self.state += 1
+        else:
+            self.state = 1
+
+        if self.next_action == self.armor:
+            self.list_incoming.append(declarationFile.Buff(5))
+        elif self.next_action == self.deal10:
+            self.list_incoming.append(declarationFile.Attack(10))
+        elif self.next_action == self.deal4_shuffle2dazed:
+            self.list_incoming.append(declarationFile.Attack(4))
+            self.list_incoming.append(declarationFile.Debuff(2))
+
+        elif self.next_action == self.lessArmor_debuff:
+            self.list_incoming.append(declarationFile.Debuff(1))
+            self.list_incoming.append(declarationFile.Debuff(1))
+        elif self.next_action == self.deal3_4times:
+            self.list_incoming.append(declarationFile.MultiAttack(4, 3))
+        elif self.next_action == self.gainStr_shuffle2would:
+            self.list_incoming.append(declarationFile.Buff(1))
+            self.list_incoming.append(declarationFile.Debuff(2))
+
+        elif self.next_action == self.cleanse_buff:
+            self.list_incoming.append(declarationFile.SuperBuff(1))
+        elif self.next_action == self.debuff:
+            self.list_incoming.append(declarationFile.Debuff(2))
+            self.list_incoming.append(declarationFile.Debuff(2))
+        elif self.next_action == self.defend10:
+            self.list_incoming.append(declarationFile.Block(10))
+        elif self.next_action == self.attack30:
+            self.list_incoming.append(declarationFile.Attack(30))
+
+    def update(self, screen):
+        super().update(screen)
+        if self.phase == 1 and self.cur_health <= 200:
+            self.phase = 2
+            self.state = 0
+            self.image_sprite = pygame.image.load("../Sprites/Characters/Boss2.png")
+        if self.phase == 2 and self.cur_health <= 100:
+            self.phase = 3
+            self.state = 0
+            self.image_sprite = pygame.image.load("../Sprites/Characters/Boss3.png")
+
+    def armor(self, player, list_of_enemies):
+        self.add_metallicize(5, self)
+
+    def deal10(self, player, list_of_enemies):
+        self.deal_damage(10, player)
+
+    def deal4_shuffle2dazed(self, player, list_of_enemies):
+        self.deal_damage(4, player)
+        for i in range(2):
+            player.add_card_to_discard(cardsFile.Dazed())
+
+    def lessArmor_debuff(self, player, list_of_enemies):
+        self.add_metallicize(-3, self)
+        self.add_strength(-1, player)
+        self.add_dexterity(-1, player)
+
+    def deal3_4times(self, player, list_of_enemies):
+        for i in range(4):
+            self.deal_damage(3, player)
+
+    def gainStr_shuffle2would(self, player, list_of_enemies):
+        self.add_strength(1, self)
+        for i in range(2):
+            player.add_card_to_discard(cardsFile.Wound())
+
+    def cleanse_buff(self, player, list_of_enemies):
+        self.dict_of_ongoing.clear()
+        self.add_madness(1, self)
+
+    def debuff(self, player, list_of_enemies):
+        self.add_weak(2, player)
+        self.add_frail(2, player)
+
+    def defend10(self, player, list_of_enemies):
+        self.add_block(10, self)
+        if o.Effect.MADNESS in self.dict_of_ongoing:
+            self.dict_of_ongoing[o.Effect.DEXTERITY].intensity = 0
+
+    def attack30(self, player, list_of_enemies):
+        self.deal_damage(30, player)
+        if o.Effect.MADNESS in self.dict_of_ongoing:
+            self.dict_of_ongoing[o.Effect.STRENGTH].intensity = 0
+
+
+

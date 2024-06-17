@@ -353,27 +353,39 @@ class Character(pygame.sprite.Sprite):
             target.dict_of_ongoing[o.Effect.ENTANGLED] = o.Entangled()
 
         target.dict_of_ongoing[o.Effect.ENTANGLED].duration += value
+        animationsFile.DebuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_angry(self, value, target):
         if o.Effect.ANGRY not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.ANGRY] = o.Angry()
 
         target.dict_of_ongoing[o.Effect.ANGRY].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_spore_cloud(self, value, target):
         if o.Effect.SPORE_CLOUD not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.SPORE_CLOUD] = o.SporeCloud()
 
         target.dict_of_ongoing[o.Effect.SPORE_CLOUD].intensity += value
+        animationsFile.DebuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_thievery(self, value, target):
         if o.Effect.THIEVERY not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.THIEVERY] = o.Thievery()
 
         target.dict_of_ongoing[o.Effect.THIEVERY].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
 
     def add_enrage(self, value, target):
         if o.Effect.ENRAGE not in target.dict_of_ongoing:
             target.dict_of_ongoing[o.Effect.ENRAGE] = o.Enrage()
 
         target.dict_of_ongoing[o.Effect.ENRAGE].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION
+
+    def add_madness(self, value, target):
+        if o.Effect.MADNESS not in target.dict_of_ongoing:
+            target.dict_of_ongoing[o.Effect.MADNESS] = o.Madness()
+
+        target.dict_of_ongoing[o.Effect.MADNESS].intensity += value
+        animationsFile.BuffAnim(self, target, value)  # TRIGGER FOR ANIMATION

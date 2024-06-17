@@ -1635,6 +1635,9 @@ class Burn(CardBase):
         # SHOP RELATED
         self.rarity = Rarity.STATUS
 
+
+# ==================================================================================================================== #
+
 class Slimed(CardBase):
     def __init__(self):
         super().__init__()

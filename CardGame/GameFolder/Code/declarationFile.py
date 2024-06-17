@@ -48,6 +48,14 @@ class Buff(Declaration):
         self.text = text_font.render("Enemy intends to inflict a positive effect on ally or themselves", True, (0, 0, 0))
 
 
+class SuperBuff(Declaration):
+    def __init__(self, value):
+        super().__init__(value)
+        self.image = pygame.image.load("../Sprites/Misc/BuffIntent.png")
+        self.rect = self.image.get_rect()
+        self.text = text_font.render("Enemy intends to inflict a major positive effect on ally or themselves", True, (0, 0, 0))
+
+
 class Debuff(Declaration):
     def __init__(self, value):
         super().__init__(value)
