@@ -46,6 +46,7 @@ while is_running:
             PLAYER.floor = 16
             PLAYER.fight_count = 3
             PLAYER.end_combat()
+            PLAYER.current_room = PLAYER.max_health
             PLAYER.current_room = roomsFile.Rewards(roomsFile.RewardsLevel.NO_REWARDS, PLAYER)
 
         # ===========   EVENT LISTEN IN THIS ROOM ONLY  ===========

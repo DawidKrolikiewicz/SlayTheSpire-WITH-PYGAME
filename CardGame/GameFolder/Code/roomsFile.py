@@ -7,7 +7,7 @@ import inspect
 import enum
 import ongoingFile as o
 import time
-import playerFile
+import sfxFile
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -382,6 +382,12 @@ class CombatEncounter(InGame):
                     rewards = RewardsLevel.NORMAL_FIGHT
                 elif self.combat_difficulty == CombatDifficulty.ELITE:
                     rewards = RewardsLevel.ELITE_FIGHT
+                elif self.combat_difficulty == CombatDifficulty.BOSS:
+                    sfxFile.yey.play()
+                    pygame.time.wait(1000)
+                    player.floor = 0
+                    player.current_room = Menu(None)
+                    return
 
                 player.current_room = Rewards(rewards, player)
                 player.current_room.play_music()

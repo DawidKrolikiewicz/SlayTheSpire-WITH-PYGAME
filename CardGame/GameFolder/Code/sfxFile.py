@@ -25,3 +25,4 @@ card_played = pygame.mixer.Sound("../Sound Effects/CardPlayed.mp3")
 card_exhausted = pygame.mixer.Sound("../Sound Effects/CardExhausted.mp3")
 power_played = pygame.mixer.Sound("../Sound Effects/PowerPlayed.mp3")
 
+yey = pygame.mixer.Sound("../Sound Effects/yey.mp3")

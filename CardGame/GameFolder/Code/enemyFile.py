@@ -1227,7 +1227,7 @@ class Sentry(Enemy):
 
 
 class Boss(Enemy):
-    def __init__(self, name="BOSS", health=101):
+    def __init__(self, name="BOSS", health=300):
         super().__init__(name, health)
         self.name = name
         self.max_health = health
