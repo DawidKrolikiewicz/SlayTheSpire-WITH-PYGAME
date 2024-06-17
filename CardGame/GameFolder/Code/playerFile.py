@@ -26,10 +26,12 @@ class Player(characterFile.Character):
         super().__init__(name, health)
         # RUN RELATED
         self.fight_count = 0
+        self.points = 0
         self.floor = 0
         self.coins = 50
         self.run_deck = starting_deck
         self.endless = False
+        
         # COMBAT RELATED
         self.max_hand_size = 10
         self.deck = []

@@ -36,6 +36,20 @@ class CombatDifficulty(enum.Enum):
     BOSS = 4
 
 
+class RewardsLevel(enum.Enum):
+    NO_REWARDS = 1
+    EASY_FIGHT = 2
+    NORMAL_FIGHT = 3
+    ELITE_FIGHT = 4
+
+
+class CombatDifficulty(enum.Enum):
+    EASY = 1
+    NORMAL = 2
+    ELITE = 3
+    BOSS = 4
+
+
 def multi_text_render(text, screen):
     rendered_fonts = []
     for i, line in enumerate(text.split('\n')):
@@ -150,14 +164,16 @@ class Menu(Room):
                     player.max_health = 70
                     player.cur_health = player.max_health
                     player.coins = 50
-                    
+
                     STARTING_DECK = [cardsFile.Strike, cardsFile.Strike, cardsFile.Strike, cardsFile.Strike,
                                      cardsFile.Strike,
                                      cardsFile.Defend, cardsFile.Defend, cardsFile.Defend, cardsFile.Defend,
                                      cardsFile.Bash]
                     player.run_deck = [card() for card in STARTING_DECK]
+                    player.points += 5
                     player.current_room = CombatEncounter(player)
                     player.current_room.play_music()
+
                 else:
                     # Continue Current Run
                     print("Cont from last room")
@@ -205,7 +221,6 @@ class Menu(Room):
         screen.blit(button_2_text, button_2_text_rect)
 
 
-
 # ======================================================================================================================
 
 class InGame(Room):
@@ -225,12 +240,15 @@ class InGame(Room):
         floor_count_text = text_font.render(f"Floor: {player.floor}", True, (0, 0, 0))
         player_health_text = text_font.render(f"Health: {player.cur_health}/{player.max_health}", True, (0, 0, 0))
         money_amount_text = text_font.render(f"${player.coins}", True, (0, 0, 0))
+        points_amount_text = text_font.render(f"Points: {player.points}", True, (0, 0, 0))
+
 
         pygame.draw.rect(screen, (184, 183, 182), self.info_bar
                          )
         screen.blit(floor_count_text, (100 - (floor_count_text.get_width() // 2), 0))
         screen.blit(player_health_text, (250 - (player_health_text.get_width() // 2), 0))
         screen.blit(money_amount_text, (400 - (money_amount_text.get_width() // 2), 0))
+        screen.blit(points_amount_text, (550 - (points_amount_text.get_width() // 2), 0))
 
         screen.blit(self.menu_button_image, self.menu_button_rect.topleft)
 
@@ -240,6 +258,7 @@ class InGame(Room):
             if self.menu_button_rect.collidepoint(pos):
                 last_room = player.current_room
                 player.current_room = Menu(last_room)
+                player.current_room.play_music()
                 print(last_room.state)
 
     def update(self, screen, player):
@@ -290,7 +309,6 @@ class CombatEncounter(InGame):
 
         self._position_enemies()
         self.number_of_enemies = len(self.list_of_enemies)
-
 
     def event_listener(self, ev, player):
         super().event_listener(ev, player)
@@ -372,18 +390,25 @@ class CombatEncounter(InGame):
                         enemy.add_vulnerable(2, player)
                     if o.Effect.THIEVERY in enemy.dict_of_ongoing:
                         player.coins += enemy.stolen_gold
+                    player.points += 2
+
                     self.list_of_enemies.remove(enemy)
                     print(f"Enemy {enemy.name} is DEAD!")
 
             if player.cur_health <= 0:
                 print(f">> (((  LOSE  )))")
                 player.end_combat()
-                player.current_room = Menu(None)  # LOSE
+                player.current_room = Ending(player)  # LOSE
                 player.current_room.play_music()
             elif all(enemy.cur_health <= 0 for enemy in self.list_of_enemies):
-                print(f">> (((  WIN!  )))")
+                if self.combat_difficulty == CombatDifficulty.ELITE:
+                    player.points += 10
+                elif self.combat_difficulty == CombatDifficulty.BOSS:
+                    player.points += 50
                 player.end_combat()
                 player.floor += 1
+                player.points += 5
+
                 rewards = 0
                 if self.combat_difficulty == CombatDifficulty.EASY:
                     rewards = RewardsLevel.EASY_FIGHT
@@ -394,6 +419,7 @@ class CombatEncounter(InGame):
                 elif self.combat_difficulty == CombatDifficulty.BOSS:
                     sfxFile.yey.play()
                     pygame.time.wait(1000)
+
                     if player.endless is True:
                         rewards = RewardsLevel.ELITE_FIGHT
                         player.max_health = int(0.8 * player.max_health)
@@ -401,7 +427,8 @@ class CombatEncounter(InGame):
                             player.cur_health = player.max_health
                     else:
                         player.floor = 0
-                        player.current_room = Menu(None)
+                        player.current_room = Ending(player)
+                        player.current_room.play_music()
                         return
 
                 player.current_room = Rewards(rewards, player)
@@ -527,7 +554,6 @@ class Shop(InGame):
 
         self.slider = Slider(220, 700, 926, 20, len(player.run_deck), 4)
 
-
     def create_shop_items(self):
         cards_weights = []
         for card in self.available_cards:
@@ -574,6 +600,8 @@ class Shop(InGame):
                 if self.leave_rect.collidepoint(pos):
                     print(f"LEAVING SHOP")
                     player.floor += 1
+                    player.points += 5
+
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
                     player.current_room.play_music()
                 elif self.remove_card_rect.collidepoint(pos) and not self.card_sold:
@@ -649,7 +677,6 @@ class RandomEncounter(InGame):
         self.exit_rect = pygame.Rect((1160, 580, 100, 100))
         pygame.display.set_caption("RANDOM ENCOUNTER")
 
-
     def update(self, screen, player):
         super().update(screen, player)
         screen.blit(self.bg_img, self.bg_rect)
@@ -702,6 +729,8 @@ class Ritual(RandomEncounter):
             elif self.state in (2, 3):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
+                    player.points += 5
+
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
                     player.current_room.play_music()
 
@@ -793,6 +822,8 @@ class Beggar(RandomEncounter):
             elif self.state in (1, 2, 3):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
+                    player.points += 5
+
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
                     player.current_room.play_music()
 
@@ -839,6 +870,8 @@ class Beggar(RandomEncounter):
 
 # ======================================================================================================================
 
+# ======================================================================================================================
+
 class Bridge(RandomEncounter):
     def __init__(self):
         super().__init__()
@@ -869,6 +902,8 @@ class Bridge(RandomEncounter):
             elif self.state in (1, 2, 3):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
+                    player.points += 5
+
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
                     player.current_room.play_music()
 
@@ -939,6 +974,8 @@ class Goop(RandomEncounter):
             elif self.state in (1, 2):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
+                    player.points += 5
+
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
                     player.current_room.play_music()
 
@@ -1002,6 +1039,8 @@ class Serpent(RandomEncounter):
             elif self.state in (1, 2):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
+                    player.points += 5
+
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
                     player.current_room.play_music()
 
@@ -1054,7 +1093,9 @@ class Goodies(RandomEncounter):
         self.choice_2_text_rect = self.choice_2_text.get_rect()
         self.choice_2_text_rect.center = self.choice_2_rect.center
 
-        self.choice_3_text = text_font_big.render("Add a random rare card to your deck, gain Wound card", True, (255, 255, 255))
+        self.choice_3_text = text_font_big.render("Add a random rare card to your deck, gain Wound card", True,
+                                                  (255, 255, 255))
+
         self.choice_3_text_rect = self.choice_3_text.get_rect()
         self.choice_3_text_rect.center = self.choice_3_rect.center
 
@@ -1077,6 +1118,8 @@ class Goodies(RandomEncounter):
             else:
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
+                    player.points += 5
+
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
                     player.current_room.play_music()
 
@@ -1129,7 +1172,6 @@ class RestRoom(InGame):
 
         pygame.display.set_caption("REST ROOM")
 
-
     def event_listener(self, ev, player):
         super().event_listener(ev, player)
         if ev.type == pygame.MOUSEBUTTONDOWN:
@@ -1141,6 +1183,8 @@ class RestRoom(InGame):
                 self.heal = 0
             if self.leave_rect.collidepoint(pos):
                 player.floor += 1
+                player.points += 5
+
                 player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
                 player.current_room.play_music()
 
@@ -1233,7 +1277,6 @@ class Rewards(InGame):
 
         pygame.display.set_caption("REWARDS")
 
-
     def set_rewards(self, rewards_level):
         cards_weights = []
         if rewards_level == RewardsLevel.NO_REWARDS:
@@ -1282,6 +1325,7 @@ class Rewards(InGame):
 
             self.choice_2_room = random.choices(room_types, [0.65, 0.20, 0.15, 0])[0]
             self.choice_2_room = self.check_arguments(player, self.choice_2_room)
+
         elif (player.floor % 25) == 24:
             self.choice_1_room, self.choice_2_room = RestRoom(player), RestRoom(player)
         elif (player.floor % 25) == 0:
@@ -1361,3 +1405,63 @@ class Rewards(InGame):
                 button_caption(card.name, card.rect, screen)
 
         super().update(screen, player)
+
+
+class Ending(InGame):
+    def __init__(self, player):
+        super().__init__()
+        self.name = self.__class__.__name__
+
+        self.bg_img = pygame.image.load("../Sprites/Backgrounds/Event_BG.png")
+        self.bg_rect = self.bg_img.get_rect()
+
+        self.leave_img = pygame.image.load("../Sprites/Misc/LeaveButton.png")
+        self.leave_rect = pygame.Rect((1216, 580, 150, 150))
+
+        self.music = "../Sound Effects/MenuAmbient.mp3"
+
+        self.game_over_text = text_font_bigger.render("You won! The Tower has been conquered!", True, (255, 255, 255))
+        self.game_over_text_rect = self.game_over_text.get_rect()
+        self.game_over_text_rect.centerx = 1366 // 2
+        self.game_over_text_rect.y = 200
+
+        self.points_text = text_font_big.render(f"Your points: {player.points}", True, (255, 255, 255))
+        self.points_text_rect = self.points_text.get_rect()
+        self.points_text_rect.centerx = 1366 // 2
+        self.points_text_rect.y = 300
+
+        self.darken = False
+        self.darken_start_time = None
+        self.alpha = 0
+
+        pygame.display.set_caption("Game Over!")
+
+    def event_listener(self, ev, player):
+        super().event_listener(ev, player)
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            if self.leave_rect.collidepoint(pos):
+                self.darken = True
+                self.darken_start_time = time.time()
+    def update(self, screen, player):
+        screen.blit(self.bg_img, self.bg_rect)
+        screen.blit(self.leave_img, self.leave_rect)
+
+        if player.cur_health <= 0:
+            self.game_over_text = text_font_bigger.render("Game over! The Tower has conquered you!", True, (255, 255, 255))
+        screen.blit(self.game_over_text, self.game_over_text_rect)
+        screen.blit(self.points_text, self.points_text_rect)
+
+        if self.darken:
+            elapsed_time = time.time() - self.darken_start_time
+            if elapsed_time < 2.75:
+                self.alpha = int((elapsed_time / 2) * 255)
+                dark_surface = pygame.Surface((1366, 768))
+                dark_surface.fill(BLACK)
+                dark_surface.set_alpha(self.alpha)
+                screen.blit(dark_surface, (0, 0))
+            else:
+                player.current_room = Menu(None)
+
+        super().update(screen, player)
+
