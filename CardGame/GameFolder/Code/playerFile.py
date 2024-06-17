@@ -29,6 +29,7 @@ class Player(characterFile.Character):
         self.floor = 0
         self.coins = 50
         self.run_deck = starting_deck
+        self.endless = False
         # COMBAT RELATED
         self.max_hand_size = 10
         self.deck = []

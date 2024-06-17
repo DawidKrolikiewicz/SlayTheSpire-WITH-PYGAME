@@ -22,14 +22,6 @@ SLIDER_HEIGHT = 668
 SLIDER_X = 588
 SLIDER_Y = 50
 
-
-# > Room   (superclass)
-# - Menu
-# > InGame (superclass)
-# - CombatEncounter
-# - Shop
-
-
 class RewardsLevel(enum.Enum):
     NO_REWARDS = 1
     EASY_FIGHT = 2
@@ -118,7 +110,7 @@ class Room:
     def play_music(self):
         pygame.mixer.music.load(self.music)
         pygame.mixer.music.play(-1)
-        pygame.mixer.music.set_volume(0.3)
+        pygame.mixer.music.set_volume(0.15)
 
     def event_listener(self, ev, player):
         pass
@@ -153,8 +145,12 @@ class Menu(Room):
                 if player.floor == 0 or player.cur_health <= 0:
                     # Start New Run
                     print("Start New Run!!!")
+                    player.fight_count = 0
                     player.floor = 1
+                    player.max_health = 70
                     player.cur_health = player.max_health
+                    player.coins = 50
+                    
                     STARTING_DECK = [cardsFile.Strike, cardsFile.Strike, cardsFile.Strike, cardsFile.Strike,
                                      cardsFile.Strike,
                                      cardsFile.Defend, cardsFile.Defend, cardsFile.Defend, cardsFile.Defend,
@@ -162,19 +158,22 @@ class Menu(Room):
                     player.run_deck = [card() for card in STARTING_DECK]
                     player.current_room = CombatEncounter(player)
                     player.current_room.play_music()
-
                 else:
                     # Continue Current Run
                     print("Cont from last room")
                     player.current_room = self.last_room
+                pass
 
-                pass
             elif self.menu_button_2_rect.collidepoint(pos):
-                player.current_room = Shop(player)
+                if player.endless is True:
+                    player.endless = False
+                else:
+                    player.endless = True
                 pass
+
             elif self.menu_button_3_rect.collidepoint(pos):
-                list_of_encounters = [Ritual(), Beggar(), Bridge(), Goop(), Serpent(), Goodies()]
-                player.current_room = random.choice(list_of_encounters)
+                pass
+
             elif self.menu_button_4_rect.collidepoint(pos):
                 player.current_room = RestRoom(player)
 
@@ -194,7 +193,17 @@ class Menu(Room):
         button_1_text_rect = button_1_text.get_rect()
         button_1_text_rect.center = self.menu_button_1_rect.center
 
+        if player.endless is True:
+            button_2_text = text_font_big.render("ENDLESS MODE: ON ", True, (0, 0, 0))
+        else:
+            button_2_text = text_font_big.render("ENDLESS MODE: OFF", True, (0, 0, 0))
+
+        button_2_text_rect = button_2_text.get_rect()
+        button_2_text_rect.center = self.menu_button_2_rect.center
+
         screen.blit(button_1_text, button_1_text_rect)
+        screen.blit(button_2_text, button_2_text_rect)
+
 
 
 # ======================================================================================================================
@@ -252,7 +261,7 @@ class CombatEncounter(InGame):
             self.combat_difficulty = CombatDifficulty.EASY
         elif player.floor < 7:
             self.combat_difficulty = CombatDifficulty.NORMAL
-        elif player.floor == 16:
+        elif (player.floor % 25) == 0:
             self.combat_difficulty = CombatDifficulty.BOSS
             self.music = "../Sound Effects/BossMusic.mp3"
         else:
@@ -385,9 +394,15 @@ class CombatEncounter(InGame):
                 elif self.combat_difficulty == CombatDifficulty.BOSS:
                     sfxFile.yey.play()
                     pygame.time.wait(1000)
-                    player.floor = 0
-                    player.current_room = Menu(None)
-                    return
+                    if player.endless is True:
+                        rewards = RewardsLevel.ELITE_FIGHT
+                        player.max_health = int(0.8 * player.max_health)
+                        if player.cur_health > player.max_health:
+                            player.cur_health = player.max_health
+                    else:
+                        player.floor = 0
+                        player.current_room = Menu(None)
+                        return
 
                 player.current_room = Rewards(rewards, player)
                 player.current_room.play_music()
@@ -1267,9 +1282,9 @@ class Rewards(InGame):
 
             self.choice_2_room = random.choices(room_types, [0.65, 0.20, 0.15, 0])[0]
             self.choice_2_room = self.check_arguments(player, self.choice_2_room)
-        elif player.floor == 15:
+        elif (player.floor % 25) == 24:
             self.choice_1_room, self.choice_2_room = RestRoom(player), RestRoom(player)
-        elif player.floor == 16:
+        elif (player.floor % 25) == 0:
             self.choice_1_room, self.choice_2_room = CombatEncounter(player), CombatEncounter(player)
             pass
         else:

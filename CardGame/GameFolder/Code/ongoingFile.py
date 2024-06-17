@@ -149,7 +149,7 @@ class Vulnerable(Ongoing):
         self.value = self.duration
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/VulnerableIcon.png")
-        self.text = text_font.render("Take 50% damage for X turns", True, (0, 0, 0))
+        self.text = text_font.render("Take 50% more damage for X turns", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass

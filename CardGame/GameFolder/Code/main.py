@@ -43,10 +43,10 @@ while is_running:
             is_running = False
         # ====== OTHER (TESTING MAINLY ¯\_(ツ)_/¯ ) ======
         if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
-            PLAYER.floor = 16
+            PLAYER.floor = 25
             PLAYER.fight_count = 3
             PLAYER.end_combat()
-            PLAYER.current_room = PLAYER.max_health
+            PLAYER.cur_health = PLAYER.max_health
             PLAYER.current_room = roomsFile.Rewards(roomsFile.RewardsLevel.NO_REWARDS, PLAYER)
 
         # ===========   EVENT LISTEN IN THIS ROOM ONLY  ===========
