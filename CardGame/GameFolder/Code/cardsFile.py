@@ -900,7 +900,7 @@ class Inflame(CardBase):
     def __init__(self):
         super().__init__()
         # GAME RELATED
-        self.type = CardType.SKILL
+        self.type = CardType.POWER
         self.target = Targeting.ANY
         self.cost = 1
         self.text = "There is no text here!"
