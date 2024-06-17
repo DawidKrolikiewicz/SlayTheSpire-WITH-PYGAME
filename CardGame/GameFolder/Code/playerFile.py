@@ -36,6 +36,7 @@ class Player(characterFile.Character):
         self.discard = []
         self.mana = 3
         self.current_room = roomsFile.Menu(None)
+        self.current_room.play_music()
         self.highlight = None
         self.drag = None
 

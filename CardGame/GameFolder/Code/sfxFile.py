@@ -24,3 +24,4 @@ heals = (heal_1, heal_2, heal_3)
 card_played = pygame.mixer.Sound("../Sound Effects/CardPlayed.mp3")
 card_exhausted = pygame.mixer.Sound("../Sound Effects/CardExhausted.mp3")
 power_played = pygame.mixer.Sound("../Sound Effects/PowerPlayed.mp3")
+

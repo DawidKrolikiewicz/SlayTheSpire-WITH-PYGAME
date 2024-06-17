@@ -113,6 +113,12 @@ class Room:
         self.state = 0
         self.name = self.__class__.__name__
         pygame.display.set_caption('ROOM (superclass)')
+        self.music = "../Sound Effects/InGameAmbient.mp3"
+
+    def play_music(self):
+        pygame.mixer.music.load(self.music)
+        pygame.mixer.music.play(-1)
+        pygame.mixer.music.set_volume(0.3)
 
     def event_listener(self, ev, player):
         pass
@@ -134,6 +140,8 @@ class Menu(Room):
         self.menu_button_3_rect = pygame.Rect((50, 560, 300, 80))
         self.menu_button_4_rect = pygame.Rect((50, 660, 300, 80))
 
+        self.music = "../Sound Effects/MenuAmbient.mp3"
+
         self.last_room = last_room
         pygame.display.set_caption("MENU")
 
@@ -153,6 +161,7 @@ class Menu(Room):
                                      cardsFile.Bash]
                     player.run_deck = [card() for card in STARTING_DECK]
                     player.current_room = CombatEncounter(player)
+                    player.current_room.play_music()
 
                 else:
                     # Continue Current Run
@@ -236,6 +245,8 @@ class CombatEncounter(InGame):
         super().__init__()
         self.name = "Combat Encounter"
 
+        self.music = "../Sound Effects/FightMusic.mp3"
+
         self.list_of_enemies = []
         if player.fight_count < 3:
             self.combat_difficulty = CombatDifficulty.EASY
@@ -243,6 +254,7 @@ class CombatEncounter(InGame):
             self.combat_difficulty = CombatDifficulty.NORMAL
         elif player.floor == 16:
             self.combat_difficulty = CombatDifficulty.BOSS
+            self.music = "../Sound Effects/BossMusic.mp3"
         else:
             self.combat_difficulty = \
                 random.choices([CombatDifficulty.NORMAL, CombatDifficulty.ELITE], weights=[0.80, 0.20], k=1)[0]
@@ -269,6 +281,7 @@ class CombatEncounter(InGame):
 
         self._position_enemies()
         self.number_of_enemies = len(self.list_of_enemies)
+
 
     def event_listener(self, ev, player):
         super().event_listener(ev, player)
@@ -357,6 +370,7 @@ class CombatEncounter(InGame):
                 print(f">> (((  LOSE  )))")
                 player.end_combat()
                 player.current_room = Menu(None)  # LOSE
+                player.current_room.play_music()
             elif all(enemy.cur_health <= 0 for enemy in self.list_of_enemies):
                 print(f">> (((  WIN!  )))")
                 player.end_combat()
@@ -370,6 +384,7 @@ class CombatEncounter(InGame):
                     rewards = RewardsLevel.ELITE_FIGHT
 
                 player.current_room = Rewards(rewards, player)
+                player.current_room.play_music()
 
         if self.state == 3:
             # END TURN
@@ -491,6 +506,7 @@ class Shop(InGame):
 
         self.slider = Slider(220, 700, 926, 20, len(player.run_deck), 4)
 
+
     def create_shop_items(self):
         cards_weights = []
         for card in self.available_cards:
@@ -538,6 +554,7 @@ class Shop(InGame):
                     print(f"LEAVING SHOP")
                     player.floor += 1
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
+                    player.current_room.play_music()
                 elif self.remove_card_rect.collidepoint(pos) and not self.card_sold:
                     if player.coins >= self.remove_price:
                         self.state = 1
@@ -611,6 +628,7 @@ class RandomEncounter(InGame):
         self.exit_rect = pygame.Rect((1160, 580, 100, 100))
         pygame.display.set_caption("RANDOM ENCOUNTER")
 
+
     def update(self, screen, player):
         super().update(screen, player)
         screen.blit(self.bg_img, self.bg_rect)
@@ -664,6 +682,7 @@ class Ritual(RandomEncounter):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
+                    player.current_room.play_music()
 
     def update(self, screen, player):
         super().update(screen, player)
@@ -687,6 +706,7 @@ class Ritual(RandomEncounter):
         elif self.state == 1:
             player.current_room = CombatEncounter(player, [enemyFile.Cultist(), enemyFile.Cultist()],
                                                   custom_combat_difficulty=CombatDifficulty.EASY)
+            player.current_room.play_music()
 
         elif self.state == 2:
             multi_text_render("You join in the prayers, mumbling something under your breath.\n"
@@ -753,6 +773,7 @@ class Beggar(RandomEncounter):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
+                    player.current_room.play_music()
 
     def update(self, screen, player):
         super().update(screen, player)
@@ -828,6 +849,7 @@ class Bridge(RandomEncounter):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
+                    player.current_room.play_music()
 
     def update(self, screen, player):
         super().update(screen, player)
@@ -897,6 +919,7 @@ class Goop(RandomEncounter):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
+                    player.current_room.play_music()
 
     def update(self, screen, player):
         super().update(screen, player)
@@ -959,6 +982,7 @@ class Serpent(RandomEncounter):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
+                    player.current_room.play_music()
 
     def update(self, screen, player):
         super().update(screen, player)
@@ -1033,6 +1057,7 @@ class Goodies(RandomEncounter):
                 if self.exit_rect.collidepoint(pos):
                     player.floor += 1
                     player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
+                    player.current_room.play_music()
 
     def update(self, screen, player):
         super().update(screen, player)
@@ -1083,6 +1108,7 @@ class RestRoom(InGame):
 
         pygame.display.set_caption("REST ROOM")
 
+
     def event_listener(self, ev, player):
         super().event_listener(ev, player)
         if ev.type == pygame.MOUSEBUTTONDOWN:
@@ -1095,6 +1121,7 @@ class RestRoom(InGame):
             if self.leave_rect.collidepoint(pos):
                 player.floor += 1
                 player.current_room = Rewards(RewardsLevel.NO_REWARDS, player)
+                player.current_room.play_music()
 
     def update(self, screen, player):
         screen.blit(self.bg_img, self.bg_rect)
@@ -1185,6 +1212,7 @@ class Rewards(InGame):
 
         pygame.display.set_caption("REWARDS")
 
+
     def set_rewards(self, rewards_level):
         cards_weights = []
         if rewards_level == RewardsLevel.NO_REWARDS:
@@ -1265,8 +1293,10 @@ class Rewards(InGame):
             if not self.state:
                 if self.choice_1_rect.collidepoint(pos):
                     player.current_room = self.choice_1_room
+                    self.choice_1_room.play_music()
                 elif self.choice_2_rect.collidepoint(pos):
                     player.current_room = self.choice_2_room
+                    self.choice_2_room.play_music()
                 elif self.get_gold_rect.collidepoint(pos) and self.gold:
                     player.coins += self.gold
                     self.gold = 0
