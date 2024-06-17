@@ -286,7 +286,6 @@ class CombatEncounter(InGame):
         self._position_enemies()
         self.number_of_enemies = len(self.list_of_enemies)
 
-
     def event_listener(self, ev, player):
         super().event_listener(ev, player)
         if self.state == 2:
@@ -374,7 +373,7 @@ class CombatEncounter(InGame):
             if player.cur_health <= 0:
                 print(f">> (((  LOSE  )))")
                 player.end_combat()
-                player.current_room = Menu(None)  # LOSE
+                player.current_room = Ending(player)  # LOSE
                 player.current_room.play_music()
             elif all(enemy.cur_health <= 0 for enemy in self.list_of_enemies):
                 print(f">> (((  WIN!  )))")
@@ -396,7 +395,8 @@ class CombatEncounter(InGame):
                     sfxFile.yey.play()
                     pygame.time.wait(1000)
                     player.floor = 0
-                    player.current_room = Menu(None)
+                    player.current_room = Ending(player)
+                    player.current_room.play_music()
                     return
 
                 player.current_room = Rewards(rewards, player)
@@ -522,7 +522,6 @@ class Shop(InGame):
 
         self.slider = Slider(220, 700, 926, 20, len(player.run_deck), 4)
 
-
     def create_shop_items(self):
         cards_weights = []
         for card in self.available_cards:
@@ -644,7 +643,6 @@ class RandomEncounter(InGame):
         self.exit_img = pygame.image.load("../Sprites/Misc/LeaveButton.png")
         self.exit_rect = pygame.Rect((1160, 580, 100, 100))
         pygame.display.set_caption("RANDOM ENCOUNTER")
-
 
     def update(self, screen, player):
         super().update(screen, player)
@@ -1055,7 +1053,8 @@ class Goodies(RandomEncounter):
         self.choice_2_text_rect = self.choice_2_text.get_rect()
         self.choice_2_text_rect.center = self.choice_2_rect.center
 
-        self.choice_3_text = text_font_big.render("Add a random rare card to your deck, gain Wound card", True, (255, 255, 255))
+        self.choice_3_text = text_font_big.render("Add a random rare card to your deck, gain Wound card", True,
+                                                  (255, 255, 255))
         self.choice_3_text_rect = self.choice_3_text.get_rect()
         self.choice_3_text_rect.center = self.choice_3_rect.center
 
@@ -1130,7 +1129,6 @@ class RestRoom(InGame):
         self.alpha = 0
 
         pygame.display.set_caption("REST ROOM")
-
 
     def event_listener(self, ev, player):
         super().event_listener(ev, player)
@@ -1235,7 +1233,6 @@ class Rewards(InGame):
         self.cards_bg_rect = pygame.Rect((0, 220, 783, 480))
 
         pygame.display.set_caption("REWARDS")
-
 
     def set_rewards(self, rewards_level):
         cards_weights = []
@@ -1362,5 +1359,64 @@ class Rewards(InGame):
             for index, card in enumerate(self.rewards_cards):
                 card.update(screen, player, index, self.cards_bg_rect)
                 button_caption(card.name, card.rect, screen)
+
+        super().update(screen, player)
+
+
+class Ending(InGame):
+    def __init__(self, player):
+        super().__init__()
+        self.name = self.__class__.__name__
+
+        self.bg_img = pygame.image.load("../Sprites/Backgrounds/Event_BG.png")
+        self.bg_rect = self.bg_img.get_rect()
+
+        self.leave_img = pygame.image.load("../Sprites/Misc/LeaveButton.png")
+        self.leave_rect = pygame.Rect((1216, 580, 150, 150))
+
+        self.music = "../Sound Effects/MenuAmbient.mp3"
+
+        self.game_over_text = text_font_bigger.render("You won! The Tower has been conquered!", True, (255, 255, 255))
+        self.game_over_text_rect = self.game_over_text.get_rect()
+        self.game_over_text_rect.centerx = 1366 // 2
+        self.game_over_text_rect.y = 200
+
+        self.points_text = text_font_big.render(f"Your points: {player.points}", True, (255, 255, 255))
+        self.points_text_rect = self.points_text.get_rect()
+        self.points_text_rect.centerx = 1366 // 2
+        self.points_text_rect.y = 300
+
+        self.darken = False
+        self.darken_start_time = None
+        self.alpha = 0
+
+        pygame.display.set_caption("Game Over!")
+
+    def event_listener(self, ev, player):
+        super().event_listener(ev, player)
+        if ev.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            if self.leave_rect.collidepoint(pos):
+                self.darken = True
+                self.darken_start_time = time.time()
+    def update(self, screen, player):
+        screen.blit(self.bg_img, self.bg_rect)
+        screen.blit(self.leave_img, self.leave_rect)
+
+        if player.cur_health <= 0:
+            self.game_over_text = text_font_bigger.render("Game over! The Tower has conquered you!", True, (255, 255, 255))
+        screen.blit(self.game_over_text, self.game_over_text_rect)
+        screen.blit(self.points_text, self.points_text_rect)
+
+        if self.darken:
+            elapsed_time = time.time() - self.darken_start_time
+            if elapsed_time < 2.75:
+                self.alpha = int((elapsed_time / 2) * 255)
+                dark_surface = pygame.Surface((1366, 768))
+                dark_surface.fill(BLACK)
+                dark_surface.set_alpha(self.alpha)
+                screen.blit(dark_surface, (0, 0))
+            else:
+                player.current_room = Menu(None)
 
         super().update(screen, player)
