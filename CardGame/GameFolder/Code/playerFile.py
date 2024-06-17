@@ -18,6 +18,7 @@ ON_SKILL_PLAYED = pygame.USEREVENT + 7
 ON_PLAYER_GAIN_BLOCK = pygame.USEREVENT + 8
 ON_TURN_END = pygame.USEREVENT + 9
 ON_TURN_START = pygame.USEREVENT + 10
+ON_CARD_PLAYED = pygame.USEREVENT + 11
 
 
 class Player(characterFile.Character):
@@ -120,6 +121,10 @@ class Player(characterFile.Character):
 
                 if card.type == cardsFile.CardType.ATTACK:
                     pygame.event.post(pygame.event.Event(ON_ATTACK_PLAYED))
+
+                if o.Effect.MADNESS in list_of_enemies[0].dict_of_ongoing:
+                    list_of_enemies[0].add_strength(list_of_enemies[0].dict_of_ongoing[o.Effect.MADNESS].intensity, list_of_enemies[0])
+                    list_of_enemies[0].add_dexterity(list_of_enemies[0].dict_of_ongoing[o.Effect.MADNESS].intensity, list_of_enemies[0])
 
                 card.action(player, list_of_enemies, target)
 

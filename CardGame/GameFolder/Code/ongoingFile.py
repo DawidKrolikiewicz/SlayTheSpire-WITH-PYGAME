@@ -41,6 +41,7 @@ class Effect(enum.Enum):
     SPORE_CLOUD = 28
     THIEVERY = 29
     ENRAGE = 30
+    MADNESS = 31
 
 
 # ======================= Ongoing Icons (superclass) =======================
@@ -696,6 +697,24 @@ class Enrage(Ongoing):
         # VISUAL RELATED
         self.image = pygame.image.load("../Sprites/Ongoing Icons/RageIcon.png")
         self.text = text_font.render("Whenever skill is played, gain X strength", True, (0, 0, 0))
+
+    def event_listener(self, ev, character, player, list_of_enemies):
+        pass
+
+    def update(self, character, screen):
+        self.value = self.intensity
+        super().update(character, screen)
+
+
+class Madness(Ongoing):
+    def __init__(self, value=0):
+        super().__init__()
+        # GAME RELATED
+        self.intensity = value
+        self.value = self.intensity
+        # VISUAL RELATED
+        self.image = pygame.image.load("../Sprites/Ongoing Icons/MadnessIcon.png")
+        self.text = text_font.render("Whenever card is played, gain X strength and dexterity but lose them when used", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
         pass

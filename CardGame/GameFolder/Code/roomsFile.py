@@ -241,8 +241,8 @@ class CombatEncounter(InGame):
             self.combat_difficulty = CombatDifficulty.EASY
         elif player.floor < 7:
             self.combat_difficulty = CombatDifficulty.NORMAL
-#        elif player.floor == 16:
-#            self.combat_difficulty = CombatDifficulty.BOSS
+        elif player.floor == 16:
+            self.combat_difficulty = CombatDifficulty.BOSS
         else:
             self.combat_difficulty = \
                 random.choices([CombatDifficulty.NORMAL, CombatDifficulty.ELITE], weights=[0.80, 0.20], k=1)[0]
@@ -426,6 +426,8 @@ class CombatEncounter(InGame):
                       [enemyFile.Lagavulin()],
                       [enemyFile.Sentry(position=1), enemyFile.Sentry(position=2), enemyFile.Sentry(position=3)]
                       )
+        elif combat_difficulty == CombatDifficulty.BOSS:
+            fights = ([enemyFile.Boss()], [enemyFile.Boss()])
 
         self.list_of_enemies += random.choice(fights)
 
@@ -1234,10 +1236,8 @@ class Rewards(InGame):
         elif player.floor == 15:
             self.choice_1_room, self.choice_2_room = RestRoom(player), RestRoom(player)
         elif player.floor == 16:
-            self.choice_1_room, self.choice_2_room = CombatEncounter(player,
-                                                                     custom_list_of_enemies=[enemyFile.Lagavulin()],
-                                                                     custom_combat_difficulty=CombatDifficulty.BOSS), CombatEncounter(
-                player, custom_list_of_enemies=[enemyFile.Lagavulin()], custom_combat_difficulty=CombatDifficulty.BOSS)
+            self.choice_1_room, self.choice_2_room = CombatEncounter(player), CombatEncounter(player)
+            pass
         else:
             self.choice_1_room = random.choices(room_types, [0.55, 0.15, 0.2, 0.1])[0]
             self.choice_1_room = self.check_arguments(player, self.choice_1_room)
