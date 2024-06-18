@@ -36,20 +36,6 @@ class CombatDifficulty(enum.Enum):
     BOSS = 4
 
 
-class RewardsLevel(enum.Enum):
-    NO_REWARDS = 1
-    EASY_FIGHT = 2
-    NORMAL_FIGHT = 3
-    ELITE_FIGHT = 4
-
-
-class CombatDifficulty(enum.Enum):
-    EASY = 1
-    NORMAL = 2
-    ELITE = 3
-    BOSS = 4
-
-
 def multi_text_render(text, screen):
     rendered_fonts = []
     for i, line in enumerate(text.split('\n')):
@@ -166,7 +152,7 @@ class Menu(Room):
                     STARTING_DECK = [cardsFile.Strike, cardsFile.Strike, cardsFile.Strike, cardsFile.Strike,
                                      cardsFile.Strike,
                                      cardsFile.Defend, cardsFile.Defend, cardsFile.Defend, cardsFile.Defend,
-                                     cardsFile.Bash]
+                                     cardsFile.BloodForBlood]
                     player.run_deck = [card() for card in STARTING_DECK]
                     player.points += 5
                     player.current_room = CombatEncounter(player)

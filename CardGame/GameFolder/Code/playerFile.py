@@ -243,6 +243,7 @@ class Player(characterFile.Character):
         self.discard.clear()
         self.dict_of_ongoing.clear()
         self.anim_list.clear()
+        cardsFile.BloodForBlood.cost = 4
 
     def start_turn(self):
         self.mana = 3
