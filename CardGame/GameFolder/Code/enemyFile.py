@@ -4,7 +4,7 @@ import characterFile
 import ongoingFile as o
 import cardsFile
 import declarationFile
-
+from fontsFile import text_font
 
 # ========================================= Enemy (superclass) =========================================
 
@@ -1227,12 +1227,12 @@ class Sentry(Enemy):
 
 
 class Boss(Enemy):
-    def __init__(self, name="BOSS", health=300):
+    def __init__(self, name="Goose", health=300):
         super().__init__(name, health)
         self.name = name
         self.max_health = health
         self.cur_health = self.max_health
-        self.image_sprite = pygame.image.load("../Sprites/Characters/Boss1.png")
+        self.image_sprite = pygame.image.load("../Sprites/Characters/Goose1.png")
         self.rect_sprite = self.image_sprite.get_rect()
         self.rect_sprite.bottom = 350
         self.state = 0
@@ -1289,11 +1289,22 @@ class Boss(Enemy):
         if self.phase == 1 and self.cur_health <= 200:
             self.phase = 2
             self.state = 0
-            self.image_sprite = pygame.image.load("../Sprites/Characters/Boss2.png")
+            self.image_sprite = pygame.image.load("../Sprites/Characters/Goose2.png")
+
+            self.name = "Goose, the Vengeful"
+            self.image_name = text_font.render(self.name, True, (0, 0, 0))
+            self.rect_name = self.image_name.get_rect()
+            self.rect_name.top = self.rect_sprite.bottom + 4
+
         if self.phase == 2 and self.cur_health <= 100:
             self.phase = 3
             self.state = 0
-            self.image_sprite = pygame.image.load("../Sprites/Characters/Boss3.png")
+            self.image_sprite = pygame.image.load("../Sprites/Characters/Goose3.png")
+
+            self.name = "Goose, the Ruined"
+            self.image_name = text_font.render(self.name, True, (0, 0, 0))
+            self.rect_name = self.image_name.get_rect()
+            self.rect_name.top = self.rect_sprite.bottom + 4
 
     def armor(self, player, list_of_enemies):
         self.add_metallicize(5, self)
