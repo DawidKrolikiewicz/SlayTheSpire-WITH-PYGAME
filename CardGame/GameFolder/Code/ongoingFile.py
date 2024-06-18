@@ -374,7 +374,7 @@ class FeelNoPain(Ongoing):
 
     def event_listener(self, ev, character, player, list_of_enemies):
         if ev.type == playerFile.ON_STATUS_CARD_DRAWN:
-            player.add_block(self.intensity)
+            player.add_block(self.intensity, character)
 
     def update(self, character, screen):
         self.value = self.intensity
