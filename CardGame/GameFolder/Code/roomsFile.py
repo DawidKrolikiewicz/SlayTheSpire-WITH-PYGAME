@@ -141,10 +141,8 @@ class Menu(Room):
         self.bg_image = pygame.image.load("../Sprites/Backgrounds/MenuBG.png")
         self.bg_color = WHITE
         self.button_colors = (140, 197, 245)
-        self.menu_button_1_rect = pygame.Rect((50, 360, 300, 80))
-        self.menu_button_2_rect = pygame.Rect((50, 460, 300, 80))
-        self.menu_button_3_rect = pygame.Rect((50, 560, 300, 80))
-        self.menu_button_4_rect = pygame.Rect((50, 660, 300, 80))
+        self.menu_button_1_rect = pygame.Rect((50, 560, 300, 80))
+        self.menu_button_2_rect = pygame.Rect((50, 660, 300, 80))
 
         self.music = "../Sound Effects/MenuAmbient.mp3"
 
@@ -187,19 +185,12 @@ class Menu(Room):
                     player.endless = True
                 pass
 
-            elif self.menu_button_3_rect.collidepoint(pos):
-                pass
-
-            elif self.menu_button_4_rect.collidepoint(pos):
-                player.current_room = RestRoom(player)
 
     def update(self, screen, player):
         screen.blit(self.bg_image, (0, 0))
 
         pygame.draw.rect(screen, self.button_colors, self.menu_button_1_rect)
         pygame.draw.rect(screen, self.button_colors, self.menu_button_2_rect)
-        pygame.draw.rect(screen, self.button_colors, self.menu_button_3_rect)
-        pygame.draw.rect(screen, self.button_colors, self.menu_button_4_rect)
 
         if player.floor == 0 or player.cur_health <= 0:
             button_1_text = text_font_big.render("BEGIN", True, (0, 0, 0))

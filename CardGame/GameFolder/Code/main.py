@@ -42,6 +42,7 @@ while is_running:
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             is_running = False
         # ====== OTHER (TESTING MAINLY ¯\_(ツ)_/¯ ) ======
+        # SKIP TO BOSS WITH CURRENT DECK
         if event.type == pygame.KEYDOWN and event.key == pygame.K_x:
             PLAYER.floor = 25
             PLAYER.fight_count = 3
