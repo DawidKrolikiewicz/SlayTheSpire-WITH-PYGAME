@@ -152,7 +152,7 @@ class Menu(Room):
                     STARTING_DECK = [cardsFile.Strike, cardsFile.Strike, cardsFile.Strike, cardsFile.Strike,
                                      cardsFile.Strike,
                                      cardsFile.Defend, cardsFile.Defend, cardsFile.Defend, cardsFile.Defend,
-                                     cardsFile.BloodForBlood]
+                                     cardsFile.Bash]
                     player.run_deck = [card() for card in STARTING_DECK]
                     player.points += 5
                     player.current_room = CombatEncounter(player)
