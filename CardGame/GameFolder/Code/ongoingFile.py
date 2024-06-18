@@ -483,8 +483,7 @@ class Rupture(Ongoing):
         self.text = text_font.render("Whenever you lose hp from a card, gain X strength", True, (0, 0, 0))
 
     def event_listener(self, ev, character, player, list_of_enemies):
-        if ev.type == playerFile.ON_PLAYER_LOSE_HP_FROM_CARD:
-            player.add_strength(self.intensity, player)
+        pass
 
     def update(self, character, screen):
         self.value = self.intensity

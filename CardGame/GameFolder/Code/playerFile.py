@@ -171,9 +171,9 @@ class Player(characterFile.Character):
 
     def deal_damage(self, damage, target, is_attack=True, hit_block=True):
         super().deal_damage(damage, target)
-        if target == self and damage > 0:
+        if target == self and damage > 0 and o.Effect.RUPTURE in self.dict_of_ongoing:
             # Post event
-            pygame.event.post(pygame.event.Event(ON_PLAYER_LOSE_HP_FROM_CARD))
+            self.add_strength(self.dict_of_ongoing[o.Effect.RUPTURE].intensity, self)
 
         return damage
 
